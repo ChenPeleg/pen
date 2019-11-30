@@ -51,7 +51,7 @@ G = {}; // the global data object
        const urlName = urlParams.get('userFullName') ?  urlParams.get('userFullName') : false
        const lsName = saveFromSS.nameOfplayer || false;
        if (!urlParams.has('api')) {
-           console.log('%c no site Connection - game saved on this PC \n אין חיבור לאתר, המשחק ישמר על מחשב זה', 'font-family:david; font-size: 3vmin; background: gold; color:blue;');
+           //console.log('%c no site Connection - game saved on this PC \n אין חיבור לאתר, המשחק ישמר על מחשב זה', 'font-family:david; font-size: 3vmin; background: gold; color:blue;');
            G.saveInLocalStorageKey = G.fileName + "_Local";
          G.isTheGameConnectedToClick = false;
            return

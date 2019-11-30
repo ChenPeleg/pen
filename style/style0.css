@@ -1,0 +1,17 @@
+/*css styleSheet.css*/
+#ErrorCheck{
+    font-size: 57px;
+    color: red;
+}
+@font-face {
+    font-family: Alima;
+    src: url(data/Alima.TTF);
+}
+div {
+ border-radius: 2vmin;
+ border: 5px solid grey;
+
+}
+body {
+    background: radial-gradient(circle, rgba(196,203,241,1) 0%, rgba(255,255,255,1) 100%);
+}
