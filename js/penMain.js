@@ -6,6 +6,7 @@ G.V = [];
 
 utils:{
     function L (...args){
+        return console.log(...args)
         let txtcolor1 = 'black';
         let txtcolor2 = 'blue';
         let colorForText = 'green';
@@ -140,7 +141,8 @@ function buildVirtualDom (q) {
     }
     class Segment {
 
-         constructor (inf) {
+         constructor (inf,num) {
+             this.number = num;
              this.posNumber = inf[0];
              this.treePos = this.posNumber.split('.').map(x=>Number(x)) || false;
              this.typ = inf[2];
@@ -149,30 +151,66 @@ function buildVirtualDom (q) {
              this.sound = inf[10];
              this.solution = inf[11];
              this.elem = elementOfhtml (this.typ)
-             }
+         };
+        toForm(){
+            const answers =  this.answer.filter((e)=>e)
 
+            let html =''
+            answers.forEach(ans=>{
+
+                const numberOfAns = answers.indexOf(ans)
+                const ansLbl = "Q" + this.number + "_" + numberOfAns
+                let formElm = `<input id = "${ansLbl}" type="radio" class="radio1" name="${"Q" + this.number }" value="${numberOfAns}"> <label class="radio1" for="${ansLbl}">${ans}</label> <br>`
+
+
+                html += formElm;
+            })
+
+            return html
+
+        };
          toHtml (){
              let htmlElement = Elm(this.elem);
-             htmlElement.innerHTML = this.content + this.answer
-             return htmlElement ;
+             let elmType = 'p';
+             let elmStyle =''; let srcImg = '';
+             let content = this.content;
+             let class1 = this.typ
+             if (this.typ.includes("image")){
+                 elmType = 'img' ; content = ``;
+                 srcImg = `src="content/${this.content}"`
+
+                 elmType = 'div';
+                 content =  `<img class = "${this.typ}" src="content/${this.content}">`;
+                 class1 = '';
+                 elmStyle = `style="width: 220px;"`
+             }
+             if (this.typ.includes("h_")){
+                 content = `<${this.elem}>${content}</${this.elem}>`
+             }
+             if (this.typ.includes("q_")) {
+                 content += this.toForm()
+             }
+
+             //htmlElement = `<${elmType} id= "${"Elm" + this.number}" class="${class1}" ${elmStyle}  ${srcImg}> ${content}</${elmType}>`
+             return  content;
          }
 
     }
     for (let i = 1; i < G.Q.length; i++ ) {
-        G.V[i] = new Segment (G.Q[i])
+        G.V[i] = new Segment (G.Q[i],i)
     }
 
     return G.V
 
 }
-function buildPageTree (){
+function mapPageTree (){
     const deepMapKillLast = (arr)=>{
-        //console.log(arr)
+
         const mapped = arr.map(a=>{
 
             if (Array.isArray(a)){
                 if (a.length < 2 && a[0] > 0){
-                    console.log("a0:", a[0])
+
                     return a[0]
 
                 } else return deepMapKillLast(a.filter(()=>true))
@@ -181,7 +219,7 @@ function buildPageTree (){
                 return a
             }
         })
-        console.log("got:",arr, "return:",mapped)
+
         return mapped
     }
     var m = [];
@@ -190,7 +228,7 @@ function buildPageTree (){
          let a = G.V[i].treePos;
         mp = m;
         for (let t = 0; t < a.length;t++) {
-            //console.log("a:" + a,"t: " + t,'mp;:' + mp)
+
             let lv = a[t]
 
             if (!mp[lv]) {mp[lv] =  []}
@@ -204,9 +242,7 @@ function buildPageTree (){
 
     m.shift();
     let deep = deepMapKillLast (m)
-
-    console.log (deep )
-    return {m, deep}
+    return  deep
 
 
 
@@ -215,36 +251,48 @@ function writePage (html = 'bla') {
     const pageContainer = Elm ('pageContainer');
     const errorCheck = Id ('ErrorCheck');
     errorCheck.remove ()
-    const str = html //JSON.stringify(html)
+    stl (pageContainer, {position: 'relative', width:"70%", left:"15%"})
+    const str = `<form>${html}</form>` //JSON.stringify(html)
     pageContainer.innerHTML = str
     document.body.appendChild(pageContainer);
 }
 function buildContent (tree) {
 
-    let fullHtml = ''
-    const rend = h => `<${h.elem }>${h.content}</${h.elem }><br>`
-    for (let i = 1; i < G.V.length; i++ ) {
-        const e = G.V[i]
-        let con = `<${e.elem }>${e.content}</${e.elem }><br>`
-        fullHtml += con
-    }
-    fullHtml = ''
-    for (let i = 0; i < tree.length; i ++){
-        console.log (tree[i])
-        if (!tree[i]) continue
-        [...tree[i]].forEach(el=>{
-            console.log (el)
-        fullHtml +=  rend (G.V[el])
 
-        })
+    const rend = h =>{
+        let content0 =  h.toHtml()
+        return  content0
+        //`<${h.elem } class="node" id="${"Wrap"+ h.number}">${content0}</${h.elem }><br>`
     }
+    const buildContainer = (arr, level = 0) => {
+        let cont = `<div class="container level${level}">`;
+        for (let a = 0; a < arr.length; a++){
 
+            if (Array.isArray(arr[a])){
+                cont += buildContainer(arr[a], level+1)
+            } else{
+                const num = arr[a]
+                const html0 = rend(G.V[num])
+                cont += html0;
+
+            }
+
+
+        }
+
+        cont += '</div>';
+
+        return cont
+
+    }
+    const fullHtml = buildContainer(tree)
     return fullHtml
 }
 
-const virt = buildVirtualDom (tree);
-const tree = JSON.stringify( buildPageTree ())
-//const cont = buildContent (tree);
-const final = tree
-//console.log(buildPageTree ())
+
+const virt = buildVirtualDom ();
+const tree =mapPageTree ()
+const cont = buildContent (tree);
+const final = cont
+
 writePage ( final )

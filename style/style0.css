@@ -3,15 +3,72 @@
     font-size: 57px;
     color: red;
 }
+
 @font-face {
-    font-family: Alima;
-    src: url(data/Alima.TTF);
-}
-div {
- border-radius: 2vmin;
- border: 5px solid grey;
+    font-family: 'Open Sans', sans-serif;
+    src: url(assets/OpenSans-Regular.ttf);
 
 }
-body {
-    background: radial-gradient(circle, rgba(196,203,241,1) 0%, rgba(255,255,255,1) 100%);
+@font-face {
+    font-family: 'Alfa Slab One', cursive;
+    src: url(assets/AlfaSlabOne-Regular.ttf);
+
 }
+
+div {
+
+ border-radius: 2vmin;
+ border: 5px solid grey;
+ padding : 1vmin;
+
+
+
+
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    background: radial-gradient(circle, rgba(196,203,241,1) 0%, rgba(255,255,255,1) 100%);
+    font-size: 26px;
+}
+p{
+ padding :1px;
+ margin:1px;
+
+
+
+}
+
+.level0{
+    border: 5px solid salmon;
+    background: linear-gradient(to left, rgba(160,203,241,1) 0%, rgba(255,190,255,1) 100%)
+}
+.level1{
+    border: 0px solid black;
+    background: linear-gradient(to left, rgba(190,173,241,1) 0%, rgba(105,190,205,1) 100%)
+}
+.node {
+        border: 0px solid black;
+}
+.image-div{
+   float:left;
+   height: 100px;
+   display:inline-block;
+}
+.image_text{
+ float:right;
+ margin: 2px;
+
+    height: 200px;
+}
+h1{
+    font-family: 'Alfa Slab One', cursive;
+    font-size: 60px;
+    margin: 10px;
+    padding: 3px;
+    font-weight:500;
+    text-shadow: 1px 1px 10px 10px orange;
+
+}
+
+ 
