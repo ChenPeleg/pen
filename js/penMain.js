@@ -123,6 +123,9 @@ utils:{
         p_elem.draggable = false; // maybye cancell ??
         p_elem.onselectstart = function(){ return false };
     }
+    function getRandomInt(max) {
+        return (Math.floor(Math.random() * Math.floor(max))) + 1
+    }
 }
 function buildVirtualDom (q) {
     const elementOfhtml = (t)=>{
@@ -163,18 +166,47 @@ function buildVirtualDom (q) {
 
 }
 function buildPageTree (){
-    let mapArr = []
+    const deepMapKillLast = (arr)=>{
+        //console.log(arr)
+        const mapped = arr.map(a=>{
 
-    for (let i = 1; i < G.V.length; i++ ) {
-        let arr = G.V[i].treePos ;
-        if (!arr) continue
-        mapArr[arr[0]] = mapArr[arr[0]] || [];
-    //    if (arr[1]) {mapArr[arr[0]] = mapArr[arr[0]] || []; }
-        mapArr[arr[0]].push(i)
+            if (Array.isArray(a)){
+                if (a.length < 2 && a[0] > 0){
+                    console.log("a0:", a[0])
+                    return a[0]
+
+                } else return deepMapKillLast(a.filter(()=>true))
+            } else if (a > 0) {
+
+                return a
+            }
+        })
+        console.log("got:",arr, "return:",mapped)
+        return mapped
+    }
+    var m = [];
+    var mp;
+    for (let i = 1; i < G.V.length ;i++){
+         let a = G.V[i].treePos;
+        mp = m;
+        for (let t = 0; t < a.length;t++) {
+            //console.log("a:" + a,"t: " + t,'mp;:' + mp)
+            let lv = a[t]
+
+            if (!mp[lv]) {mp[lv] =  []}
+            mp = mp[lv]
+        }
+
+
+        mp.push(i)
 
     }
-    mapArr.shift()
-    return mapArr
+
+    m.shift();
+    let deep = deepMapKillLast (m)
+
+    console.log (deep )
+    return {m, deep}
 
 
 
@@ -209,8 +241,10 @@ function buildContent (tree) {
 
     return fullHtml
 }
-const virt = buildVirtualDom ();
+
+const virt = buildVirtualDom (tree);
 const tree = JSON.stringify( buildPageTree ())
-const cont = buildContent (tree);
-const final = cont
+//const cont = buildContent (tree);
+const final = tree
+//console.log(buildPageTree ())
 writePage ( final )
