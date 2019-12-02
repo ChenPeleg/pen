@@ -176,13 +176,19 @@ function buildVirtualDom (q) {
              let content = this.content;
              let class1 = this.typ
              if (this.typ.includes("image")){
-                 elmType = 'img' ; content = ``;
-                 srcImg = `src="content/${this.content}"`
+                 let addedStyle = ''
+                 if (this.typ.includes("left")) {
+                       addedStyle = "float-left";
+                 }
+                 else if (this.typ.includes("image")) {
+                     addedStyle = `float-right`;
+                 }
+                let  class0 = 'image_text'
 
-                 elmType = 'div';
-                 content =  `<img class = "${this.typ}" src="content/${this.content}">`;
-                 class1 = '';
-                 elmStyle = `style="width: 220px;"`
+
+                 content =  `<img class = "${class0} ${addedStyle}"  src="content/${this.content}">`;
+
+
              }
              if (this.typ.includes("h_")){
                  content = `<${this.elem}>${content}</${this.elem}>`
@@ -190,9 +196,12 @@ function buildVirtualDom (q) {
              if (this.typ.includes("q_")) {
                  content += this.toForm()
              }
+             if (this.typ === 'txt'){
+                 content = `<div class="txt">${ content}</div>`;
+             }
 
              //htmlElement = `<${elmType} id= "${"Elm" + this.number}" class="${class1}" ${elmStyle}  ${srcImg}> ${content}</${elmType}>`
-             return  content;
+             return  content
          }
 
     }
