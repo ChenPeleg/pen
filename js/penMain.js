@@ -141,7 +141,7 @@ function buildVirtualDom (q) {
     }
     class Segment {
 
-         constructor (inf,num) {
+        constructor (inf,num) {
              this.number = num;
              this.posNumber = inf[0];
              this.treePos = this.posNumber.split('.').map(x=>Number(x)) || false;
@@ -152,24 +152,32 @@ function buildVirtualDom (q) {
              this.solution = inf[11];
              this.elem = elementOfhtml (this.typ)
          };
-        toForm(){
+        toMultiInput(){
             const answers =  this.answer.filter((e)=>e)
-
-            let html =''
+            let html =''; let slash = '<span style="color:black">/</span>';
+            let isSlashin = false;
+            const avarageLength = Math.round( JSON.stringify(answers).length/ answers.length)
+            if (avarageLength < 17){isSlashin =true }
             answers.forEach(ans=>{
 
                 const numberOfAns = answers.indexOf(ans)
                 const ansLbl = "Q" + this.number + "_" + numberOfAns
-                let formElm = `<input id = "${ansLbl}" type="radio" class="radio1" name="${"Q" + this.number }" value="${numberOfAns}"> <label class="radio1" for="${ansLbl}">${ans}</label> <br>`
+                const radioClass = "radio2"; let sl = '';
+                if ((numberOfAns + 1) < answers.length && isSlashin) {sl = slash} else {sl = ' '}
+                let formElm = `<input id = "${ansLbl}" type="radio" class="${radioClass}" name="${"Q" + this.number }" value="${numberOfAns}"> <label class="${radioClass}" for="${ansLbl}">${ans}</label>` + sl
 
 
                 html += formElm;
             })
-
             return html
 
         };
-         toHtml (){
+        toWordInput () {
+            const textInputClass = 'textInputClass';
+            let formElm = `<input id = "${"Q" + this.number}" type="text" class="${textInputClass}" name="${"Q" + this.number }" value="">`
+            return formElm
+        }
+        toHtml (){
              let htmlElement = Elm(this.elem);
              let elmType = 'p';
              let elmStyle =''; let srcImg = '';
@@ -180,12 +188,12 @@ function buildVirtualDom (q) {
                  if (this.typ.includes("left")) {
                        addedStyle = "float-left";
                  }
-                 else if (this.typ.includes("image")) {
+                 else if (this.typ.includes("right")) {
                      addedStyle = `float-right`;
+                 } else if (this.typ.includes("main")){
+                     addedStyle = `img-main`;
                  }
                 let  class0 = 'image_text'
-
-
                  content =  `<img class = "${class0} ${addedStyle}"  src="content/${this.content}">`;
 
 
@@ -193,12 +201,17 @@ function buildVirtualDom (q) {
              if (this.typ.includes("h_")){
                  content = `<${this.elem}>${content}</${this.elem}>`
              }
-             if (this.typ.includes("q_")) {
-                 content += this.toForm()
+             if (this.typ.includes("q_")&& this.typ !== "q_word") {
+
+                 content = '<br>' + content + this.toMultiInput()
+             }
+             if (this.typ === "q_word"){
+                 content = '<br>' + content + this.toWordInput()
              }
              if (this.typ === 'txt'){
                  content = `<div class="txt">${ content}</div>`;
              }
+
 
              //htmlElement = `<${elmType} id= "${"Elm" + this.number}" class="${class1}" ${elmStyle}  ${srcImg}> ${content}</${elmType}>`
              return  content
@@ -208,7 +221,6 @@ function buildVirtualDom (q) {
     for (let i = 1; i < G.Q.length; i++ ) {
         G.V[i] = new Segment (G.Q[i],i)
     }
-
     return G.V
 
 }
@@ -300,7 +312,7 @@ function buildContent (tree) {
 
 
 const virt = buildVirtualDom ();
-const tree =mapPageTree ()
+const tree = mapPageTree ()
 const cont = buildContent (tree);
 const final = cont
 

@@ -2,6 +2,7 @@
 :root {
   --main-text-padding: 30px;
   --main-soft-shadow: 1px 1px 6px 1px rgba(0,0,0,0.5);
+  --main-inText-image-height: 150px;
 }
 
 
@@ -30,34 +31,26 @@
 
 
 div {
-
  border-radius: 2vmin;
  padding : 1vmin;
-
-
-
-
 }
 
 body {
     font-family: 'Quicksand', sans-serif;
-    //background: radial-gradient(circle, rgba(196,203,241,1) 0%, rgba(255,255,255,1) 100%);
     font-size: 26px;
 }
-p{
-
-}
+p{}
 
 .level0{
-    /* border: 5px solid salmon;
-    background: linear-gradient(to left, rgba(160,203,241,1) 0%, rgba(255,190,255,1) 100%) */
     box-shadow:var(--main-soft-shadow);
+    padding: 15px;
+    background: linear-gradient(to right, rgba(240,240,254,0.9),rgba(240,254,240,0.9) )
 }
 .level1{
     border: 0px solid black;
     }
 .node {
-        border: 0px solid black;
+    border: 0px solid black;
 }
 .image-div{
    float:left;
@@ -68,25 +61,29 @@ p{
 
 .image_text{
     display:inline-block;
- float:right;
- margin: 7px;
- height: 200px;
- margin:var(--main-text-padding);
- margin-bottom: calc(var(--main-text-padding)*0.1);
- box-shadow:var(--main-soft-shadow);
-
-
+    float:right;
+    margin: 7px;
+    height: var(--main-inText-image-height);
+    margin:var(--main-text-padding);
+    margin-bottom: calc(var(--main-text-padding)*0.1);
+    box-shadow:var(--main-soft-shadow);
 }
+
 .float-left{
    float:left;
-
 }
 .float-right{
    float:right;
 }
+
+.txt~.image_text{
+     height: calc(var(--main-inText-image-height)*1.5);
+     box-shadow: 0 0;
+ }
 .txt{
     padding: var(--main-text-padding);
-    background: linear-gradient(to left, rgba(190,173,241,1) 0%, rgba(105,190,205,1) 100%)
+    background: linear-gradient(to left, rgba(190,173,241,1) 0%, rgba(105,190,205,1) 100%);
+    font-weight: 600;
 
 }
 h1{
@@ -105,4 +102,16 @@ h1.gradient1 {
     color:transparent;
     -webkit-background-clip: text;
     background-clip: text;
+}
+
+.img-main{
+    text-align: center;
+    position:relative;
+    float:none;
+    display:block;
+    margin: auto;
+    margin-bottom: 10px;
+    width: auto;
+    height: inherit;
+    box-shadow:var(--main-soft-shadow);
 }

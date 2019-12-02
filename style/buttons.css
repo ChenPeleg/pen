@@ -43,3 +43,67 @@ input[type=radio].radio1:checked+label {
       box-shadow: 0px 0px 3px 3px rgba(0,0,0,0.2)
   }
 }
+
+
+
+input[type=radio].radio2  {
+    display: none;
+
+}
+label.radio2{
+    display:inline-block;
+    position:relative;
+    border-radius: 20px;
+    padding: 3px;
+    padding-left: 7px;
+    padding-right: 12px;
+    margin: 2px;
+    color: rgba(0,50,200,1);
+}
+label.radio2:hover{
+    animation-name: hoverButton2;
+     animation-duration: 0.2s ;
+     animation-fill-mode: forwards;
+}
+input[type=radio].radio2:checked+label {
+    animation-name: selectButton2;
+     animation-duration: 0.4s ;
+     animation-fill-mode: forwards;
+}
+
+@keyframes hoverButton2 {
+  from {background-color: transparent;
+      box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.2)
+  }
+  to {background-color: rgba(144, 238, 144,0.7);
+      box-shadow: 1px 1px 4px 4px rgba(0,0,0,0.2)
+  }
+}
+@keyframes selectButton2 {
+  from {background:rgb(120, 220, 120);
+      box-shadow: 4px -4px 1px 1px rgba(0,0,0,0.2)
+  }
+  to {background: rgb(120, 255, 120);
+      box-shadow: 0px 0px 3px 3px rgba(0,0,0,0.2)
+  }
+}
+
+.textInputClass{
+    display:inline-block;
+    position:relative;
+    text-align: center;
+    width:200px;
+    border-radius: 20px;
+    padding: 3px;
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-left: 10px;
+    margin-right: 10px;
+    color: rgba(0,50,200,1);
+    font-size: inherit;
+    font-family: inherit;
+}
+.textInputClass:focus{
+    outline: none;
+    background:rgba(144, 238, 144,0.7);
+}
