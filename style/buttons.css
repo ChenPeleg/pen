@@ -102,8 +102,58 @@ input[type=radio].radio2:checked+label {
     color: rgba(0,50,200,1);
     font-size: inherit;
     font-family: inherit;
+    font-weight: bold;
 }
 .textInputClass:focus{
     outline: none;
     background:rgba(144, 238, 144,0.7);
 }
+/*
+.order0{
+    color: rgba(0,50,200,1);
+}
+.order0:hover{
+    cursor: s-resize;
+    animation-name: hoverorder0;
+     animation-duration: 0.2s ;
+     animation-fill-mode: forwards;
+}
+
+@keyframes hoverorder0 {
+  from {background-color: transparent;
+      box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.2)
+  }
+  to {background-color: rgba(160,  210, 255,0.9);
+      box-shadow: 1px 1px 4px 4px rgba(0,0,0,0.2)
+  }
+ */
+
+
+ ul {
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    margin: 5px 0;
+    padding: 0 20px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 3px;
+    background: #136a8a;
+  background: -webkit-linear-gradient(to right, #267871, #136a8a);
+  background: linear-gradient(to right, #267871, #136a8a);
+    color: #fff;
+    list-style: none;
+  }
+
+  li.drag-sort-active {
+    background: transparent;
+    color: transparent;
+    border: 1px sol id #4ca1af;
+  }
+
+  span.drag-sort-active {
+    background: transparent;
+    color: transparent;
+  }

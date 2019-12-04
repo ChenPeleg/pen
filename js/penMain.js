@@ -121,12 +121,31 @@ utils:{
         for (x in p_styles2) {
             p_elem.style[x] = p_styles2[x];
         }
-        p_elem.draggable = false; // maybye cancell ??
+        //p_elem.draggable = false; // maybye cancell ??
         p_elem.onselectstart = function(){ return false };
     }
     function getRandomInt(max) {
         return (Math.floor(Math.random() * Math.floor(max))) + 1
     }
+}
+function setDirectionBylanguage (element, text) {
+    if (text && element) {} else return
+    function isHebrew(qtext) {
+        if (typeof qtext !== 'string'){return true}
+        var hebLetters = /\s?[1234567890אבגדהוזחטיכלמנסעפצקרשתםןץףך]{1,30}\s?/g
+        var englishLetters =  /[A-Za-z]{3,30}/g
+        let matchArryEnglsh = qtext.match(englishLetters)
+        if (matchArryEnglsh === null){matchArryEnglsh = [] }
+        let matchArryHebrew = qtext.match(hebLetters)
+
+        if (matchArryHebrew !== null && matchArryHebrew.length >  matchArryEnglsh.length ){ return true} else {return false}
+
+    }
+    if (isHebrew(text)) {
+        element.style.direction = 'rtl'; element.style.textAlign = 'right'} else {
+        {element.style.direction = "ltr"; element.style.textAlign = "left"}
+    }
+
 }
 function buildVirtualDom (q) {
     const elementOfhtml = (t)=>{
@@ -143,7 +162,7 @@ function buildVirtualDom (q) {
 
         constructor (inf,num) {
              this.number = num;
-             this.posNumber = inf[0];
+             this.posNumber = inf[0] ;
              this.treePos = this.posNumber.split('.').map(x=>Number(x)) || false;
              this.typ = inf[2];
              this.content = inf[3];
@@ -172,6 +191,19 @@ function buildVirtualDom (q) {
             return html
 
         };
+        toOrderInput(){
+            const answers =  this.answer.filter((e)=>e)
+            let html ='<ul class="orderList">';
+            answers.forEach(ans=>{
+                const numberOfAns = answers.indexOf(ans)
+                const ansLbl = "Ol" + this.number + "_" + numberOfAns
+                const orderClass = "order0"; // draggable="true"
+                let formElm = `<li id="${ansLbl}"  class="${orderClass}" > ${ans}</li>`
+                html += formElm ;
+            })
+            return html + '</ul>'
+
+        }
         toWordInput () {
             const textInputClass = 'textInputClass';
             let formElm = `<input id = "${"Q" + this.number}" type="text" class="${textInputClass}" name="${"Q" + this.number }" value="">`
@@ -201,15 +233,19 @@ function buildVirtualDom (q) {
              if (this.typ.includes("h_")){
                  content = `<${this.elem}>${content}</${this.elem}>`
              }
-             if (this.typ.includes("q_")&& this.typ !== "q_word") {
-
-                 content = '<br>' + content + this.toMultiInput()
+             if (this.typ.includes("q_multi")&& this.typ !== "q_word") {
+//'<br>' +
+                 content =  '<span>' + content + '</span>' + this.toMultiInput()  + '<br>';
              }
              if (this.typ === "q_word"){
-                 content = '<br>' + content + this.toWordInput()
+                 //'<br>' +
+                 content =  content + this.toWordInput() ;
              }
-             if (this.typ === 'txt'){
-                 content = `<div class="txt">${ content}</div>`;
+             if (this.typ === "q_order"){
+                 content =  content + this.toOrderInput() ;
+             }
+             if (this.typ.includes('txt')){
+                 content = `<div class="${this.typ}"><span>${ content}</span></div>`;
              }
 
 
@@ -219,6 +255,9 @@ function buildVirtualDom (q) {
 
     }
     for (let i = 1; i < G.Q.length; i++ ) {
+        let addPosition = '1'
+        if (i>1){addPosition = G.Q[i-1][0]}
+        G.Q[i][0] = G.Q[i][0] || addPosition
         G.V[i] = new Segment (G.Q[i],i)
     }
     return G.V
@@ -273,7 +312,7 @@ function writePage (html = 'bla') {
     const errorCheck = Id ('ErrorCheck');
     errorCheck.remove ()
     stl (pageContainer, {position: 'relative', width:"70%", left:"15%"})
-    const str = `<form>${html}</form>` //JSON.stringify(html)
+    const str = `<form id="mainForm">${html}</form>` //JSON.stringify(html)
     pageContainer.innerHTML = str
     document.body.appendChild(pageContainer);
 }
@@ -309,6 +348,145 @@ function buildContent (tree) {
     const fullHtml = buildContainer(tree)
     return fullHtml
 }
+function setDirection (){
+    const mainForm = Id('mainForm');
+    const collection = mainForm .querySelectorAll('span, h1, h2, h3, div.txt_instruct');
+    collection.forEach (e=>setDirectionBylanguage(e, e.innerHTML))
+}
+
+function enableDragSort(listClass) {
+  const sortableLists = document.getElementsByClassName(listClass);
+  Array.prototype.map.call(sortableLists, (list) => {enableDragList(list)});
+}
+function enableDragList(list) {
+  Array.prototype.map.call(list.children, (item) => {enableDragItem(item)});
+}
+function enableDragItem(item) {
+  item.setAttribute('draggable', true)
+  item.ondrag = handleDrag;
+  item.ondragend = handleDrop;
+}
+function handleDrag(item) {
+  const selectedItem = item.target,
+        list = selectedItem.parentNode,
+        x = event.clientX,
+        y = event.clientY;
+
+  selectedItem.classList.add('drag-sort-active');
+  let swapItem = document.elementFromPoint(x, y) === null ? selectedItem : document.elementFromPoint(x, y);
+
+  if (list === swapItem.parentNode) {
+    swapItem = swapItem !== selectedItem.nextSibling ? swapItem : swapItem.nextSibling;
+    list.insertBefore(selectedItem, swapItem);
+  }
+}
+function handleDrop(item) {
+  item.target.classList.remove('drag-sort-active');
+}
+
+
+// function scriptElements () {
+//     const dragCollection = mainForm .querySelectorAll('.order0')
+//     dragCollection.forEach(myObject=>{
+//         let mouseupTime = '';
+//         dragElement(myObject)
+//         myObject.addEventListener('mousedown', function (e){
+//             // var rect = e.target.getBoundingClientRect();
+//             // console.log(rect.top, rect.right, rect.bottom, rect.left);
+//             //
+//             e.target.style.position = 'absolute'
+//             clearTimeout(mouseupTime)
+//             mouseupTime = setTimeout(()=>{e.target.style.position = 'static'},2000)
+//         })
+//         myObject.addEventListener('mouseup', function (e){
+//          e.target.style.position = 'static';
+//
+//         })
+//
+//
+//             // myObject.addEventListener("mousedown", function(e){
+//             //     const firstTarget = e.target
+//             //     myObject.onmousemove = function(e2) {
+//             //     e2.target.style.color = 'red'
+//             //     mouseMoveFunction(e2, firstTarget);
+//             //     }
+//             //     setTimeout(()=>{myObject.onmousemove = null},500)
+//             // });
+//             // myObject.addEventListener("mouseup", function(e){
+//             // myObject.onmousemove = null
+//             // });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//     })
+//
+// }
+function mouseMoveFunction (e, firstTarget){
+    function moveListDown (){
+        let listElments = e.target.parentElement.querySelectorAll("li")
+        listElments = [...listElments]
+        const elementAfter = listElments.indexOf(e.target) + 1;
+        e.target.parentElement.insertBefore(listElments[elementAfter],e.target)
+
+    }
+    function moveListUp (){
+
+    }
+    const hieghtOfElem = e.path[0].offsetHeight / 6;
+
+
+
+    if (e.movementY > hieghtOfElem){moveListDown () } else if (e.movementY < (-1 * hieghtOfElem) ) {}
+
+}
+//
+//
+// function dragElement(elmnt) {
+//   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+//   if (document.getElementById(elmnt.id )) {
+//     // if present, the header is where you move the DIV from:
+//     document.getElementById(elmnt.id).onmousedown = dragMouseDown;
+//   } else {
+//     // otherwise, move the DIV from anywhere inside the DIV:
+//     elmnt.onmousedown = dragMouseDown;
+//   }
+//
+//   function dragMouseDown(e) {
+//     e = e || window.event;
+//     e.preventDefault();
+//     // get the mouse cursor position at startup:
+//     pos3 = e.clientX;
+//     pos4 = e.clientY;
+//     document.onmouseup = closeDragElement;
+//     // call a function whenever the cursor moves:
+//     document.onmousemove = elementDrag;
+//   }
+//
+//   function elementDrag(e) {
+//     e = e || window.event;
+//     e.preventDefault();
+//     // calculate the new cursor position:
+//     pos1 = pos3 - e.clientX;
+//     pos2 = pos4 - e.clientY;
+//     pos3 = e.clientX;
+//     pos4 = e.clientY;
+//     // set the element's new position:
+//     elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+//     elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+//   }
+//
+//   function closeDragElement() {
+//     // stop moving when mouse button is released:
+//     document.onmouseup = null;
+//     document.onmousemove = null;
+//   }
+// }
 
 
 const virt = buildVirtualDom ();
@@ -317,3 +495,6 @@ const cont = buildContent (tree);
 const final = cont
 
 writePage ( final )
+setDirection ()
+enableDragSort('orderList')
+//scriptElements ()
