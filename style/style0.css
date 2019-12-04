@@ -37,6 +37,7 @@ div {
 }
 
 body {
+    
     font-family: 'Quicksand', sans-serif;
     font-size: var(--main-font-size)
 }
@@ -133,16 +134,4 @@ h1.gradient1 {
 .txt_instruct{
     font-size: calc(var(--main-font-size)*0.9);
     color: rgba(0, 0, 0, 0.8);
-}
-
-
-li.drag-sort-active {
-  background: transparent;
-  color: transparent;
-  border: 1px solid #4ca1af;
-}
-
-span.drag-sort-active {
-  background: transparent;
-  color: transparent;
 }

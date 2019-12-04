@@ -1,4 +1,6 @@
-
+:root {
+  --main-hover-radio: rgba(144, 238, 144,0.7)
+}
 
 input[type=radio].radio1  {
     display: none;
@@ -75,7 +77,7 @@ input[type=radio].radio2:checked+label {
   from {background-color: transparent;
       box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.2)
   }
-  to {background-color: rgba(144, 238, 144,0.7);
+  to {background-color: var(--main-hover-radio);
       box-shadow: 1px 1px 4px 4px rgba(0,0,0,0.2)
   }
 }
@@ -108,15 +110,30 @@ input[type=radio].radio2:checked+label {
     outline: none;
     background:rgba(144, 238, 144,0.7);
 }
-/*
+
 .order0{
+
+
+        width: 150px;
+        border-radius: 7px;
+        text-align: center;
+        padding: 1px;
+        padding-left: 7px;
+        padding-right: 12px;
+        margin: 8px;
+        background-color: rgba(160,  210, 255,0.9);
+            box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.2);
+
     color: rgba(0,50,200,1);
 }
 .order0:hover{
-    cursor: s-resize;
-    animation-name: hoverorder0;
-     animation-duration: 0.2s ;
-     animation-fill-mode: forwards;
+    cursor:grab;
+    background-color: rgba(160,  210, 255,0.9);
+        box-shadow: 1px 1px 4px 4px rgba(0,0,0,0.2)
+}
+.order0:active{
+    cursor:grabbing;
+
 }
 
 @keyframes hoverorder0 {
@@ -126,34 +143,26 @@ input[type=radio].radio2:checked+label {
   to {background-color: rgba(160,  210, 255,0.9);
       box-shadow: 1px 1px 4px 4px rgba(0,0,0,0.2)
   }
- */
+}
 
 
- ul {
-    margin: 0;
-    padding: 0;
-  }
 
-  li {
-    margin: 5px 0;
-    padding: 0 20px;
-    height: 40px;
-    line-height: 40px;
-    border-radius: 3px;
-    background: #136a8a;
-  background: -webkit-linear-gradient(to right, #267871, #136a8a);
-  background: linear-gradient(to right, #267871, #136a8a);
-    color: #fff;
-    list-style: none;
-  }
+/*
+ li.drag-sort-active {
 
-  li.drag-sort-active {
-    background: transparent;
-    color: transparent;
-    border: 1px sol id #4ca1af;
-  }
+       background: transparent;
+       color: transparent;
+       border: 1px solid #4ca1af;
 
-  span.drag-sort-active {
-    background: transparent;
-    color: transparent;
+  } */
+
+ li.drag-sort-active{
+     background: transparent;
+     color: transparent;
+      animation-name: active-element-animation ;
+      text-decoration-thickness: 30px;
+      animation-fill-mode: forwards;
+      animation-duration: 0.5s ;
+      --effect-color:black;
+       border: 1px solid #4ca1af;
   }
