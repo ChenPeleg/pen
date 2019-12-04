@@ -213,20 +213,31 @@ function buildWorkSheet (q) {
             return formElm
         }
         toFillbank () {
-            const rgex = /\$[12346789]/g; let comleteElem = '';
+            let bankDiv = '<div class="word-bank">';
+            const shuffle = (array) => array.sort(() => Math.random() - 0.5);
+            let answers =  this.answer.filter((e)=>e)
+            answers = shuffle(answers);
+            const spaces = '&nbsp &nbsp &nbsp'
+            answers.forEach (ans=>{
+                const ansLower = ans.toLowerCase()
+                bankDiv += `<span id="${'bank_' + ansLower}" class="">${ans}</span>${spaces}`
+            })
+            bankDiv += '</div>'
+
+            const rgex = /\$[12346789]/g; let comleteElem = bankDiv;
             let txtArr = this.content.split(rgex)
-            let answers = this.content.match(rgex)
-            answers = answers.map(a=>Number(a.replace('$','')))
+            let answersCode = this.content.match(rgex)
+            answersCode = answersCode.map(a=>Number(a.replace('$','')))
             const textInputClass = 'textFillInputClass';
             txtArr.forEach (e=>{
                 const num = txtArr.indexOf(e) ////
-                let input = `<input id = "${"Q" + this.number + "_" + num}" type="text" class="${textInputClass}" name="${"Q" + this.number }" value="">`
+                let input = `<div class="bottom-input-border"><input id = "${"Q" + this.number + "_" + num}" type="text" class="${textInputClass}" name="${"Q" + this.number }" value=""></div>`
                 if  (!answers[num]){input = ''}
                 let formElm = `${e}${input}`
                 comleteElem += formElm
             })
 
-            return comleteElem + '<br>'
+            return comleteElem + '<br>';
         }
         toHtml (){
              let htmlElement = Elm(this.elem);
@@ -375,7 +386,6 @@ function setDirection (){
     const collection = mainForm .querySelectorAll('span, h1, h2, h3, div.txt_instruct');
     collection.forEach (e=>setDirectionBylanguage(e, e.innerHTML))
 }
-
 function enableDragSort(listClass) {
     function enableDragList(list) {
       Array.prototype.map.call(list.children, (item) => {enableDragItem(item)});
@@ -417,6 +427,44 @@ function enableDragSort(listClass) {
   Array.prototype.map.call(sortableLists, (list) => {enableDragList(list)});
 }
 
+function addListnerToBank (listClass){
+    const dataAtr = 'data-wordBank';
+    function changeBank (el, reverse = false){
+        el.classList.remove('wordBank-delete-striked-out')
+        el.classList.add('wordBank-striked-out');
+
+        if (reverse){el.classList.remove('wordBank-striked-out');
+        el.classList.add('wordBank-delete-striked-out')
+    }
+
+    }
+    function addFocusListner (item){
+
+        item.addEventListener('focusout',focusOut);
+    }
+    function focusOut (item){
+        const text = item.target.value.trim().toLowerCase();
+        let elem = Id('bank_' + text)
+
+        if (elem) {
+            changeBank  (elem)
+            item.target.setAttribute(dataAtr , text) ;
+
+        } else if (item.target.hasAttribute(dataAtr)) {
+            const lastWord = item.target.getAttribute(dataAtr);
+            item.target.removeAttribute(dataAtr)
+            let elem1 = Id('bank_' + lastWord);
+            let allElements = document.getElementsByClassName(listClass);
+            allElements = [...allElements];
+            if (allElements.some(e=>e.value.trim().toLowerCase() === lastWord)){L('has' +lastWord )}else {
+                changeBank (elem1, true);
+            }
+        }
+    }
+    const bankLists = document.getElementsByClassName(listClass);
+    Array.prototype.map.call(bankLists, (list) => {addFocusListner(list)});
+}
+
 
 const virt = buildWorkSheet ();
 const tree = mapPageTree ()
@@ -426,3 +474,4 @@ const final = cont
 writePage ( final )
 setDirection ()
 enableDragSort('orderList')
+addListnerToBank('textFillInputClass')

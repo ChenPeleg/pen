@@ -37,7 +37,7 @@ div {
 }
 
 body {
-    
+
     font-family: 'Quicksand', sans-serif;
     font-size: var(--main-font-size)
 }
@@ -130,6 +130,20 @@ h1.gradient1 {
     background: linear-gradient(to left, rgba(230,213,241,1) 0%, rgba(205,190,205,1) 100%);
     font-weight: 600;
     margin: 20px;
+}
+.word-bank{
+    text-align: center;
+    word-spacing: 10px;
+    white-space: pre-wrap;
+    overflow-wrap: normal;
+    padding: calc(var(--main-text-padding)/2);
+    background: linear-gradient(to left, rgba(230,213,241,1) 0%, rgba(205,190,205,1) 100%);
+    font-weight: 600;
+    margin: 20px;
+    padding: 20px;
+    padding-left: 40px;
+    padding-right: 10px;
+    line-height: 200%;
 }
 .txt_instruct{
     font-size: calc(var(--main-font-size)*0.9);

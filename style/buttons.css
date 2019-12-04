@@ -1,5 +1,7 @@
 :root {
-  --main-hover-radio: rgba(144, 238, 144,0.7)
+  --main-hover-radio: rgba(144, 238, 144,0.7);
+  --main-answer-color:rgba(0,50,200,1);
+
 }
 
 input[type=radio].radio1  {
@@ -60,7 +62,7 @@ label.radio2{
     padding-left: 7px;
     padding-right: 12px;
     margin: 2px;
-    color: rgba(0,50,200,1);
+    color: var(--main-answer-color);
 }
 label.radio2:hover{
     animation-name: hoverButton2;
@@ -109,6 +111,64 @@ input[type=radio].radio2:checked+label {
 .textInputClass:focus{
     outline: none;
     background:rgba(144, 238, 144,0.7);
+}
+.textFillInputClass {
+    --border-color0: black;
+    background:rgba(0, 0, 0,0.0);
+    display:inline-block;
+    position:relative;
+    text-align: center;
+    width:170px;
+    border-radius: 10px;
+    padding: 0px;
+    padding-left: 5px;
+    padding-right: 5px;
+
+    color: rgba(0,50,100,1);
+    font-size: inherit;
+    font-family: inherit;
+    border-top-style: hidden;
+    border-left-style:  hidden;
+    border-right-style: hidden;
+    border-bottom-style: hidden;
+    background: linear-gradient(to bottom,transparent,transparent 97%, var(--border-color0) 98%, var(--border-color0) 100%);
+}
+.textFillInputClass:focus{
+    outline: none;
+    background:rgba(144, 238, 144,0.2);
+}
+.bottom-input-border{
+    --border-color0: black;
+    margin-left: 10px;
+    margin-right: 10px;
+    display: inline-block;
+    left: 0px;
+    display: inline-flex;
+    padding: 0; margin: 0;
+
+}
+.bottom-input-border:focus-within{
+    --border-color0: var(--main-answer-color);
+    margin-left: 10px;
+    margin-right: 10px;
+    display: inline-block;
+    left: 0px;
+    display: inline-flex;
+    padding: 0; margin: 0;
+    background-image: linear-gradient(to bottom,transparent,transparent 94%, var(--border-color0) 95%, var(--border-color0) 100%);
+    background-repeat: no-repeat;
+    background-position: center;
+    animation-name: underlineTextFill;
+    animation-duration: 0.4s;
+    animation-fill-mode: forwards;
+}
+@keyframes underlineTextFill {
+    0% {background-size: 0% 100%;}
+    25% {background-size: 20% 100%;}
+    50% {background-size: 60% 100%;}
+    75% {background-size: 80% 100%;}
+    100% {background-size: 90% 100%;}
+
 }
 
 .order0{
@@ -166,3 +226,74 @@ input[type=radio].radio2:checked+label {
       --effect-color:black;
        border: 1px solid #4ca1af;
   }
+
+ .wordBank-striked-out {
+  color:grey;
+  position: relative;
+ }
+.wordBank-striked-out::after {
+    --strike: rgba( 131, 92, 59,0.8);
+  background: linear-gradient(0deg, transparent 0%, transparent 54%, var(--strike) 55%, var(--strike) 75%, transparent 76%, transparent 100% ),
+  linear-gradient(3deg, transparent 0%, transparent 54%, var(--strike) 55%, var(--strike) 75%, transparent 76%, transparent 100%), linear-gradient(5deg, transparent 0%, transparent 54%, var(--strike) 55%, var(--strike) 75%, transparent 76%, transparent 100%)   ;
+  content: "";
+  height: 0.25em;
+  left: 0;
+  margin-top: calc(0.125em / 2 * -1);
+  position: absolute;
+  right: 0;
+  top: 55%;
+  border-radius: 90% 90%;
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  opacity: 0;
+   animation-name: wordbankafteranim;
+  animation-duration: 1.5s;
+  animation-fill-mode: forwards;
+
+}
+@keyframes wordbankafteranim {
+    from {opacity: 0.2;
+        background-size: 0% 100%;
+
+    }
+    to {opacity: 1;
+        background-size: 100% 100%;
+    }
+}
+
+.wordBank-delete-striked-out {
+ color:inherit;
+ position: relative;
+}
+.wordBank-delete-striked-out::after {
+   --strike: rgba( 131, 92, 59,0.8);
+ background: linear-gradient(0deg, transparent 0%, transparent 54%, var(--strike) 55%, var(--strike) 75%, transparent 76%, transparent 100% ),
+ linear-gradient(3deg, transparent 0%, transparent 54%, var(--strike) 55%, var(--strike) 75%, transparent 76%, transparent 100%), linear-gradient(5deg, transparent 0%, transparent 54%, var(--strike) 55%, var(--strike) 75%, transparent 76%, transparent 100%)   ;
+ content: "";
+ height: 0.25em;
+ left: 0;
+ margin-top: calc(0.125em / 2 * -1);
+ position: absolute;
+ right: 0;
+ top: 55%;
+ border-radius: 90% 90%;
+ background-repeat: no-repeat;
+ background-size: 0% 100%;
+ opacity: 0;
+  animation-name: wordbankdeleteafteranim;
+ animation-duration: 1.5s;
+ animation-fill-mode: forwards;
+
+}
+@keyframes wordbankdeleteafteranim {
+   from {
+       opacity: 1;
+   background-size: 100% 100%;
+
+   }
+   to {
+       opacity: 0.0;
+           background-size: 0% 100%;
+
+   }
+}
