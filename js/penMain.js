@@ -428,13 +428,19 @@ function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-pl
     const activeContainerClass = 'placeInputWithBankReady'
     const elementThatIsplaced = 'place-bank-element-in-container'
     function clickContainer (ev){
+        if (!ev.target.classList.contains(activeContainerClass)){return}
         // const isContained = [...ev.target.getElementsByClassName(elemClass_)]
         // if (isContained[0]){alert ('full')}
         let elements = document.getElementsByClassName(chooseClass);
         elements = [...elements];
-        elements[0].classList.add(elementThatIsplaced)
+        if (!elements[0]) {return}
+        elements[0].classList.add(elementThatIsplaced);
+        elements[0].classList.remove(chooseClass);
+        let htm = ev.target.innerHTML;
+        htm = htm.replace(/[\s ]+/g, "")
         ev.target.innerHTML = '';
         ev.target.appendChild(elements[0])
+        containerElements.forEach(e=>e.classList.remove(activeContainerClass))
     }
     function addclickListner (elem) {
         elem.addEventListener('click', chooseElement)

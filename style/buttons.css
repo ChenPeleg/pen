@@ -306,6 +306,7 @@ input[type=radio].radio2:checked+label {
     text-align: center !important;
     padding: auto;
     width:auto;
+    min-width: 70px;
     background: linear-gradient(to bottom,transparent,transparent 97%, var(--border-color0) 98%, var(--border-color0) 100%);
 
 }
@@ -347,15 +348,15 @@ input[type=radio].radio2:checked+label {
 {
     display:inline-block;
     width: auto;
-    border-radius: 0px;
+    border-radius: 4px;
     text-align: center !important;
     padding: 1px;
-    padding-left: 7px;
+    padding-left: 2px;
     padding-right: 0px;
     margin: 0px;
     margin-right: 0px;
     background-color: rgba(240,  240, 240,0.2);
-    box-shadow: 0px 0px 1px 1px rgba(0,0,0,0.2);
+    box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.0);
     color: rgba(0,50,200,1);
 
 }
