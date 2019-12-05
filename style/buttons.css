@@ -299,15 +299,19 @@ input[type=radio].radio2:checked+label {
 }
 
 .placeInputWithBank{
+    border-radius: 2px;
     --border-color0: black;
     display:inline-block;
     position:relative;
     text-align: center;
     width:auto;
     background: linear-gradient(to bottom,transparent,transparent 97%, var(--border-color0) 98%, var(--border-color0) 100%);
+
 }
-
-
+.placeInputWithBankReady{
+  cursor:pointer;
+      background-color: rgba(255, 200, 200, 0.5);
+}
 .place-bank-element{
 
         display:inline-block;
@@ -320,16 +324,37 @@ input[type=radio].radio2:checked+label {
         margin: 8px;
         margin-right: 12px;
         background-color: rgba(160,  210, 255,0.9);
-            box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.2);
+        box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.2);
+        color: rgba(0,50,200,1);
 
-    color: rgba(0,50,200,1);
 }
-.place-bank-element:hover{
-    cursor:grab;
+.place-bank-element:hover:not(.choosen-place-element){
+
     background-color: rgba(160,  210, 255,0.9);
         box-shadow: 1px 1px 4px 4px rgba(0,0,0,0.2)
 }
 .place-bank-element:active{
-    cursor:grabbing;
+
+
+}
+.choosen-place-element {
+    background-color: rgba(120, 190, 230,1);
+    box-shadow: 1px 1px 10px 2px rgba(255,255,20,0.7),2px 2px 0px 2px rgba(10,25,20,0.7);
+}
+
+.place-bank-element-in-container
+{
+    display:inline-block;
+    width: auto;
+    border-radius: 7px;
+    text-align: center !important;
+    padding: 1px;
+    padding-left: 7px;
+    padding-right: 12px;
+    margin: 8px;
+    margin-right: 12px;
+    background-color: rgba(160,  210, 255,0.9);
+    box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.2);
+    color: rgba(0,50,200,1);
 
 }

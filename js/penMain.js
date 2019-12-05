@@ -423,28 +423,40 @@ function setDirection (){
     const collection = mainForm .querySelectorAll('span, h1, h2, h3, div.txt_instruct');
     collection.forEach (e=>setDirectionBylanguage(e, e.innerHTML))
 }
-function enableElementPlacing (class_){
-    function enableDrop (item){
-        item.style.background = 'red';
-        item.ondragover = onDragOver;
-        item.ondrop = onDropEvent;
+function enableElementPlacing (elemClass_, containerClass_){
+    const chooseClass = 'choosen-place-element'
+    const activeContainerClass = 'placeInputWithBankReady'
+    function clickContainer (ev){
+        let elements = document.getElementsByClassName(chooseClass);
+        elements = [...elements];
+        elements[0].classList.add('place-bank-element-in-container')
+        ev.target.appendChild(elements[0])
     }
-    function onDropEvent (item) {
-        item.preventDefault();
-        item.dataTransfer.dropEffect = "link";
-        let data = item.dataTransfer.getData("link");
+    function addclickListner (elem) {
+        elem.addEventListener('click', chooseElement)
+    }
+    function chooseElement (ev){
+
+        if (ev.target.classList.contains(chooseClass)){
+            ev.target.classList.remove(chooseClass)
+            containerElements.forEach(e=>e.classList.remove(activeContainerClass))
+        } else {
+            let elements = document.getElementsByClassName(elemClass_);
+            elements = [...elements];
+            elements.forEach(e=>e.classList.remove(chooseClass))
+            containerElements.forEach(e=>{e.classList.add(activeContainerClass);
+
+            })
+            ev.target.classList.add(chooseClass)
+
+        }
 
     }
-    //
-    function onDragOver (item){
-        let target = item.target;
-        item.preventDefault();
-        item.dataTransfer.dropEffect = "link";
-        item.dataTransfer.setData("link", target.id)
-
-    }
-    const elements = document.getElementsByClassName(class_);
-     Array.prototype.map.call(elements, (list) => {enableDrop(list)});
+    const elements = document.getElementsByClassName(elemClass_);
+    var containerElements = document.getElementsByClassName(containerClass_);
+    containerElements = [...containerElements];
+    containerElements.forEach(e=>e.addEventListener('click',clickContainer))
+    Array.prototype.map.call(elements, (list) => {addclickListner(list)});
 }
 function enableDragSort(listClass) {
     function enableDragList(list) {
@@ -543,6 +555,6 @@ setDirection ()
 enableDragSort('orderList');
 enableDragSort('word-place-bank');
 addListnerToBank('textFillInputClass')
-enableElementPlacing ('placeInputWithBank')
+enableElementPlacing ('place-bank-element', 'placeInputWithBank')
 
 //
