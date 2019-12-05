@@ -217,6 +217,8 @@ function buildWorkSheet (q) {
             const shuffle = (array) => array.sort(() => Math.random() - 0.5);
             let answers =  this.answer.filter((e)=>e)
             answers = shuffle(answers);
+            const answerLength = answers.map(a=>a.length)
+            const maxLetters = Math.max(...answerLength)
             const spaces = '&nbsp &nbsp &nbsp'
             answers.forEach (ans=>{
                 const ansLower = ans.toLowerCase()
@@ -229,13 +231,45 @@ function buildWorkSheet (q) {
             let answersCode = this.content.match(rgex)
             answersCode = answersCode.map(a=>Number(a.replace('$','')))
             const textInputClass = 'textFillInputClass';
+
             txtArr.forEach (e=>{
                 const num = txtArr.indexOf(e) ////
-                let input = `<div class="bottom-input-border"><input id = "${"Q" + this.number + "_" + num}" type="text" class="${textInputClass}" name="${"Q" + this.number }" value=""></div>`
+                let input = `<div class="bottom-input-border"><input id = "${"Q" + this.number + "_" + num}" type="text" class="${textInputClass}" name="${"Q" + this.number }" size="${maxLetters}" value=""></div>`
                 if  (!answers[num]){input = ''}
                 let formElm = `${e}${input}`
                 comleteElem += formElm
             })
+
+            return comleteElem + '<br>';
+        }
+        toPlaceFromBank () {
+            let bankDiv = '<div class="word-place-bank">';
+            const shuffle = (array) => array.sort(() => Math.random() - 0.5);
+            let answers =  this.answer.filter((e)=>e)
+            answers = shuffle(answers);
+            const answerLength = answers.map(a=>a.length)
+            const maxLetters = Math.max(...answerLength)
+            const spaces = '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
+            answers.forEach (ans=>{
+                const ansLower = ans.toLowerCase()
+                bankDiv += `<span id="${'bank_' + ansLower}" class="place-bank-element">${ans}</span>`
+            })
+            bankDiv += '</div>';
+
+            const rgex = /\$[12346789]/g; let comleteElem = bankDiv;
+            let txtArr = this.content.split(rgex)
+            let answersCode = this.content.match(rgex)
+            answersCode = answersCode.map(a=>Number(a.replace('$','')))
+            const placeInputWithBank = 'placeInputWithBank';
+            comleteElem += '<div class="InputDropContainer">'
+            txtArr.forEach (e=>{
+                const num = txtArr.indexOf(e) ////
+                let input = `<div id="dropLocation" class="${placeInputWithBank}">${spaces}</div>`
+                if  (!answers[num]){input = ''}
+                let formElm = `${e}${input}`
+                comleteElem += formElm
+            })
+            comleteElem += '</div>'
 
             return comleteElem + '<br>';
         }
@@ -276,6 +310,9 @@ function buildWorkSheet (q) {
              }
              if (this.typ === "q_fillbank"){
                  content = this.toFillbank() ;
+             }
+             if (this.typ === "q_dropbank"){
+                 content = this.toPlaceFromBank() ;
              }
              if (this.typ.includes('txt')){
                  content = `<div class="${this.typ}"><span>${ content}</span></div>`;
@@ -386,6 +423,29 @@ function setDirection (){
     const collection = mainForm .querySelectorAll('span, h1, h2, h3, div.txt_instruct');
     collection.forEach (e=>setDirectionBylanguage(e, e.innerHTML))
 }
+function enableElementPlacing (class_){
+    function enableDrop (item){
+        item.style.background = 'red';
+        item.ondragover = onDragOver;
+        item.ondrop = onDropEvent;
+    }
+    function onDropEvent (item) {
+        item.preventDefault();
+        item.dataTransfer.dropEffect = "link";
+        let data = item.dataTransfer.getData("link");
+
+    }
+    //
+    function onDragOver (item){
+        let target = item.target;
+        item.preventDefault();
+        item.dataTransfer.dropEffect = "link";
+        item.dataTransfer.setData("link", target.id)
+
+    }
+    const elements = document.getElementsByClassName(class_);
+     Array.prototype.map.call(elements, (list) => {enableDrop(list)});
+}
 function enableDragSort(listClass) {
     function enableDragList(list) {
       Array.prototype.map.call(list.children, (item) => {enableDragItem(item)});
@@ -393,21 +453,28 @@ function enableDragSort(listClass) {
     function enableDragItem(item) {
       item.setAttribute('draggable', true)
       item.ondrag = handleDrag;
+      item.ondragstart = onDragStart
       item.ondragend = handleDrop;
       item.ondragover = onDragOver
+    }
+    function onDragStart (item){
+        //item.preventDefault();
+        item.dataTransfer.dropEffect= "link";
+        item.dataTransfer.setData("link", item.target.id);
+        L(item.dataTransfer);
     }
     function onDragOver(item){
         let target = item.target;
         item.preventDefault();
-        //target.style.cursor = 'move !important';
         item.dataTransfer.dropEffect= "link";
-        L(item)
+
     }
     function handleDrag(item) {
       const selectedItem = item.target,
             list = selectedItem.parentNode,
             x = event.clientX,
             y = event.clientY;
+
 
 
 
@@ -426,7 +493,6 @@ function enableDragSort(listClass) {
   const sortableLists = document.getElementsByClassName(listClass);
   Array.prototype.map.call(sortableLists, (list) => {enableDragList(list)});
 }
-
 function addListnerToBank (listClass){
     const dataAtr = 'data-wordBank';
     function changeBank (el, reverse = false){
@@ -456,7 +522,8 @@ function addListnerToBank (listClass){
             let elem1 = Id('bank_' + lastWord);
             let allElements = document.getElementsByClassName(listClass);
             allElements = [...allElements];
-            if (allElements.some(e=>e.value.trim().toLowerCase() === lastWord)){L('has' +lastWord )}else {
+            if (allElements.some(e=>e.value.trim().toLowerCase() === lastWord)){
+                }else {
                 changeBank (elem1, true);
             }
         }
@@ -473,5 +540,9 @@ const final = cont
 
 writePage ( final )
 setDirection ()
-enableDragSort('orderList')
+enableDragSort('orderList');
+enableDragSort('word-place-bank');
 addListnerToBank('textFillInputClass')
+enableElementPlacing ('placeInputWithBank')
+
+//
