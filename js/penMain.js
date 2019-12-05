@@ -423,19 +423,34 @@ function setDirection (){
     const collection = mainForm .querySelectorAll('span, h1, h2, h3, div.txt_instruct');
     collection.forEach (e=>setDirectionBylanguage(e, e.innerHTML))
 }
-function enableElementPlacing (elemClass_, containerClass_){
+function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-place-bank'){
     const chooseClass = 'choosen-place-element'
     const activeContainerClass = 'placeInputWithBankReady'
+    const elementThatIsplaced = 'place-bank-element-in-container'
     function clickContainer (ev){
+        // const isContained = [...ev.target.getElementsByClassName(elemClass_)]
+        // if (isContained[0]){alert ('full')}
         let elements = document.getElementsByClassName(chooseClass);
         elements = [...elements];
-        elements[0].classList.add('place-bank-element-in-container')
+        elements[0].classList.add(elementThatIsplaced)
+        ev.target.innerHTML = '';
         ev.target.appendChild(elements[0])
     }
     function addclickListner (elem) {
         elem.addEventListener('click', chooseElement)
     }
     function chooseElement (ev){
+        if (ev.target.classList.contains(elementThatIsplaced)){
+            const previosParent = ev.target.parentNode;
+            document.getElementsByClassName(bankClass)[0].appendChild(ev.target);
+            ev.target.classList.remove (elementThatIsplaced );
+            ev.target.classList.remove (chooseClass);
+            ev.target.classList.remove (activeContainerClass);
+            containerElements.forEach(e=>e.classList.remove(activeContainerClass))
+            previosParent.innerHTML = '&nbsp&nbsp&nbsp&nbsp&nbsp'
+            return;
+
+        }
 
         if (ev.target.classList.contains(chooseClass)){
             ev.target.classList.remove(chooseClass)
@@ -452,6 +467,7 @@ function enableElementPlacing (elemClass_, containerClass_){
         }
 
     }
+
     const elements = document.getElementsByClassName(elemClass_);
     var containerElements = document.getElementsByClassName(containerClass_);
     containerElements = [...containerElements];
