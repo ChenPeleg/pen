@@ -252,7 +252,7 @@ function buildWorkSheet (q) {
             const spaces = '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
             answers.forEach (ans=>{
                 const ansLower = ans.toLowerCase()
-                bankDiv += `<span id="${'bank_' + ansLower}" class="place-bank-element">${ans}</span>`
+                bankDiv += `<span id="${'placeBank_' + ansLower}" class="place-bank-element">${ans}</span>`
             })
             bankDiv += '</div>';
 
@@ -428,24 +428,45 @@ function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-pl
     const activeContainerClass = 'placeInputWithBankReady'
     const elementThatIsplaced = 'place-bank-element-in-container'
     function clickContainer (ev){
+        const createFakeElement = (elme) => {
+            const dupe = elme.cloneNode(true)
+            dupe.innerHTML =  dupe.innerHTML.replace(/./g , '&nbsp');
+            dupe.style.backgroundColor = 'transparent';
+            dupe.style.boxShadow = '0 0 0 0';
+            dupe.id = dupe.id + 'dupe';
+            return dupe
+        }
         if (!ev.target.classList.contains(activeContainerClass)){return}
         // const isContained = [...ev.target.getElementsByClassName(elemClass_)]
         // if (isContained[0]){alert ('full')}
         let elements = document.getElementsByClassName(chooseClass);
         elements = [...elements];
         if (!elements[0]) {return}
-        elements[0].classList.add(elementThatIsplaced);
+        const wordRect = elements[0].getBoundingClientRect();
+        const targetRect = ev.target.getBoundingClientRect();
+        console.log("top word" + wordRect.top,"top container" + targetRect.top  ,"left word" +  wordRect .left);
+
         elements[0].classList.remove(chooseClass);
         let htm = ev.target.innerHTML;
         htm = htm.replace(/[\s ]+/g, "")
         ev.target.innerHTML = '';
+        const parent = elements[0].parentNode
+        const dupelicate = createFakeElement (elements[0])
         ev.target.appendChild(elements[0])
+        parent.appendChild(dupelicate)
+        elements[0].style.top = wordRect.top - targetRect.top + 'px';
+        elements[0].style.left = wordRect.left - targetRect.left + 'px';
+
+        elements[0].classList.add(elementThatIsplaced);
+        setTimeout (()=>{elements[0].style.top = '0px';elements[0].style.left = '0px';},0)
+
         containerElements.forEach(e=>e.classList.remove(activeContainerClass))
     }
     function addclickListner (elem) {
         elem.addEventListener('click', chooseElement)
     }
     function chooseElement (ev){
+
         if (ev.target.classList.contains(elementThatIsplaced)){
             const previosParent = ev.target.parentNode;
             document.getElementsByClassName(bankClass)[0].appendChild(ev.target);

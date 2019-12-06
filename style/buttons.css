@@ -57,7 +57,7 @@ input[type=radio].radio2  {
 label.radio2{
     display:inline-block;
     position:relative;
-    border-radius: 20px;
+    border-radius: 10px; // was 20
     padding: 3px;
     padding-left: 7px;
     padding-right: 12px;
@@ -306,7 +306,7 @@ input[type=radio].radio2:checked+label {
     text-align: center !important;
     padding: auto;
     width:auto;
-    min-width: 70px;
+    min-width: 90px;
     background: linear-gradient(to bottom,transparent,transparent 97%, var(--border-color0) 98%, var(--border-color0) 100%);
 
 }
@@ -315,6 +315,7 @@ input[type=radio].radio2:checked+label {
       background-color: rgba(255, 200, 200, 0.5);
 }
 .place-bank-element{
+    position: relative;
 
         display:inline-block;
         width: auto;
@@ -328,6 +329,7 @@ input[type=radio].radio2:checked+label {
         background-color: rgba(160,  210, 255,0.9);
         box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.2);
         color: rgba(0,50,200,1);
+        transition: all 0.6s ease 0s;
 
 }
 .place-bank-element:hover:not(.choosen-place-element){
@@ -346,6 +348,7 @@ input[type=radio].radio2:checked+label {
 
 .place-bank-element-in-container
 {
+
     display:inline-block;
     width: auto;
     border-radius: 4px;
@@ -358,5 +361,24 @@ input[type=radio].radio2:checked+label {
     background-color: rgba(240,  240, 240,0.2);
     box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.0);
     color: rgba(0,50,200,1);
+    /* animation-name: move-placeable-element; */
+    top: 0px;
+    transition: all 1s ease 0s;
+
+    /* animation-duration: 2s;
+    animation-fill-mode: forwards; */
+
+}
+@keyframes move-placeable-element {
+    50%{
+        position: relative;
+        top:-300px;
+        color:red;
+    }
+    100%{
+        position: relative;
+        top:0px;
+        color:black;
+    }
 
 }
