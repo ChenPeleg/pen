@@ -311,9 +311,10 @@ input[type=radio].radio2:checked+label {
 
 }
 .placeInputWithBankReady{
-  cursor:pointer;
+      cursor:pointer;
       background-color: rgba(255, 200, 200, 0.5);
 }
+
 .place-bank-element{
     position: relative;
 
@@ -329,7 +330,7 @@ input[type=radio].radio2:checked+label {
         background-color: rgba(160,  210, 255,0.9);
         box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.2);
         color: rgba(0,50,200,1);
-        transition: all 0.6s ease 0s;
+        transition: top 0.5s ease 0s, left 0.5s ease 0s,  background-color 0.5s ease 0.3s;
 
 }
 .place-bank-element:hover:not(.choosen-place-element){
@@ -363,7 +364,7 @@ input[type=radio].radio2:checked+label {
     color: rgba(0,50,200,1);
     /* animation-name: move-placeable-element; */
     top: 0px;
-    transition: all 1s ease 0s;
+
 
     /* animation-duration: 2s;
     animation-fill-mode: forwards; */

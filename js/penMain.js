@@ -426,19 +426,18 @@ function setDirection (){
 function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-place-bank'){
     const chooseClass = 'choosen-place-element'
     const activeContainerClass = 'placeInputWithBankReady'
-    const elementThatIsplaced = 'place-bank-element-in-container'
+    const elementThatIsplaced = 'place-bank-element-in-container';
+    const fakeElementId = 'dupe';
     function clickContainer (ev){
         const createFakeElement = (elme) => {
             const dupe = elme.cloneNode(true)
             dupe.innerHTML =  dupe.innerHTML.replace(/./g , '&nbsp');
             dupe.style.backgroundColor = 'transparent';
             dupe.style.boxShadow = '0 0 0 0';
-            dupe.id = dupe.id + 'dupe';
+            dupe.id = dupe.id + fakeElementId;
             return dupe
         }
         if (!ev.target.classList.contains(activeContainerClass)){return}
-        // const isContained = [...ev.target.getElementsByClassName(elemClass_)]
-        // if (isContained[0]){alert ('full')}
         let elements = document.getElementsByClassName(chooseClass);
         elements = [...elements];
         if (!elements[0]) {return}
@@ -452,13 +451,22 @@ function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-pl
         ev.target.innerHTML = '';
         const parent = elements[0].parentNode
         const dupelicate = createFakeElement (elements[0])
-        ev.target.appendChild(elements[0])
+        ev.target.appendChild(elements[0]);
         parent.appendChild(dupelicate)
+
+        const styleOfBankElement = document.querySelector('.place-bank-element');
+        const styleOfElementInBank = getComputedStyle(styleOfBankElement);
+
+
         elements[0].style.top = wordRect.top - targetRect.top + 'px';
         elements[0].style.left = wordRect.left - targetRect.left + 'px';
-
+        elements[0].style.backgroundColor = styleOfElementInBank.backgroundColor;;
         elements[0].classList.add(elementThatIsplaced);
-        setTimeout (()=>{elements[0].style.top = '0px';elements[0].style.left = '0px';},0)
+        setTimeout (()=>{
+            elements[0].style.top = '0px';elements[0].style.left = '0px';
+            elements[0].style.backgroundColor = ''
+        },0)
+
 
         containerElements.forEach(e=>e.classList.remove(activeContainerClass))
     }
@@ -469,8 +477,12 @@ function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-pl
 
         if (ev.target.classList.contains(elementThatIsplaced)){
             const previosParent = ev.target.parentNode;
+            let dupe = Id(ev.target.id + fakeElementId)
             document.getElementsByClassName(bankClass)[0].appendChild(ev.target);
-            ev.target.classList.remove (elementThatIsplaced );
+            if(dupe) {dupe.remove(); dupe = null;}
+            ev.target.style.opacity = '0'
+            setTimeout(()=>{ev.target.style.opacity = '1'},2)
+            ev.target.classList.remove (elementThatIsplaced);
             ev.target.classList.remove (chooseClass);
             ev.target.classList.remove (activeContainerClass);
             containerElements.forEach(e=>e.classList.remove(activeContainerClass))
@@ -478,7 +490,6 @@ function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-pl
             return;
 
         }
-
         if (ev.target.classList.contains(chooseClass)){
             ev.target.classList.remove(chooseClass)
             containerElements.forEach(e=>e.classList.remove(activeContainerClass))
@@ -486,6 +497,7 @@ function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-pl
             let elements = document.getElementsByClassName(elemClass_);
             elements = [...elements];
             elements.forEach(e=>e.classList.remove(chooseClass))
+            // filter if 
             containerElements.forEach(e=>{e.classList.add(activeContainerClass);
 
             })
