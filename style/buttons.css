@@ -6,7 +6,6 @@
 
 input[type=radio].radio1  {
     display: none;
-
 }
 label.radio1{
     display:inline-block;
@@ -52,7 +51,6 @@ input[type=radio].radio1:checked+label {
 
 input[type=radio].radio2  {
     display: none;
-
 }
 label.radio2{
     display:inline-block;
@@ -74,6 +72,64 @@ input[type=radio].radio2:checked+label {
      animation-duration: 0.4s ;
      animation-fill-mode: forwards;
 }
+
+
+
+input[type=checkbox].checkbox0  {
+    display: none;
+}
+
+
+label.checkbox0{
+    display:inline-block;
+    position:relative;
+    border-radius: 10px; // was 20
+    padding: 3px;
+    padding-left: 7px;
+    padding-right: 32px;
+    margin: 2px;
+    color: var(--main-answer-color);
+}
+label.checkbox0:before {
+      content: '';
+}
+label.checkbox0:hover{
+    animation-name: hoverButton2;
+     animation-duration: 0.2s ;
+     animation-fill-mode: forwards;
+}
+input[type=checkbox].checkbox0:checked+label {
+    animation-name: selectButton2;
+     animation-duration: 0.4s ;
+     //animation-fill-mode: forwards;
+}
+.checksigndecore{
+    visibility: hidden;
+    display: inline-block;
+    height: var(--main-font-size);
+    width:  var(--main-font-size);
+}
+input[type=checkbox].checkbox0:checked+label>.checksigndecore{
+    visibility: visible;
+    animation-name: showchecksign;
+    animation-duration: 0.7s;
+    animation-fill-mode: both;
+    margin-right:  var(--main-font-size);
+
+}
+ @keyframes showchecksign {
+    from{
+        width:  0px;
+        margin-right:  var(--main-font-size);
+
+    }
+    to{
+        width:   var(--main-font-size);
+        margin-right:   0px;
+
+    }
+}
+
 
 @keyframes hoverButton2 {
   from {background-color: transparent;
@@ -316,8 +372,7 @@ input[type=radio].radio2:checked+label {
 }
 
 .place-bank-element{
-    position: relative;
-
+        position: relative;
         display:inline-block;
         width: auto;
         border-radius: 7px;
@@ -330,7 +385,8 @@ input[type=radio].radio2:checked+label {
         background-color: rgba(160,  210, 255,0.9);
         box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.2);
         color: rgba(0,50,200,1);
-        transition: top 0.5s ease 0s, left 0.5s ease 0s,  background-color 0.5s ease 0.3s;
+        transition: top 0.5s ease 0s, left 0.5s ease 0s, background 0.5s ease 0.6s, opacity 0.9s ease 0.0s, box-shadow 0.5s ease 0s;
+        cursor: pointer;
 
 }
 .place-bank-element:hover:not(.choosen-place-element){
