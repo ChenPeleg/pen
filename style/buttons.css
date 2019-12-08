@@ -131,7 +131,7 @@ input[type=checkbox].checkbox0:checked+label>.checksigndecore{
         text-shadow: 0px 0px  0px black;
     }
     to{
-        text-shadow: 1px 1px  1px  grey;
+        text-shadow: 0.75px 0.75px  0px  grey;
     }
 }
  @keyframes showchecksign {
@@ -455,4 +455,16 @@ input[type=checkbox].checkbox0:checked+label>.checksigndecore{
         color:black;
     }
 
+}
+.image-question{
+    margin: 5px;
+    display:inline-table;
+    height: auto;
+    width: calc(var(--main-font-size)*6);
+    border-radius: 2px;
+    border: 5px solid rgba(0,0,0,0);
+}
+.image-question:hover{
+    filter: brightness(110%);
+    border: 5px solid rgba(100,100,100,1);
 }

@@ -208,7 +208,7 @@ function buildWorkSheet (q) {
 
                 const svg2 = svgFun()
                 if ((numberOfAns + 1) < answers.length && isSlashin) {sl = slash} else {sl = ' '}
-                let formElm = `<br><input id = "${ansLbl}" type="checkbox" class="${radioClass}" name="${"Q" + this.number }" value="${numberOfAns}"> <label class="${radioClass}" for="${ansLbl}"><span class="checksigndecore">${svg2}</span> ${ans}</label>` 
+                let formElm = `<br><input id = "${ansLbl}" type="checkbox" class="${radioClass}" name="${"Q" + this.number }" value="${numberOfAns}"> <label class="${radioClass}" for="${ansLbl}"><span class="checksigndecore">${svg2}</span> ${ans}</label>`
 
 
                 html += formElm;
@@ -235,6 +235,19 @@ function buildWorkSheet (q) {
             const textInputClass = 'textInputClass';
             let formElm = `<input id = "${"Q" + this.number}" type="text" class="${textInputClass}" name="${"Q" + this.number }" value="">`
             return formElm
+        }
+        toImageInput () {
+            const shuffle = (array) => array.sort(() => Math.random() - 0.5);
+            let answers =  this.answer.filter((e)=>e);
+            let addedStyle = ''; let finaHtml = '';
+            answers = shuffle(answers);
+            answers.forEach (ans=>{
+                let  class0 = 'image-question'
+                let imgHtml =  `<img id="ans" class = "${class0} ${addedStyle}"  src="content/${ans.trim()}">`;
+                finaHtml += imgHtml
+            })
+            return finaHtml
+
         }
         toFillbank () {
             let bankDiv = '<div class="word-bank">';
@@ -303,7 +316,7 @@ function buildWorkSheet (q) {
              let elmStyle =''; let srcImg = '';
              let content = this.content;
              let class1 = this.typ
-             if (this.typ.includes("image")){
+             if (this.typ.includes("image_")){
                  let addedStyle = ''
                  if (this.typ.includes("left")) {
                        addedStyle = "float-left";
@@ -328,6 +341,10 @@ function buildWorkSheet (q) {
              if (this.typ === "q_word"){
                  //'<br>' +
                  content =  content + this.toWordInput() ;
+             }
+             if (this.typ === "q_image"){
+
+                 content =  content + '<br>' + this.toImageInput() + `<br>`;
              }
              if (this.typ === "q_order"){
                  content =  content + this.toOrderInput() ;
