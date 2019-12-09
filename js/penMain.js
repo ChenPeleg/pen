@@ -158,6 +158,22 @@ function buildWorkSheet (q) {
             default: return 'div'
         }
     }
+    const imageIntext = (txt) => {
+        const imageInTxtClass = 'image-inside-text'
+        const imager = (im) => `&nbsp&nbsp<img id="${'inText_'+im}" class = "${imageInTxtClass}"  src="content/${im}"><span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</span>`
+        regex = /#[\S]{4,37}/gi
+
+        let images = txt.match (regex)
+        if (!images) return txt
+        images = images.map(e=> e.replace('#',""))
+
+        images.forEach(e=> {
+            const imgMU = imager (e)
+            txt  = txt.replace('#' + e, imgMU )
+        })
+
+        return txt
+    }
     class Segment {
 
         constructor (inf,num) {
@@ -272,8 +288,13 @@ function buildWorkSheet (q) {
             })
             bankDiv += '</div>'
 
+
+            const content = this.content;
+            const txtWithimageMarkup = imageIntext (content)
+            let imageInTextClass = ''
+            if (content !== txtWithimageMarkup) { imageInTextClass = 'text-containig-images'};
             const rgex = /\$[12346789]/g; let comleteElem = bankDiv;
-            let txtArr = this.content.split(rgex)
+            let txtArr = txtWithimageMarkup.split(rgex)
             let answersCode = this.content.match(rgex)
             answersCode = answersCode.map(a=>Number(a.replace('$','')))
             const textInputClass = 'textFillInputClass';
@@ -282,7 +303,7 @@ function buildWorkSheet (q) {
                 const num = txtArr.indexOf(e) ////
                 let input = `<div class="bottom-input-border"><input id = "${"Q" + this.number + "_" + num}" type="text" class="${textInputClass}" name="${"Q" + this.number }" size="${maxLetters}" value=""></div>`
                 if  (!answers[num]){input = ''}
-                let formElm = `${e}${input}`
+                let formElm = `<span class="${imageInTextClass}">${e}${input}</span>`
                 comleteElem += formElm
             })
 
@@ -348,7 +369,7 @@ function buildWorkSheet (q) {
                  content =  '<span>' + content + '</span>' + this.toMultiInput()  + '<br>';
              }
              if (this.typ === "q_word"){
-                 //'<br>' +
+
                  content =  content + this.toWordInput() ;
              }
              if (this.typ === "q_image"){
@@ -368,7 +389,10 @@ function buildWorkSheet (q) {
                   content =  '<span>' + content + '</span>' + this.toCheckboxInput()  + '<br>';
              }
              if (this.typ.includes('txt')){
-                 content = `<div class="${this.typ}"><span>${ content}</span></div>`;
+                 const imageMarkup = imageIntext (content)
+                 let imageInText = ''
+                 if (content !== imageMarkup) { imageInText = 'text-containig-images'}
+                 content = `<div class="${this.typ} ${imageInText}"><span>${imageMarkup}</span></div>`;
              }
 
 
@@ -448,7 +472,7 @@ function buildContent (tree) {
         //`<${h.elem } class="node" id="${"Wrap"+ h.number}">${content0}</${h.elem }><br>`
     }
     const buildContainer = (arr, level = 0) => {
-        //L(arr)
+
         let bgstyle = '';
         if (level && G.V[arr[0]].bgcolor){
             bgstyle = `style="background-color:${G.V[arr[0]].bgcolor};"`
@@ -458,11 +482,15 @@ function buildContent (tree) {
 
             if (Array.isArray(arr[a])){
                 cont += buildContainer(arr[a], level+1)
-            } else{
+            } else if (level === 0){
+                const num = arr[a]
+                const html0 = rend(G.V[num])
+                cont += `<div class="container level${level+1}" ${bgstyle}>` + html0 + '</div>';
+
+            } else {
                 const num = arr[a]
                 const html0 = rend(G.V[num])
                 cont += html0;
-
             }
 
 
@@ -558,7 +586,7 @@ function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-pl
             elements.forEach(e=>e.classList.remove(chooseClass))
             let emptyContainerElements = containerElements.filter(e=>
                 {const res = e.getElementsByClassName(elemClass_)
-                    L(res)
+
                     return !res[0]
                 }
             )
@@ -666,15 +694,11 @@ function addListnerToBank (listClass){
 
 const virt = buildWorkSheet ();
 const tree = mapPageTree ()
-
 const cont = buildContent (tree);
 const final = cont
 
 writePage ( final )
 setDirection ()
 enableDragSort('orderList');
-//enableDragSort('word-place-bank');
 addListnerToBank('textFillInputClass')
 enableElementPlacing ('place-bank-element', 'placeInputWithBank')
-
-//

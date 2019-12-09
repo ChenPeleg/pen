@@ -5,7 +5,22 @@
   --main-inText-image-height: 150px;
   --main-font-size:26px;
 }
+.image-inside-text{
 
+    display: inline-block;
+    position: absolute;
+    //top:calc(var(--main-font-size)*1);
+    height: calc(var(--main-font-size)*3);
+    width: auto;
+    margin-left: calc(var(--main-font-size)*0);
+    margin-right: calc(var(--main-font-size)*17);
+    border-radius: 5px;
+}
+
+
+.text-containig-images{
+    line-height: calc(var(--main-font-size)*3.5);
+}
 
 #ErrorCheck{
     font-size: 57px;
