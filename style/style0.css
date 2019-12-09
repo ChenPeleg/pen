@@ -45,11 +45,12 @@ p{}
 
 .level0{
     box-shadow:var(--main-soft-shadow);
-    padding: 55px;
+    padding: 0px;
     background: linear-gradient(to right, rgba(240,240,254,0.9),rgba(240,254,240,0.9) )
 }
 .level1{
     border: 0px solid black;
+    padding: 20px;
     }
 .node {
     border: 0px solid black;

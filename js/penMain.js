@@ -169,6 +169,7 @@ function buildWorkSheet (q) {
              this.answer = [inf[4], inf[5],inf[6], inf[7],inf[8],inf[9],inf[10],inf[11]]
              this.sound = inf[12];
              this.solution = inf[13];
+             this.bgcolor = inf[14]
              this.elem = elementOfhtml (this.typ)
          };
         toMultiInput(){
@@ -240,10 +241,18 @@ function buildWorkSheet (q) {
             const shuffle = (array) => array.sort(() => Math.random() - 0.5);
             let answers =  this.answer.filter((e)=>e);
             let addedStyle = ''; let finaHtml = '';
+
+            const q_image = 'q_image'
             answers = shuffle(answers);
+            const numberOfAns = answers.length;
+            if (numberOfAns < 4){addedStyle = 'bigquestionimages'}
             answers.forEach (ans=>{
-                let  class0 = 'image-question'
+                const numberOfAns = answers.indexOf(ans)
+                const ansLbl = "Q" + this.number + "_" + numberOfAns
+                let  class0 = 'image-question';
+
                 let imgHtml =  `<img id="ans" class = "${class0} ${addedStyle}"  src="content/${ans.trim()}">`;
+                imgHtml = `<input id = "${ansLbl}" type="radio" class="${class0}" name="${"Q" + this.number }" value="${numberOfAns}"> <label class="${class0}" for="${ansLbl}"><img id="ans" class = "${class0} ${addedStyle}"  src="content/${ans.trim()}"></label>`
                 finaHtml += imgHtml
             })
             return finaHtml
@@ -439,7 +448,12 @@ function buildContent (tree) {
         //`<${h.elem } class="node" id="${"Wrap"+ h.number}">${content0}</${h.elem }><br>`
     }
     const buildContainer = (arr, level = 0) => {
-        let cont = `<div class="container level${level}">`;
+        //L(arr)
+        let bgstyle = '';
+        if (level && G.V[arr[0]].bgcolor){
+            bgstyle = `style="background-color:${G.V[arr[0]].bgcolor};"`
+        }
+        let cont = `<div class="container level${level}" ${bgstyle}>`;
         for (let a = 0; a < arr.length; a++){
 
             if (Array.isArray(arr[a])){
@@ -652,6 +666,7 @@ function addListnerToBank (listClass){
 
 const virt = buildWorkSheet ();
 const tree = mapPageTree ()
+
 const cont = buildContent (tree);
 const final = cont
 
