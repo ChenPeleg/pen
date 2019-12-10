@@ -2,8 +2,6 @@
 var G = {};
 G.Q = _Q_object.QuestionsArray;
 G.V = [];
-
-
 utils:{
     function L (...args){
         return console.log(...args)
@@ -174,6 +172,7 @@ function buildWorkSheet (q) {
 
         return txt
     }
+
     class Segment {
 
         constructor (inf,num) {
@@ -188,6 +187,7 @@ function buildWorkSheet (q) {
              this.bgcolor = inf[14]
              this.elem = elementOfhtml (this.typ)
          };
+        segNum () {return  `data-seg="${this.number}"`}
         toMultiInput(){
             const answers =  this.answer.filter((e)=>e)
             let html =''; let slash = '<span style="color:black">/</span>';
@@ -282,9 +282,13 @@ function buildWorkSheet (q) {
             const answerLength = answers.map(a=>a.length)
             const maxLetters = Math.max(...answerLength)
             const spaces = '&nbsp &nbsp &nbsp'
+            const seg = this.segNum();
+            const segnumber = this.number
+
+
             answers.forEach (ans=>{
                 const ansLower = ans.toLowerCase()
-                bankDiv += `<span id="${'bank_' + ansLower}" class="">${ans}</span>${spaces}`
+                bankDiv += `<span id="${'bank_' + ansLower + "_"+ segnumber }" class="" ${seg}>${ans}</span>${spaces}`
             })
             bankDiv += '</div>'
 
@@ -301,7 +305,7 @@ function buildWorkSheet (q) {
 
             txtArr.forEach (e=>{
                 const num = txtArr.indexOf(e) ////
-                let input = `<div class="bottom-input-border"><input id = "${"Q" + this.number + "_" + num}" type="text" class="${textInputClass}" name="${"Q" + this.number }" size="${maxLetters}" value=""></div>`
+                let input = `<div class="bottom-input-border"><input id = "${"Q" + this.number + "_" + num}" type="text" class="${textInputClass}" name="${"Q" + this.number }" size="${maxLetters}" value="" ${seg}></div>`
                 if  (!answers[num]){input = ''}
                 let formElm = `<span class="${imageInTextClass}">${e}${input}</span>`
                 comleteElem += formElm
@@ -310,6 +314,7 @@ function buildWorkSheet (q) {
             return comleteElem + '<br>';
         }
         toPlaceFromBank () {
+
             let bankDiv = '<div class="word-place-bank">';
             const shuffle = (array) => array.sort(() => Math.random() - 0.5);
             let answers =  this.answer.filter((e)=>e)
@@ -317,21 +322,29 @@ function buildWorkSheet (q) {
             const answerLength = answers.map(a=>a.length)
             const maxLetters = Math.max(...answerLength)
             const spaces = '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
+            const seg = this.segNum();
+
             answers.forEach (ans=>{
                 const ansLower = ans.toLowerCase()
-                bankDiv += `<span id="${'placeBank_' + ansLower}" class="place-bank-element">${ans}</span>`
+                bankDiv += `<span id="${'placeBank_' + ansLower}" class="place-bank-element" ${seg}>${ans}</span>`
             })
             bankDiv += '</div>';
 
+            const content = this.content;
+            const txtWithimageMarkup = imageIntext (content)
+            let imageInTextClass = ''
+            if (content !== txtWithimageMarkup) { imageInTextClass = 'text-containig-images'};
+
+
             const rgex = /\$[12346789]/g; let comleteElem = bankDiv;
-            let txtArr = this.content.split(rgex)
-            let answersCode = this.content.match(rgex)
+            let txtArr = txtWithimageMarkup.split(rgex)
+            let answersCode = txtWithimageMarkup.match(rgex)
             answersCode = answersCode.map(a=>Number(a.replace('$','')))
             const placeInputWithBank = 'placeInputWithBank';
-            comleteElem += '<div class="InputDropContainer">'
+            comleteElem += `<div class="InputDropContainer ${imageInTextClass}">`
             txtArr.forEach (e=>{
                 const num = txtArr.indexOf(e) ////
-                let input = `<div id="dropLocation" class="${placeInputWithBank}">${spaces}</div>`
+                let input = `<div id="dropLocation" class="${placeInputWithBank}" ${seg}>${spaces}</div>`
                 if  (!answers[num]){input = ''}
                 let formElm = `${e}${input}`
                 comleteElem += formElm
@@ -362,11 +375,21 @@ function buildWorkSheet (q) {
 
              }
              if (this.typ.includes("h_")){
-                 content = `<${this.elem}>${content}</${this.elem}>`
+                 let txtWithimageMarkup = imageIntext (content)
+                 let imageInTextClass = '';
+                 const unerline = '<div class="header-underline"></div>'
+                 if (content !== txtWithimageMarkup) {
+                     txtWithimageMarkup = txtWithimageMarkup.replace(/&nbsp&nbsp&nbsp/ig,'&nbsp&nbsp');
+                     imageInTextClass = 'text-containig-images'};
+
+                 content = `<${this.elem} class="${imageInTextClass }">${txtWithimageMarkup}</${this.elem}>${ unerline}`
              }
              if (this.typ.includes("q_multi")&& this.typ !== "q_word") {
+                 const txtWithimageMarkup = imageIntext (content)
+                 let imageInTextClass = ''
+                 if (content !== txtWithimageMarkup) { imageInTextClass = 'text-containig-images'};
 //'<br>' +
-                 content =  '<span>' + content + '</span>' + this.toMultiInput()  + '<br>';
+                 content =  `<span class="${imageInTextClass}">` + txtWithimageMarkup + '</span>' + this.toMultiInput()  + '<br>';
              }
              if (this.typ === "q_word"){
 
@@ -441,8 +464,6 @@ function mapPageTree (){
             if (!mp[lv]) {mp[lv] =  []}
             mp = mp[lv]
         }
-
-
         mp.push(i)
 
     }
@@ -458,7 +479,7 @@ function writePage (html = 'bla') {
     const pageContainer = Elm ('pageContainer');
     const errorCheck = Id ('ErrorCheck');
     errorCheck.remove ()
-    stl (pageContainer, {position: 'relative', width:"70%", left:"15%"})
+    //stl (pageContainer, {position: 'relative', width:"70%", left:"15%"})
     const str = `<form id="mainForm">${html}</form>` //JSON.stringify(html)
     pageContainer.innerHTML = str
     document.body.appendChild(pageContainer);
@@ -669,7 +690,8 @@ function addListnerToBank (listClass){
     }
     function focusOut (item){
         const text = item.target.value.trim().toLowerCase();
-        let elem = Id('bank_' + text)
+        const seg = item.target.getAttribute('data-seg')
+        let elem = Id('bank_' + text + "_" + seg )
 
         if (elem) {
             changeBank  (elem)
@@ -678,7 +700,7 @@ function addListnerToBank (listClass){
         } else if (item.target.hasAttribute(dataAtr)) {
             const lastWord = item.target.getAttribute(dataAtr);
             item.target.removeAttribute(dataAtr)
-            let elem1 = Id('bank_' + lastWord);
+            let elem1 = Id('bank_' + lastWord + "_" + seg );
             let allElements = document.getElementsByClassName(listClass);
             allElements = [...allElements];
             if (allElements.some(e=>e.value.trim().toLowerCase() === lastWord)){
@@ -702,3 +724,6 @@ setDirection ()
 enableDragSort('orderList');
 addListnerToBank('textFillInputClass')
 enableElementPlacing ('place-bank-element', 'placeInputWithBank')
+
+//things to add: after in-text images add spaces acording to width relation;
+// separate questions of deleting lines
