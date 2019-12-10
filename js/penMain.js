@@ -476,13 +476,31 @@ function mapPageTree (){
 
 }
 function writePage (html = 'bla') {
+    const widthPx = Math.round(screen.width * 0.68);
+    const pageMetaContainer = Elm ('pageMetaContainer')
     const pageContainer = Elm ('pageContainer');
     const errorCheck = Id ('ErrorCheck');
     errorCheck.remove ()
     //stl (pageContainer, {position: 'relative', width:"70%", left:"15%"})
     const str = `<form id="mainForm">${html}</form>` //JSON.stringify(html)
     pageContainer.innerHTML = str
-    document.body.appendChild(pageContainer);
+    pageContainer.style.width = widthPx + 'px'
+    document.body.appendChild(pageMetaContainer);
+    pageMetaContainer.appendChild(pageContainer)
+}
+function writeNavBar () {
+    let html = `
+  <a href="#home">עמודים</a>
+  <a href="#news">תפריט</a>
+  <a href="#contact">התקדמות</a>
+  <a href="#fullscreen"><svg  width="20" height="20" viewBox="0 0 24 24"><path d="M24 9h-2v-4h-4v-2h6v6zm-6 12v-2h4v-4h2v6h-6zm-18-6h2v4h4v2h-6v-6zm6-12v2h-4v4h-2v-6h6z"/></svg>&nbsp&nbsp מסך מלא </a>
+`
+    const navbar = Elm ('navbar');
+    navbar.innerHTML = html;
+    const pageMetaContainer = Id('pageMetaContainer')
+    pageMetaContainer.insertBefore(navbar, pageMetaContainer.childNodes[0])
+
+
 }
 function buildContent (tree) {
 
@@ -581,7 +599,8 @@ function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-pl
         elem.addEventListener('click', chooseElement)
     }
     function chooseElement (ev){
-
+        const seg = ev.target.getAttribute('data-seg')
+        L(seg)
         if (ev.target.classList.contains(elementThatIsplaced)){
             const previosParent = ev.target.parentNode;
             let dupe = Id(ev.target.id + fakeElementId)
@@ -607,7 +626,10 @@ function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-pl
             elements.forEach(e=>e.classList.remove(chooseClass))
             let emptyContainerElements = containerElements.filter(e=>
                 {const res = e.getElementsByClassName(elemClass_)
-
+                    if (e.getAttribute('data-seg') !== seg) {
+                        e.classList.remove(activeContainerClass)
+                        return false
+                    }
                     return !res[0]
                 }
             )
@@ -724,6 +746,6 @@ setDirection ()
 enableDragSort('orderList');
 addListnerToBank('textFillInputClass')
 enableElementPlacing ('place-bank-element', 'placeInputWithBank')
+writeNavBar ()
 
 //things to add: after in-text images add spaces acording to width relation;
-// separate questions of deleting lines
