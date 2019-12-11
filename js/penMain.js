@@ -489,16 +489,22 @@ function writePage (html = 'bla') {
     pageMetaContainer.appendChild(pageContainer)
 }
 function writeNavBar () {
+    const oldSVG = `<svg  width="20" height="20" viewBox="0 0 24 24"><path d="M24 9h-2v-4h-4v-2h6v6zm-6 12v-2h4v-4h2v6h-6zm-18-6h2v4h4v2h-6v-6zm6-12v2h-4v4h-2v-6h6z"/></svg>`;
+    const fullScreenSVG = `<svg version="1.1" viewBox="0 0 36 36" class="fullscreen"><g>< xlink:href="#ytp-id-27"></use><path  d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" id="ytp-id-27"></path></g><g><path d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" id="ytp-id-28"></path></g><g><path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" id="ytp-id-29"></path></g><g ><path class="ytp-svg-fill" d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" id="ytp-id-30"></path></g></svg>`
     let html = `
   <a href="#home">עמודים</a>
   <a href="#news">תפריט</a>
   <a href="#contact">התקדמות</a>
-  <a href="#fullscreen"><svg  width="20" height="20" viewBox="0 0 24 24"><path d="M24 9h-2v-4h-4v-2h6v6zm-6 12v-2h4v-4h2v6h-6zm-18-6h2v4h4v2h-6v-6zm6-12v2h-4v4h-2v-6h6z"/></svg>&nbsp&nbsp מסך מלא </a>
+  <a href="#fullscreen">${fullScreenSVG}&nbsp&nbsp&nbsp&nbsp מסך מלא </a>
 `
+    const navbarhinter = Elm('navbarhinter');
     const navbar = Elm ('navbar');
+    const navbarContatiner = Elm ('navbarContatiner');
     navbar.innerHTML = html;
+    navbarContatiner.appendChild(navbar);
+    navbar.appendChild(navbarhinter);
     const pageMetaContainer = Id('pageMetaContainer')
-    pageMetaContainer.insertBefore(navbar, pageMetaContainer.childNodes[0])
+    pageMetaContainer.insertBefore(navbarContatiner, pageMetaContainer.childNodes[0])
 
 
 }
