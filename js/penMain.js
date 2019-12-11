@@ -172,7 +172,6 @@ function buildWorkSheet (q) {
 
         return txt
     }
-
     class Segment {
 
         constructor (inf,num) {
@@ -489,6 +488,13 @@ function writePage (html = 'bla') {
     pageMetaContainer.appendChild(pageContainer)
 }
 function writeNavBar () {
+    function clickNav (ev){
+        const id = ev.target.id
+        if (id.includes('page_')){
+            choosePage(Number(id.replace ('page_',"")))
+
+        }
+    }
     function hovering (ev){
         const nav = Id('navbar');
         if (nav.classList.contains('hovering')) {return};
@@ -496,9 +502,21 @@ function writeNavBar () {
         setTimeout(()=>{nav.classList.remove('hovering')}, 1500)
     }
     const oldSVG = `<svg  width="20" height="20" viewBox="0 0 24 24"><path d="M24 9h-2v-4h-4v-2h6v6zm-6 12v-2h4v-4h2v6h-6zm-18-6h2v4h4v2h-6v-6zm6-12v2h-4v4h-2v-6h6z"/></svg>`;
-    const fullScreenSVG = `<svg version="1.1" viewBox="0 0 36 36" class="fullscreen"><g>< xlink:href="#ytp-id-27"></use><path  d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" id="ytp-id-27"></path></g><g><path d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" id="ytp-id-28"></path></g><g><path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" id="ytp-id-29"></path></g><g ><path class="ytp-svg-fill" d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" id="ytp-id-30"></path></g></svg>`
-    let html = `עמודים
-  <a href="#home"> 1 </a><a href="#home"> 2 </a>
+    const fullScreenSVG = `<svg version="1.1" viewBox="0 0 36 36" class="fullscreen"><g>< xlink:href="#ytp-id-27"></use><path  d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" id="ytp-id-27"></path></g><g><path d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" id="ytp-id-28"></path></g><g><path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" id="ytp-id-29"></path></g><g ><path class="ytp-svg-fill" d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" id="ytp-id-30"></path></g></svg>`;
+    const allSects = [...document.querySelectorAll('section')]
+    let pageslinks = '';
+    if (allSects.length > 1) {
+        pageslinks += 'עמודים '
+        allSects.forEach(s=>{
+            const num = (allSects.indexOf(s)+1);
+            pageslinks += `<a herf="#page_${num}" id="page_${num}"> ${num} </a>`
+        })
+    }
+
+
+
+
+    let html = `<span id="pages_select">${pageslinks}</span>
   <a href="#news">תפריט</a>
   <a href="#contact">התקדמות</a>
   <a href="#fullscreen">${fullScreenSVG}&nbsp&nbsp&nbsp&nbsp מסך מלא </a>
@@ -506,7 +524,9 @@ function writeNavBar () {
     const navbarhinter = Elm('navbarhinter');
     const navbar = Elm ('navbar');
     const navbarContatiner = Elm ('navbarContatiner');
+
     navbarContatiner.addEventListener('mouseover', hovering)
+    navbar.addEventListener('click', clickNav)
     navbar.innerHTML = html;
     navbarContatiner.appendChild(navbar);
     navbar.appendChild(navbarhinter);
@@ -515,13 +535,21 @@ function writeNavBar () {
 
 
 }
+
 function buildContent (tree) {
+    let pageBreak = {is:true, num:1}
+    const makeSection = () => {
+        let output =  ''
+        if (pageBreak.num - 1){output += `</section>`}
+        output += `<section id="sect${pageBreak.num}">`;
+        pageBreak.is = false;
+        pageBreak.num++;
+        return output
 
-
+    }
     const rend = h =>{
         let content0 =  h.toHtml()
         return  content0
-        //`<${h.elem } class="node" id="${"Wrap"+ h.number}">${content0}</${h.elem }><br>`
     }
     const buildContainer = (arr, level = 0) => {
 
@@ -529,7 +557,13 @@ function buildContent (tree) {
         if (level && G.V[arr[0]].bgcolor){
             bgstyle = `style="background-color:${G.V[arr[0]].bgcolor};"`
         }
-        let cont = `<div class="container level${level}" ${bgstyle}>`;
+
+        let cont = '';
+        if (level === 1 && pageBreak.is){
+         cont += makeSection ()
+        }
+
+        cont += `<div class="container level${level}" ${bgstyle}>`;
         for (let a = 0; a < arr.length; a++){
 
             if (Array.isArray(arr[a])){
@@ -537,6 +571,11 @@ function buildContent (tree) {
             } else if (level === 0){
                 const num = arr[a]
                 const html0 = rend(G.V[num])
+                if (G.V[num].typ === "page_break"){pageBreak.is = 'start'}
+                if (level === 0 && pageBreak.is){
+                 cont += makeSection ()
+                }
+
                 cont += `<div class="container level${level+1}" ${bgstyle}>` + html0 + '</div>';
 
             } else {
@@ -548,7 +587,9 @@ function buildContent (tree) {
 
         }
 
+
         cont += '</div>';
+
 
         return cont
 
@@ -613,7 +654,7 @@ function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-pl
     }
     function chooseElement (ev){
         const seg = ev.target.getAttribute('data-seg')
-        L(seg)
+
         if (ev.target.classList.contains(elementThatIsplaced)){
             const previosParent = ev.target.parentNode;
             let dupe = Id(ev.target.id + fakeElementId)
@@ -747,18 +788,38 @@ function addListnerToBank (listClass){
     const bankLists = document.getElementsByClassName(listClass);
     Array.prototype.map.call(bankLists, (list) => {addFocusListner(list)});
 }
+function getSections () {
+    const allSects = [...document.querySelectorAll('section')]
+    const choosePage = (n) => {
+        allSects.forEach(s=>{
+            let disp = 'none';
+            if (allSects.indexOf(s) === n - 1){disp = 'block'}
+            s.style.display = disp
+
+        })
+
+    }
+
+
+    return choosePage
+}
 
 
 const virt = buildWorkSheet ();
 const tree = mapPageTree ()
 const cont = buildContent (tree);
-const final = cont
+const final = cont;
+
 
 writePage ( final )
 setDirection ()
 enableDragSort('orderList');
 addListnerToBank('textFillInputClass')
-enableElementPlacing ('place-bank-element', 'placeInputWithBank')
+enableElementPlacing ('place-bank-element', 'placeInputWithBank');
+const choosePage = getSections ()
+choosePage (1)
 writeNavBar ()
+
+
 
 //things to add: after in-text images add spaces acording to width relation;
