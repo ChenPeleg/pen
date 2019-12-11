@@ -313,15 +313,15 @@ function buildWorkSheet (q) {
             return comleteElem + '<br>';
         }
         toPlaceFromBank () {
-
-            let bankDiv = '<div class="word-place-bank">';
+            const seg = this.segNum();
+            let bankDiv = `<div class="word-place-bank" ${seg}>`;
             const shuffle = (array) => array.sort(() => Math.random() - 0.5);
             let answers =  this.answer.filter((e)=>e)
             answers = shuffle(answers);
             const answerLength = answers.map(a=>a.length)
             const maxLetters = Math.max(...answerLength)
             const spaces = '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
-            const seg = this.segNum();
+
 
             answers.forEach (ans=>{
                 const ansLower = ans.toLowerCase()
@@ -342,7 +342,7 @@ function buildWorkSheet (q) {
             const placeInputWithBank = 'placeInputWithBank';
             comleteElem += `<div class="InputDropContainer ${imageInTextClass}">`
             txtArr.forEach (e=>{
-                const num = txtArr.indexOf(e) ////
+                const num = txtArr.indexOf(e)
                 let input = `<div id="dropLocation" class="${placeInputWithBank}" ${seg}>${spaces}</div>`
                 if  (!answers[num]){input = ''}
                 let formElm = `${e}${input}`
@@ -491,7 +491,7 @@ function writeNavBar () {
     function clickNav (ev){
         const id = ev.target.id
         if (id.includes('page_')){
-            choosePage(Number(id.replace ('page_',"")))
+            pageTransition(Number(id.replace ('page_',"")))
 
         }
     }
@@ -535,13 +535,12 @@ function writeNavBar () {
 
 
 }
-
 function buildContent (tree) {
     let pageBreak = {is:true, num:1}
     const makeSection = () => {
         let output =  ''
         if (pageBreak.num - 1){output += `</section>`}
-        output += `<section id="sect${pageBreak.num}">`;
+        output += `<section id="sect${pageBreak.num}" class="sectionClass">`;
         pageBreak.is = false;
         pageBreak.num++;
         return output
@@ -654,11 +653,13 @@ function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-pl
     }
     function chooseElement (ev){
         const seg = ev.target.getAttribute('data-seg')
-
         if (ev.target.classList.contains(elementThatIsplaced)){
             const previosParent = ev.target.parentNode;
             let dupe = Id(ev.target.id + fakeElementId)
-            document.getElementsByClassName(bankClass)[0].appendChild(ev.target);
+            let correctBank = [...document.getElementsByClassName(bankClass)].filter(b=>seg === b.getAttribute('data-seg'))
+
+            correctBank[0].appendChild(ev.target);
+
             if(dupe) {dupe.remove(); dupe = null;}
             ev.target.style.opacity = '0'
             setTimeout(()=>{ev.target.style.opacity = '1'},1)
@@ -669,7 +670,6 @@ function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-pl
             [...elements].forEach(e=>e.classList.remove(chooseClass));
             previosParent.innerHTML = '&nbsp&nbsp&nbsp&nbsp&nbsp'
             return;
-
         }
         if (ev.target.classList.contains(chooseClass)){
             ev.target.classList.remove(chooseClass)
@@ -788,21 +788,7 @@ function addListnerToBank (listClass){
     const bankLists = document.getElementsByClassName(listClass);
     Array.prototype.map.call(bankLists, (list) => {addFocusListner(list)});
 }
-function getSections () {
-    const allSects = [...document.querySelectorAll('section')]
-    const choosePage = (n) => {
-        allSects.forEach(s=>{
-            let disp = 'none';
-            if (allSects.indexOf(s) === n - 1){disp = 'block'}
-            s.style.display = disp
 
-        })
-
-    }
-
-
-    return choosePage
-}
 
 
 const virt = buildWorkSheet ();
@@ -816,9 +802,46 @@ setDirection ()
 enableDragSort('orderList');
 addListnerToBank('textFillInputClass')
 enableElementPlacing ('place-bank-element', 'placeInputWithBank');
-const choosePage = getSections ()
-choosePage (1)
+
+function pageTransition (n = 1) {
+    const choosePage = (n) => {
+        allSects.forEach(s=>{
+            let disp = 'none';
+            if (allSects.indexOf(s) === n - 1){disp = 'block'}
+            s.style.display = disp
+
+        })
+
+    }
+
+    const allSects = [...document.querySelectorAll('section')];
+    const currentPageList = allSects.filter(e=>e.style.display === 'block');
+
+    const currentPage = currentPageList[0]
+    if (currentPageList.length !== 1 || (currentPage === allSects[n-1])) {return}
+    if (allSects.indexOf(currentPage) >  n - 1) {document.documentElement.scrollTop = 0; }
+
+    allSects[n-1].style.display = 'block'
+    currentPage.classList.add('turn-page');
+    setTimeout(()=>{
+        currentPage.classList.remove('turn-page');
+        currentPage.style.display = 'none';
+    },1000)
+
+
+
+    //setTimeout(()=>{form.classList.remove('fadeOut-in')},700)
+    //setTimeout(()=>{choosePage (n)},250)
+}
+
+
+
 writeNavBar ()
+const allSects = [...document.querySelectorAll('section')]
+allSects[0].style.display = 'block'
+allSects[1].style.display = 'none'
+allSects[2].style.display = 'none'
+//pageTransition ()
 
 
 

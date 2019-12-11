@@ -314,3 +314,27 @@ h3{
     font-size: calc(var(--main-font-size)*0.9);
     color: rgba(0, 0, 0, 0.8);
 }
+
+.turn-page {
+    position: absolute;
+    animation-name: fade-out-and-in;
+    animation-duration: 0.7s;
+    animation-fill-mode: forwards;
+}
+@keyframes fade-out-and-in {
+    0% { transform: translateX(0);
+        z-index: 10;
+    }
+    50% {transform: translateX(calc(-102%)) ;z-index: 10;
+    }
+    51%{z-index: -20; transform: translateX(calc(-102%)) }
+    52%{transform: translateX(calc(-102%))}
+    100% {transform: translateX(calc(0%));
+        z-index: -20;
+
+    }
+}
+
+.go-back-page{
+    
+}
