@@ -7,6 +7,47 @@
   --main-pageContainer-width:70%;
   --navbar-height:50px;
   --navbar-bg: #333;
+  --navbar-color: #f2f2f2
+
+}
+html{
+     scroll-behavior: smooth;
+}
+
+
+div {
+ /* border-radius: 5px;
+ padding : 1vmin; */
+}
+
+body {
+//    white-space: pre-wrap;
+    font-family: 'Quicksand', sans-serif;
+    font-size: var(--main-font-size)
+}
+section div:first-child {
+    padding-top: calc(var(--main-font-size)*1.5)
+}
+p{}
+footer{
+
+    direction: rtl;
+    text-align: center;
+    font-size: 20px;
+    font-family: arial;
+    cursor: pointer;
+    position: relative;
+    display:inline-block;
+    padding: 10px;
+    z-index: 3;
+}
+footer a{
+        padding: 10px;
+}
+footer a.allow-hover:hover{
+ background-color: rgba(200,200,200,0.8);
+}
+footer a:hover {
 
 }
 #pageContainer {
@@ -20,7 +61,6 @@
 }
 #pageMetaContainer {
     flex: 1;
-    //text-align: center;
     position: relative;
     max-width: 100%;
 
@@ -35,7 +75,6 @@
 }
 #navbar {
   position: relative;
-
   transform: translateY(calc(-100%));
   transition: all 0.5s 1s;
   direction: rtl;
@@ -46,7 +85,7 @@
   display: block;
   border-radius: 5px;
   z-index: 30;
-  color: #f2f2f2;
+  color: var(--navbar-color);
   text-align: center;
   text-decoration: none;
   font-size: 17px;
@@ -72,22 +111,26 @@
 }
 
 #navbar a {
+  cursor: pointer;
   position: relative;
   display:inline-block;
-  color: #f2f2f2;
+  color: var(--navbar-color);
   text-align: center;
   padding: 15px;
   text-decoration: none;
   font-size: 17px;
 }
+.currentPageInd{
+    font-weight: 900;
+    box-shadow: inset 0px -4px #ddd;
+}
+
 
 
 #navbar a:hover {
-
   background-color: #ddd;
   color: black;
   fill:black;
-
 }
 
 #navbarContatiner:hover #navbar , .hovering{
@@ -154,24 +197,12 @@
 }
 
 
-div {
- /* border-radius: 5px;
- padding : 1vmin; */
-}
-
-body {
-//    white-space: pre-wrap;
-    font-family: 'Quicksand', sans-serif;
-    font-size: var(--main-font-size)
-}
-p{}
-
 .level0{
     box-shadow:var(--main-soft-shadow);
     padding: 0px;
-    background: linear-gradient(to right, rgba(240,240,254,0.9),rgba(240,254,240,0.9) )
+    background: linear-gradient(to right, rgba(140,140,154,0.9),rgba(140,170,174,0.9) )
 }
-.level1{
+.level1, .level2{
     border: 0px solid black;
     padding: 20px;
     }
@@ -179,6 +210,31 @@ p{}
     border: 0px solid black;
 }
 
+.soundBtn{
+    cursor: pointer;
+    position:relative;
+    top:4px;
+    display: inline-block;
+    height: var(--main-font-size);
+    width: var(--main-font-size);
+    background-color: rgba(40,128,40,0.4);
+    border-radius: calc(var(--main-font-size)+50%);
+    background-size: var(--main-font-size) var(--main-font-size);
+}
+.soundBtn:hover{
+    box-shadow: var(--main-soft-shadow);
+}
+.soundBtn-active {
+    animation-name:  sound-button-play;
+    animation-duration: 0.5s;
+    animation-iteration-count: infinite;
+}
+@keyframes sound-button-play {
+    0%{background-color: rgba(0,228,0,0.9);}
+    50%{background-color: rgba(40,128,254,0.9);}
+    100%{background-color: rgba(0,228,0,0.9)}
+
+}
 .image_text{
     display:inline-block;
     float:right;
@@ -210,6 +266,7 @@ p{}
 
 }
 h1{
+    display: inline-block;
     font-size: calc(var(--main-font-size)*1.8);
     font-family: 'Alfa Slab One', cursive;
     margin: 10px;
@@ -219,14 +276,15 @@ h1{
     text-shadow: -1px 0  black, 0 1px black, 1px 0 black, 0 -1px black, 3px 3px 2px grey;
 }
 h1.gradient1 {
-    background-image:         linear-gradient(to right, blue,  red,crimson, salmon, orange, navy, green, purple, brown, blue, lightblue); /* Standard syntax; must be last */
+
+    background-image:linear-gradient(to right, blue,  red,crimson, salmon, orange, navy, green, purple, brown, blue, lightblue); /* Standard syntax; must be last */
     color:transparent;
     -webkit-background-clip: text;
     background-clip: text;
 }
 
- h2, h3 , h4{
-
+h2, h3 , h4{
+    display: inline-block;
     font-weight:800;
     letter-spacing: 0.06em;
     padding: 3px;
@@ -317,11 +375,11 @@ h3{
 
 .turn-page {
     position: absolute;
-    animation-name: fade-out-and-in;
+    animation-name: turn-page-out;
     animation-duration: 0.7s;
     animation-fill-mode: forwards;
 }
-@keyframes fade-out-and-in {
+@keyframes turn-page-out {
     0% { transform: translateX(0);
         z-index: 10;
     }
@@ -336,5 +394,22 @@ h3{
 }
 
 .go-back-page{
-    
+    position: absolute;
+    animation-name: turn-page-in;
+    animation-duration: 0.7s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes turn-page-in {
+    0% { transform: translateX(calc(0%));
+        z-index: -20;
+    }
+    50% {transform: translateX(calc(-102%)) ;z-index: -20;
+    }
+    51%{z-index: 10; transform: translateX(calc(-102%)) }
+    52%{transform: translateX(calc(-102%))}
+    100% {
+        transform: translateX(0);
+        z-index: 10;
+    }
 }

@@ -303,7 +303,7 @@ function buildWorkSheet (q) {
             const textInputClass = 'textFillInputClass';
 
             txtArr.forEach (e=>{
-                const num = txtArr.indexOf(e) ////
+                const num = txtArr.indexOf(e)
                 let input = `<div class="bottom-input-border"><input id = "${"Q" + this.number + "_" + num}" type="text" class="${textInputClass}" name="${"Q" + this.number }" size="${maxLetters}" value="" ${seg}></div>`
                 if  (!answers[num]){input = ''}
                 let formElm = `<span class="${imageInTextClass}">${e}${input}</span>`
@@ -352,12 +352,21 @@ function buildWorkSheet (q) {
 
             return comleteElem + '<br>';
         }
+        creadSoundButton (con){
+            let sounsSpan = `<svg version="1.1" id="${'sound_'+this.number}" x="0px" y="0px" viewBox="0 0 510 510" class="soundBtn" data-sound-file="${this.sound}"><g><g id="play-circle-outline"><path d="M204,369.75L357,255L204,140.25V369.75z M255,0C114.75,0,0,114.75,0,255s114.75,255,255,255s255-114.75,255-255 			S395.25,0,255,0z M255,459c-112.2,0-204-91.8-204-204S142.8,51,255,51s204,91.8,204,204S367.2,459,255,459z"/></g></g><g></g><g></g><g> </g><g></g><g></g><g></g><g></g><g></g><g> </g><g></g><g>             </g><g></g><g></g><g></g><g></g></svg>&nbsp&nbsp` // <span class="soundBtn"></span>
+
+            if (!this.sound){sounsSpan = ''}
+            let div = `${sounsSpan}${con}`;
+            return div
+        }
         toHtml (){
              let htmlElement = Elm(this.elem);
              let elmType = 'p';
              let elmStyle =''; let srcImg = '';
              let content = this.content;
-             let class1 = this.typ
+             let class1 = this.typ;
+             this.sound ?  "▶️" : 0
+             let sound = ''
              if (this.typ.includes("image_")){
                  let addedStyle = ''
                  if (this.typ.includes("left")) {
@@ -416,10 +425,17 @@ function buildWorkSheet (q) {
                  if (content !== imageMarkup) { imageInText = 'text-containig-images'}
                  content = `<div class="${this.typ} ${imageInText}"><span>${imageMarkup}</span></div>`;
              }
+             if (this.typ === 'page_break'){
+
+                 content = `<div class="${this.typ} "><span>${content}</span></div>`;
+             }
+             if (this.typ === 'video'){
+                 let videoHtml = `<div style="text-align:center"><video width="80%"  controls><source src="content/${content}" type="video/mp4"> היתה בעייה בטעינת הוידאו</video></div>`;
+                 content =  videoHtml ;
+             }
 
 
-             //htmlElement = `<${elmType} id= "${"Elm" + this.number}" class="${class1}" ${elmStyle}  ${srcImg}> ${content}</${elmType}>`
-             return  content
+             return  this.creadSoundButton(content)
          }
 
     }
@@ -485,14 +501,24 @@ function writePage (html = 'bla') {
     pageContainer.innerHTML = str
     pageContainer.style.width = widthPx + 'px'
     document.body.appendChild(pageMetaContainer);
-    pageMetaContainer.appendChild(pageContainer)
+    pageMetaContainer.appendChild(pageContainer);
+
 }
-function writeNavBar () {
+function writeNavBarAndFooter () {
+
     function clickNav (ev){
         const id = ev.target.id
         if (id.includes('page_')){
             pageTransition(Number(id.replace ('page_',"")))
 
+        }
+    }
+    function clickfoot (ev){
+        const id = ev.target.id
+        if (id.includes('fpage_')){
+            if (id === 'fpage_next') {pageTransition ('next')}
+            else if (id === 'fpage_pre') {pageTransition ('pre')}
+            pageTransition(Number(id.replace ('fpage_',""))); return
         }
     }
     function hovering (ev){
@@ -501,37 +527,62 @@ function writeNavBar () {
         nav.classList.add('hovering')
         setTimeout(()=>{nav.classList.remove('hovering')}, 1500)
     }
+    function openFullscreen() {
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) {elem.requestFullscreen();}
+}
     const oldSVG = `<svg  width="20" height="20" viewBox="0 0 24 24"><path d="M24 9h-2v-4h-4v-2h6v6zm-6 12v-2h4v-4h2v6h-6zm-18-6h2v4h4v2h-6v-6zm6-12v2h-4v4h-2v-6h6z"/></svg>`;
     const fullScreenSVG = `<svg version="1.1" viewBox="0 0 36 36" class="fullscreen"><g>< xlink:href="#ytp-id-27"></use><path  d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" id="ytp-id-27"></path></g><g><path d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" id="ytp-id-28"></path></g><g><path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" id="ytp-id-29"></path></g><g ><path class="ytp-svg-fill" d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" id="ytp-id-30"></path></g></svg>`;
     const allSects = [...document.querySelectorAll('section')]
     let pageslinks = '';
+
+
     if (allSects.length > 1) {
         pageslinks += 'עמודים '
         allSects.forEach(s=>{
             const num = (allSects.indexOf(s)+1);
-            pageslinks += `<a herf="#page_${num}" id="page_${num}"> ${num} </a>`
+            let cls = '';
+            if (num === 1){cls = 'currentPageInd'}
+            pageslinks += `<a herf="#page_${num}" id="page_${num}" class="${cls}"> ${num} </a>`
         })
     }
 
+    const footer = document.createElement('footer')
+    footer.id="formFooter"; footer.style.display ="block";
+    Id('mainForm').appendChild(footer)
+    const formFooter = footer
 
-
+    if (pageslinks){
+        const footcls = 'allow-hover'
+        let pageslinks2 = ' עמוד '
+            pageslinks2 += `<a herf="#page_${2}" id="fpage_next" class="${footcls}"> הבא </a>`
+            pageslinks2 += `<a herf="#page_${1}" id="fpage_pre" class="${footcls}"> הקודם </a>`
+            allSects.forEach(s=>{
+            const num = (allSects.indexOf(s)+1);
+            let cls = '';
+            if (num === 1){cls = 'currentPageInd'}
+            pageslinks2 += `<a herf="#page_${num}" id="fpage_${num}" class="${footcls}"> ${num} </a>`
+        })
+        formFooter.innerHTML += pageslinks2;
+    }
 
     let html = `<span id="pages_select">${pageslinks}</span>
   <a href="#news">תפריט</a>
   <a href="#contact">התקדמות</a>
-  <a href="#fullscreen">${fullScreenSVG}&nbsp&nbsp&nbsp&nbsp מסך מלא </a>
+  <a href="#fullscreen" id ="fullscreenBtn">${fullScreenSVG}&nbsp&nbsp&nbsp&nbsp מסך מלא </a>
 `
     const navbarhinter = Elm('navbarhinter');
     const navbar = Elm ('navbar');
     const navbarContatiner = Elm ('navbarContatiner');
-
     navbarContatiner.addEventListener('mouseover', hovering)
     navbar.addEventListener('click', clickNav)
+    formFooter.addEventListener('click', clickfoot)
     navbar.innerHTML = html;
     navbarContatiner.appendChild(navbar);
     navbar.appendChild(navbarhinter);
     const pageMetaContainer = Id('pageMetaContainer')
     pageMetaContainer.insertBefore(navbarContatiner, pageMetaContainer.childNodes[0])
+    Id('fullscreenBtn').addEventListener('click', openFullscreen)
 
 
 }
@@ -540,7 +591,9 @@ function buildContent (tree) {
     const makeSection = () => {
         let output =  ''
         if (pageBreak.num - 1){output += `</section>`}
-        output += `<section id="sect${pageBreak.num}" class="sectionClass">`;
+        let disp = 'none'
+        if (pageBreak.num === 1){disp = 'block'}
+        output += `<section id="sect${pageBreak.num}" style="display:${disp}" class="sectionClass">`;
         pageBreak.is = false;
         pageBreak.num++;
         return output
@@ -554,9 +607,9 @@ function buildContent (tree) {
 
         let bgstyle = '';
         if (level && G.V[arr[0]].bgcolor){
+
             bgstyle = `style="background-color:${G.V[arr[0]].bgcolor};"`
         }
-
         let cont = '';
         if (level === 1 && pageBreak.is){
          cont += makeSection ()
@@ -574,8 +627,11 @@ function buildContent (tree) {
                 if (level === 0 && pageBreak.is){
                  cont += makeSection ()
                 }
+                let addedCont = `<div class="container level${level+1}" ${bgstyle}>` + html0 + '</div>';
+                if (G.V[num].typ === "page_break"){addedCont = ''}
 
-                cont += `<div class="container level${level+1}" ${bgstyle}>` + html0 + '</div>';
+
+                cont += addedCont
 
             } else {
                 const num = arr[a]
@@ -788,6 +844,58 @@ function addListnerToBank (listClass){
     const bankLists = document.getElementsByClassName(listClass);
     Array.prototype.map.call(bankLists, (list) => {addFocusListner(list)});
 }
+function addSoundsListeners(classSnd){
+    function playSounds (ev){
+        ev.target.classList.add('soundBtn-active');
+        const file  = 'content/' + ev.target.getAttribute('data-sound-file')
+         let audio = new Audio(file).play()
+    }
+    function addSoundsListener(elem){
+        elem.addEventListener('click', playSounds);
+    }
+    const soundLists = document.getElementsByClassName(classSnd);
+    Array.prototype.map.call(soundLists, (list) => {addSoundsListener(list)});
+
+}
+function pageTransition (n = 1) {
+    if (!n){return}
+
+    const allSects = [...document.querySelectorAll('section')];
+    const currentPageList = allSects.filter(e=>e.style.display === 'block');
+    const currentPage = currentPageList[0]
+    if (n === 'next') {n = allSects.indexOf(currentPage) + 2} else if (n === 'pre') {
+        n = allSects.indexOf(currentPage)}
+    if (n > allSects.length  || n < 1) {
+    //alert ('no such page');
+    return}
+    if (currentPageList.length !== 1 || (currentPage === allSects[n-1])) {return}
+
+    window.scrollTo(0, 0)
+    if (allSects.indexOf(currentPage) >  n - 1) {document.documentElement.scrollTop = 0; }
+    if (allSects.indexOf(currentPage) >  n - 1){
+        allSects[n-1].classList.add('go-back-page');
+        allSects[n-1].style.display = 'block'
+        setTimeout(()=>{
+            allSects[n-1].classList.remove('go-back-page');
+            currentPage.style.display = 'none';
+        },750)
+
+    } else {
+        allSects[n-1].style.display = 'block'
+        currentPage.classList.add('turn-page');
+        setTimeout(()=>{
+            currentPage.classList.remove('turn-page');
+            currentPage.style.display = 'none';
+        },750)
+    }
+
+    Id('page_' + (allSects.indexOf(currentPage)+1)).classList.remove('currentPageInd')
+    Id('page_'+ n).classList.add('currentPageInd');
+    Id('fpage_pre').classList.add('allow-hover'); Id('fpage_next').classList.add('allow-hover');
+    if (n === 1) {Id('fpage_pre').classList.remove('allow-hover') }
+    if (n === allSects.length) {Id('fpage_next').classList.remove('allow-hover')}
+
+}
 
 
 
@@ -802,46 +910,14 @@ setDirection ()
 enableDragSort('orderList');
 addListnerToBank('textFillInputClass')
 enableElementPlacing ('place-bank-element', 'placeInputWithBank');
-
-function pageTransition (n = 1) {
-    const choosePage = (n) => {
-        allSects.forEach(s=>{
-            let disp = 'none';
-            if (allSects.indexOf(s) === n - 1){disp = 'block'}
-            s.style.display = disp
-
-        })
-
-    }
-
-    const allSects = [...document.querySelectorAll('section')];
-    const currentPageList = allSects.filter(e=>e.style.display === 'block');
-
-    const currentPage = currentPageList[0]
-    if (currentPageList.length !== 1 || (currentPage === allSects[n-1])) {return}
-    if (allSects.indexOf(currentPage) >  n - 1) {document.documentElement.scrollTop = 0; }
-
-    allSects[n-1].style.display = 'block'
-    currentPage.classList.add('turn-page');
-    setTimeout(()=>{
-        currentPage.classList.remove('turn-page');
-        currentPage.style.display = 'none';
-    },1000)
+addSoundsListeners ('soundBtn')
 
 
 
-    //setTimeout(()=>{form.classList.remove('fadeOut-in')},700)
-    //setTimeout(()=>{choosePage (n)},250)
-}
 
+writeNavBarAndFooter ()
+pageTransition (1)
 
-
-writeNavBar ()
-const allSects = [...document.querySelectorAll('section')]
-allSects[0].style.display = 'block'
-allSects[1].style.display = 'none'
-allSects[2].style.display = 'none'
-//pageTransition ()
 
 
 
