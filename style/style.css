@@ -50,6 +50,10 @@ footer a.allow-hover:hover{
 footer a:hover {
 
 }
+svg{
+    display: inline-block;
+    position: relative;
+}
 #pageContainer {
     align-self: center;
     position: relative;
@@ -220,6 +224,13 @@ footer a:hover {
     background-color: rgba(40,128,40,0.4);
     border-radius: calc(var(--main-font-size)+50%);
     background-size: var(--main-font-size) var(--main-font-size);
+}
+audio{
+    /* position:absolute;
+    top: -20px;
+    opacity: 0.5;
+    left: 40px; */
+
 }
 .soundBtn:hover{
     box-shadow: var(--main-soft-shadow);
