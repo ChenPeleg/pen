@@ -353,7 +353,7 @@ function buildWorkSheet (q) {
             return comleteElem + '<br>';
         }
         creadSoundButton (con){
-            let sounsSpan = `<span class="soundBtn" id="${'sound_'+this.number}" data-sound-file="${this.sound}"><svg version="1.1"  viewBox="0 0 510 510"  ><g><g><path d="M204,369.75L357,255L204,140.25V369.75z M255,0C114.75,0,0,114.75,0,255s114.75,255,255,255s255-114.75,255-255 			S395.25,0,255,0z M255,459c-112.2,0-204-91.8-204-204S142.8,51,255,51s204,91.8,204,204S367.2,459,255,459z"/></g></g><g></g><g></g><g> </g><g></g><g></g><g></g><g></g><g></g><g> </g><g></g><g>             </g><g></g><g></g><g></g><g></g></svg>&nbsp&nbsp</span>` // <span class="soundBtn"></span>
+            let sounsSpan = `<span class="soundBtn" id="${'sound_'+this.number}" data-sound-file="${this.sound}"><svg version="1.1"  viewBox="0 0 510 510"  ><g><g><path d="M204,369.75L357,255L204,140.25V369.75z M255,0C114.75,0,0,114.75,0,255s114.75,255,255,255s255-114.75,255-255 			S395.25,0,255,0z M255,459c-112.2,0-204-91.8-204-204S142.8,51,255,51s204,91.8,204,204S367.2,459,255,459z"/></g></g><g></g><g></g><g> </g><g></g><g></g><g></g><g></g><g></g><g> </g><g></g><g>             </g><g></g><g></g><g></g><g></g> </svg>  </span> &nbsp` // <span class="soundBtn"></span>
 
             if (!this.sound){sounsSpan = ''}
             let div = `${sounsSpan}${con}`;
@@ -847,11 +847,16 @@ function addListnerToBank (listClass){
 function addSoundsListeners(classSnd){
     function soundEnded (elem){
         elem.classList.remove('soundBtn-active');
+        let allAudio = [...document.getElementsByTagName('audio')]
+        allAudio.forEach(e=>e.remove())
     }
     function playSounds (ev){
         const target = this
         const allSoundElements = [...document.getElementsByClassName(classSnd)];
         allSoundElements.forEach(e=>e.classList.remove('soundBtn-active'));
+        let allAudio = [...document.getElementsByTagName('audio')]
+        allAudio.forEach(e=>e.remove())
+
         target.classList.add('soundBtn-active');
         const file  = 'content/' + target.getAttribute('data-sound-file')
          let audio = new Audio(file);

@@ -50,10 +50,7 @@ footer a.allow-hover:hover{
 footer a:hover {
 
 }
-svg{
-    display: inline-block;
-    position: relative;
-}
+
 #pageContainer {
     align-self: center;
     position: relative;
@@ -226,10 +223,11 @@ svg{
     background-size: var(--main-font-size) var(--main-font-size);
 }
 audio{
-    /* position:absolute;
-    top: -20px;
-    opacity: 0.5;
-    left: 40px; */
+    position:fixed;
+    bottom: 10px;
+    opacity: 0.9;
+    left: 10px;
+    z-index: 39;
 
 }
 .soundBtn:hover{
