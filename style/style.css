@@ -174,10 +174,16 @@ footer a:hover {
     line-height: calc(var(--main-font-size)*3.5);
 }
 .check-mark{
+    position: absolute;
+    display: inline-block;
+    line-height: normal;
+    height: calc(var(--main-font-size)*1);
+    width:  calc(var(--main-font-size)*1);
     font-size: 40;
-    color: green;
-    
-
+    fill: green;
+    opacity: 0.7;
+    z-index: 33;
+    margin-right:10px;
 }
 #ErrorCheck{
     font-size: 57px;

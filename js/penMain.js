@@ -327,8 +327,9 @@ function buildWorkSheet (q) {
 
 
             answers.forEach (ans=>{
+                const ansNum = this.answer.indexOf(ans)
                 const ansLower = ans.toLowerCase()
-                bankDiv += `<span id="${'placeBank_' + ansLower}" class="place-bank-element" ${seg}>${ans}</span>`
+                bankDiv += `<span id="Q${this.number}A${ansNum}}" class="place-bank-element" ${seg}>${ans}</span>`
             })
             bankDiv += '</div>';
 
@@ -345,8 +346,8 @@ function buildWorkSheet (q) {
             const placeInputWithBank = 'placeInputWithBank';
             comleteElem += `<div class="InputDropContainer ${imageInTextClass}">${ this.creadSoundButton()}`
             txtArr.forEach (e=>{
-                const num = txtArr.indexOf(e)
-                let input = `<div id="dropLocation" class="${placeInputWithBank}" ${seg}>${spaces}</div>`
+                const num = txtArr.indexOf(e) ///
+                let input = `<div id="Q${this.number}_${num}" class="${placeInputWithBank}" ${seg}>${spaces}</div>`
                 if  (!answers[num]){input = ''}
                 let formElm = `${e}${input}`
                 comleteElem += formElm
@@ -915,24 +916,49 @@ function pageTransition (n = 1) {
 }
 function keyPressFunc (e) {if (e.charCode == 49) {checkAll()}}
 function checkAll(){
+    const insertAfter = function (newNode, nodeToinsertAfter) {//.nextSibling
+         nodeToinsertAfter.parentNode.insertBefore(newNode, nodeToinsertAfter )}
+    const checkSvg = `<svg version="1.1"  x="0px" y="0px"
+     	  viewBox="0 0 442.533 442.533" style="enable-background:new 0 0 442.533 442.533;"	 xml:space="preserve"> <g> 	<path d="M434.539,98.499l-38.828-38.828c-5.324-5.328-11.799-7.993-19.41-7.993c-7.618,0-14.093,2.665-19.417,7.993L169.59,247.248 l-83.939-84.225c-5.33-5.33-11.801-7.992-19.412-7.992c-7.616,0-14.087,2.662-19.417,7.992L7.994,201.852 C2.664,207.181,0,213.654,0,221.269c0,7.609, 2.664,14.088,7.994,19.416l103.351,103.349l38.831,38.828 c5.327,5.332, 11.8,7.994,19.414,7.994c7.611,0,14.084-2.669,19.414-7.994l38.83-38.828L434.539,137.33 c5.325-5.33,7.994-11.802,7.994-19.417C442.537,110.302,439.864,103.829,434.539,98.499z"><g><g><g><g><g><g><g><g> <g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><svg>`
+    let amswerObj = {};
+    const ansAdd = (name, value) =>{
+        let good = Elm (name + '_mark' ,'span'); good.classList.add("check-mark");
+        good.innerHTML = checkSvg
+        amswerObj[name] = value
+        if (Id(name).type === 'text' || Id(name).type === 'radio') {
+             //good.style.position = 'relative';
+            //good.style.left = '0px';
+
+        }
+
+            insertAfter (good,Id(name))
+
+        //
+
+        L(Id(name).parentNode)
+
+    }
     const inputs = [...document.querySelectorAll('input')]
     const orders = [...document.querySelectorAll('.orderList')]
-    let amswerObj = {};
-    let good = Elm ('span'); good.classList.add("check-mark");
-    good.innerHTML = 'Good!'
+    const placeing = [...document.querySelectorAll('.place-bank-element-in-container')]
+
+
     orders.forEach(o=>{
-    L(o);
     ansRy = [];
-    [...o.childNodes].forEach(c=>L(c.innerHTML))
+    [...o.childNodes].forEach(c=>ansRy.push(c.innerHTML))
+     ansAdd(o.id, ansRy)
     })
     inputs.forEach(i=>{
         if (i.value !== i.defaultValue){
-        //    L(i.id, i.value )
-        }
-        if (i.checked !==  i.defaultChecked){
-        //    L(i.id, i.checked )
+        ansAdd(i.id,i.value)
+    } else if (i.checked !==  i.defaultChecked){
+        ansAdd(i.id, i.checked )
         }
     })
+    placeing.forEach(p=>{
+        ansAdd(p.id, p.parentNode.id)
+    })
+    L(amswerObj)
 
 
 
