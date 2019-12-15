@@ -173,7 +173,12 @@ footer a:hover {
 .text-containig-images{
     line-height: calc(var(--main-font-size)*3.5);
 }
+.check-mark{
+    font-size: 40;
+    color: green;
+    
 
+}
 #ErrorCheck{
     font-size: 57px;
     color: red;
@@ -218,9 +223,10 @@ footer a:hover {
     display: inline-block;
     height: var(--main-font-size);
     width: var(--main-font-size);
-    background-color: rgba(40,128,40,0.4);
+    background-color: rgba(90,178,90,0.8);
     border-radius: calc(var(--main-font-size)+50%);
     background-size: var(--main-font-size) var(--main-font-size);
+    line-height: normal;
 }
 audio{
     position:fixed;
@@ -229,6 +235,9 @@ audio{
     left: 10px;
     z-index: 39;
 
+}
+svg{
+    display: inline-block;
 }
 .soundBtn:hover{
     box-shadow: var(--main-soft-shadow);

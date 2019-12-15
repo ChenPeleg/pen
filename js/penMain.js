@@ -129,8 +129,8 @@ utils:{
 function setDirectionBylanguage (element, text) {
     if (text && element) {} else return
     function isHebrew(qtext) {
-        if (typeof qtext !== 'string'){return true}
-        var hebLetters = /\s?[1234567890אבגדהוזחטיכלמנסעפצקרשתםןץףך]{1,30}\s?/g
+        if (typeof qtext !== 'string'){return false}
+        var hebLetters = /\s?[אבגדהוזחטיכלמנסעפצקרשתםןץףך]{1,30}\s?/g
         var englishLetters =  /[A-Za-z]{3,30}/g
         let matchArryEnglsh = qtext.match(englishLetters)
         if (matchArryEnglsh === null){matchArryEnglsh = [] }
@@ -140,8 +140,10 @@ function setDirectionBylanguage (element, text) {
 
     }
     if (isHebrew(text)) {
-        element.style.direction = 'rtl'; element.style.textAlign = 'right'} else {
-        {element.style.direction = "ltr"; element.style.textAlign = "left"}
+
+        element.style.direction = 'rtl'; element.style.textAlign = 'right'
+    } else {
+        //{element.style.direction = "ltr"; element.style.textAlign = "left"}
     }
 
 }
@@ -234,7 +236,7 @@ function buildWorkSheet (q) {
         toOrderInput(){
             const shuffle = (array) => array.sort(() => Math.random() - 0.5);
             let answers =  this.answer.filter((e)=>e)
-            let html ='<ol class="orderList">';
+            let html =`<ol class="orderList" id="Q_${this.number}">`;
 
             answers = shuffle(answers);
             answers.forEach(ans=>{
@@ -301,6 +303,7 @@ function buildWorkSheet (q) {
             let answersCode = this.content.match(rgex)
             answersCode = answersCode.map(a=>Number(a.replace('$','')))
             const textInputClass = 'textFillInputClass';
+            comleteElem += this.creadSoundButton();
 
             txtArr.forEach (e=>{
                 const num = txtArr.indexOf(e)
@@ -340,7 +343,7 @@ function buildWorkSheet (q) {
             let answersCode = txtWithimageMarkup.match(rgex)
             answersCode = answersCode.map(a=>Number(a.replace('$','')))
             const placeInputWithBank = 'placeInputWithBank';
-            comleteElem += `<div class="InputDropContainer ${imageInTextClass}">`
+            comleteElem += `<div class="InputDropContainer ${imageInTextClass}">${ this.creadSoundButton()}`
             txtArr.forEach (e=>{
                 const num = txtArr.indexOf(e)
                 let input = `<div id="dropLocation" class="${placeInputWithBank}" ${seg}>${spaces}</div>`
@@ -352,11 +355,10 @@ function buildWorkSheet (q) {
 
             return comleteElem + '<br>';
         }
-        creadSoundButton (con){
-            let sounsSpan = `<span class="soundBtn" id="${'sound_'+this.number}" data-sound-file="${this.sound}"><svg version="1.1"  viewBox="0 0 510 510"  ><g><g><path d="M204,369.75L357,255L204,140.25V369.75z M255,0C114.75,0,0,114.75,0,255s114.75,255,255,255s255-114.75,255-255 			S395.25,0,255,0z M255,459c-112.2,0-204-91.8-204-204S142.8,51,255,51s204,91.8,204,204S367.2,459,255,459z"/></g></g><g></g><g></g><g> </g><g></g><g></g><g></g><g></g><g></g><g> </g><g></g><g>             </g><g></g><g></g><g></g><g></g> </svg>  </span> &nbsp` // <span class="soundBtn"></span>
-
-            if (!this.sound){sounsSpan = ''}
-            let div = `${sounsSpan}${con}`;
+        creadSoundButton (con = ''){
+            if (!this.sound){return ''}
+            let sounsSpan = `<span class="soundBtn" id="${'sound_'+this.number}" data-sound-file="${this.sound}"><svg version="1.1"  viewBox="0 0 510 510"><g><g><path d="M204,369.75L357,255L204,140.25V369.75z M255,0C114.75,0,0,114.75,0,255s114.75,255,255,255s255-114.75,255-255 			S395.25,0,255,0z M255,459c-112.2,0-204-91.8-204-204S142.8,51,255,51s204,91.8,204,204S367.2,459,255,459z"/></g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g> </g><g></g><g></g><g></g><g></g><g></g><g></g></svg> </span> &nbsp`
+            let div = `${sounsSpan}`;
             return div
         }
         toHtml (){
@@ -378,7 +380,7 @@ function buildWorkSheet (q) {
                      addedStyle = `img-main`;
                  }
                 let  class0 = 'image_text'
-                 content =  `<img class = "${class0} ${addedStyle}"  src="content/${this.content}">`;
+                 content =  `${this.creadSoundButton()}<img class = "${class0} ${addedStyle}"  src="content/${this.content}">`;
 
 
              }
@@ -390,25 +392,25 @@ function buildWorkSheet (q) {
                      txtWithimageMarkup = txtWithimageMarkup.replace(/&nbsp&nbsp&nbsp/ig,'&nbsp&nbsp');
                      imageInTextClass = 'text-containig-images'};
 
-                 content = `<${this.elem} class="${imageInTextClass }">${txtWithimageMarkup}</${this.elem}>${ unerline}`
+                 content = `${this.creadSoundButton()}<${this.elem} class="${imageInTextClass }">${txtWithimageMarkup}</${this.elem}>${ unerline}`
              }
              if (this.typ.includes("q_multi")&& this.typ !== "q_word") {
                  const txtWithimageMarkup = imageIntext (content)
                  let imageInTextClass = ''
                  if (content !== txtWithimageMarkup) { imageInTextClass = 'text-containig-images'};
-//'<br>' +
-                 content =  `<span class="${imageInTextClass}">` + txtWithimageMarkup + '</span>' + this.toMultiInput()  + '<br>';
+
+                 content =  `<span class="${imageInTextClass}">${this.creadSoundButton()}` + txtWithimageMarkup + '</span>' + this.toMultiInput()  + '<br>';
              }
              if (this.typ === "q_word"){
 
-                 content =  content + this.toWordInput() ;
+                 content =  this.creadSoundButton() +content + this.toWordInput() ;
              }
              if (this.typ === "q_image"){
 
-                 content =  content + '<br>' + this.toImageInput() + `<br>`;
+                 content =  this.creadSoundButton() + content + '<br>' + this.toImageInput() + `<br>`;
              }
              if (this.typ === "q_order"){
-                 content =  content + this.toOrderInput() ;
+                 content =  this.creadSoundButton() + content + this.toOrderInput() ;
              }
              if (this.typ === "q_fillbank"){
                  content = this.toFillbank() ;
@@ -417,13 +419,13 @@ function buildWorkSheet (q) {
                  content = this.toPlaceFromBank() ;
              }
              if (this.typ === 'q_checkbox'){
-                  content =  '<span>' + content + '</span>' + this.toCheckboxInput()  + '<br>';
+                  content =  '<span>' + this.creadSoundButton() + content + '</span>' + this.toCheckboxInput()  + '<br>';
              }
              if (this.typ.includes('txt')){
                  const imageMarkup = imageIntext (content)
                  let imageInText = ''
                  if (content !== imageMarkup) { imageInText = 'text-containig-images'}
-                 content = `<div class="${this.typ} ${imageInText}"><span>${imageMarkup}</span></div>`;
+                 content = `<div class="${this.typ} ${imageInText}"><span>${this.creadSoundButton()}${imageMarkup}</span></div>`;
              }
              if (this.typ === 'page_break'){
 
@@ -435,7 +437,7 @@ function buildWorkSheet (q) {
              }
 
 
-             return  this.creadSoundButton(content)
+             return  content
          }
 
     }
@@ -654,7 +656,7 @@ function buildContent (tree) {
 }
 function setDirection (){
     const mainForm = Id('mainForm');
-    const collection = mainForm .querySelectorAll('span, h1, h2, h3, div.txt_instruct');
+    const collection = mainForm .querySelectorAll('span, h1, h2, h3, div');
     collection.forEach (e=>setDirectionBylanguage(e, e.innerHTML))
 }
 function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-place-bank'){
@@ -911,6 +913,31 @@ function pageTransition (n = 1) {
     if (n === allSects.length) {Id('fpage_next').classList.remove('allow-hover')}
 
 }
+function keyPressFunc (e) {if (e.charCode == 49) {checkAll()}}
+function checkAll(){
+    const inputs = [...document.querySelectorAll('input')]
+    const orders = [...document.querySelectorAll('.orderList')]
+    let amswerObj = {};
+    let good = Elm ('span'); good.classList.add("check-mark");
+    good.innerHTML = 'Good!'
+    orders.forEach(o=>{
+    L(o);
+    ansRy = [];
+    [...o.childNodes].forEach(c=>L(c.innerHTML))
+    })
+    inputs.forEach(i=>{
+        if (i.value !== i.defaultValue){
+        //    L(i.id, i.value )
+        }
+        if (i.checked !==  i.defaultChecked){
+        //    L(i.id, i.checked )
+        }
+    })
+
+
+
+}
+
 
 
 
@@ -933,7 +960,8 @@ addSoundsListeners ('soundBtn')
 writeNavBarAndFooter ()
 pageTransition (1)
 
-
+document.body.addEventListener("keypress", keyPressFunc);
+checkAll()
 
 
 //things to add: after in-text images add spaces acording to width relation;
