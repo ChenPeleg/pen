@@ -185,6 +185,12 @@ footer a:hover {
     z-index: 33;
     margin-right:10px;
 }
+.check-mark svg {
+
+    position: relative;
+    top: -10px;
+    left: -10px;
+}
 #ErrorCheck{
     font-size: 57px;
     color: red;
