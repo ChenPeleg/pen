@@ -256,15 +256,15 @@ function buildWorkSheet (q) {
         }
         toImageInput () {
             const shuffle = (array) => array.sort(() => Math.random() - 0.5);
-            let answers =  this.answer.filter((e)=>e);
+            let originalAnswers =  this.answer.filter((e)=>e);
             let addedStyle = ''; let finaHtml = '';
 
             const q_image = 'q_image'
-            answers = shuffle(answers);
+            let answers = shuffle(originalAnswers);
             const numberOfAns = answers.length;
             if (numberOfAns < 4){addedStyle = 'bigquestionimages'}
             answers.forEach (ans=>{
-                const numberOfAns = answers.indexOf(ans)
+                const numberOfAns =  this.answer.filter((e)=>e).indexOf(ans)
                 const ansLbl = "Q" + this.number + "_" + numberOfAns
                 let  class0 = 'image-question';
 
@@ -298,7 +298,7 @@ function buildWorkSheet (q) {
             const txtWithimageMarkup = imageIntext (content)
             let imageInTextClass = ''
             if (content !== txtWithimageMarkup) { imageInTextClass = 'text-containig-images'};
-            const rgex = /\$[12346789]/g; let comleteElem = bankDiv;
+            const rgex = /\$[123456789]/g; let comleteElem = bankDiv;
             let txtArr = txtWithimageMarkup.split(rgex)
             let answersCode = this.content.match(rgex)
             answersCode = answersCode.map(a=>Number(a.replace('$','')))
@@ -339,7 +339,7 @@ function buildWorkSheet (q) {
             if (content !== txtWithimageMarkup) { imageInTextClass = 'text-containig-images'};
 
 
-            const rgex = /\$[12346789]/g; let comleteElem = bankDiv;
+            const rgex = /\$[0123456789]/g; let comleteElem = bankDiv;
             let txtArr = txtWithimageMarkup.split(rgex)
             let answersCode = txtWithimageMarkup.match(rgex)
             answersCode = answersCode.map(a=>Number(a.replace('$','')))
@@ -922,15 +922,51 @@ function checkAll(){
      	  viewBox="0 0 442.533 442.533" style="enable-background:new 0 0 442.533 442.533;"	 xml:space="preserve"> <g> 	<path d="M434.539,98.499l-38.828-38.828c-5.324-5.328-11.799-7.993-19.41-7.993c-7.618,0-14.093,2.665-19.417,7.993L169.59,247.248 l-83.939-84.225c-5.33-5.33-11.801-7.992-19.412-7.992c-7.616,0-14.087,2.662-19.417,7.992L7.994,201.852 C2.664,207.181,0,213.654,0,221.269c0,7.609, 2.664,14.088,7.994,19.416l103.351,103.349l38.831,38.828 c5.327,5.332, 11.8,7.994,19.414,7.994c7.611,0,14.084-2.669,19.414-7.994l38.83-38.828L434.539,137.33 c5.325-5.33,7.994-11.802,7.994-19.417C442.537,110.302,439.864,103.829,434.539,98.499z"><g><g><g><g><g><g><g><g> <g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><svg>`
     const Xsvg = `<svg viewBox="0 0 24 24" style="fill:red;"><path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"/></svg>`
     let amswerObj = {};
-    const isCorrect = (id, ans) =>{
-      const reg = /Q([0123456789]{1,3})(_A?([0123456789]{1,3}))?/i
-      const theMatch = id.match(reg);
-      const Qnum = theMatch ? Number(theMatch[1]) : false;
-      const PartNum = theMatch ? Number(theMatch[3]) : false;
-      return {Qnum,PartNum}
+    function getQnumber (id) {
+    const reg = /Q([0123456789]{1,3})(_A?([0123456789]{1,3}))?/i
+    const theMatch = id.match(reg);
+    const questNum = theMatch ? Number(theMatch[1]) : false;
+    const PartNum = theMatch ? Number(theMatch[3]) + 1 || false : false;
+      return {questNum,PartNum}
+    }
+    function trimAndLower (text) {
+      return text.trim().toLowerCase();
+    }
+    function checkIfAnsCorrect (qObj, val){
+      const questionObject = G.V[qObj.questNum];
+      const ansObj =  questionObject ? questionObject.answer[qObj.PartNum-1] : false
+      const solution = questionObject ? Number(questionObject.solution) : false;
+      let finalCorretValue = ansObj
+      if (solution){finalCorretValue = solution}
+     //L(qObj, val)
+   //L("solution: " + finalCorretValue , "num : "+ qObj.PartNum,"value: "+  val)
+      switch (questionObject.typ) {
+        case 'q_multi': case 'q_image':
+        if (qObj.PartNum === solution){return true} else {return false}
+        break;
+        case 'q_dropbank':
+        let numberOfAns = getQnumber(val);
+        if (qObj.PartNum === numberOfAns.PartNum){return true} else {return false};
+        case 'q_fillbank':
+        if (trimAndLower (val) === trimAndLower (ansObj)){return true} else {return false};
+        break;
+        case 'q_checkbox':
+        const numRegex = /[\D]{1,4}/g; const arr = questionObject.solution.split(numRegex).filter(e=>e).map(e=>Number(e));
+        // move throgh the whole boxes !!
+
+
+
+
+        break;
+
+        default:
+
+      }
     }
     const ansAdd = (name, value) =>{
-        L(isCorrect (name, ""))
+      const check = checkIfAnsCorrect (getQnumber (name), value)
+
+     L("is correct: " + check)
         let good = Elm (name + '_mark' ,'span'); good.classList.add("check-mark");
         good.innerHTML =   checkSvg //Xsvg
         amswerObj[name] = value
@@ -941,13 +977,7 @@ function checkAll(){
         if (Id(name).type === 'radio' ) {
             good.childNodes[0].style.top = '-10px';
         }
-
             insertAfter (good,Id(name))
-
-        //
-
-
-
     }
     const inputs = [...document.querySelectorAll('input')]
     const orders = [...document.querySelectorAll('.orderList')]
@@ -957,19 +987,22 @@ function checkAll(){
     orders.forEach(o=>{
     ansRy = [];
     [...o.childNodes].forEach(c=>ansRy.push(c.innerHTML))
-     ansAdd(o.id, ansRy)
+    // ansAdd(o.id, ansRy)
     })
     inputs.forEach(i=>{
-        if (i.value !== i.defaultValue|| 1){
+
+        if (i.value !== i.defaultValue){
         ansAdd(i.id,i.value)
-    } else if (i.checked !==  i.defaultChecked || 1){
+    } else if (i.checked !==  i.defaultChecked ){
+
         ansAdd(i.id, i.checked )
         }
     })
     placeing.forEach(p=>{
+
         ansAdd(p.id, p.parentNode.id)
     })
-    L(amswerObj)
+
 
 
 
@@ -999,6 +1032,12 @@ pageTransition (1)
 
 document.body.addEventListener("keypress", keyPressFunc);
 checkAll()
+
+function t (n){
+  const numRegex = /[\D]{1,4}/g
+  const arr = n.split(numRegex).filter(e=>e).map(e=>Number(e));
+  return arr
+}
 
 
 //things to add: after in-text images add spaces acording to width relation;
