@@ -602,15 +602,17 @@ function buildContent (tree) {
         return output
 
     }
-    const rend = h =>{
+    const rend = h => {
+      //L(h)
+
         let content0 =  h.toHtml()
         return  content0
     }
     const buildContainer = (arr, level = 0) => {
 
+
         let bgstyle = '';
         if (level && G.V[arr[0]].bgcolor){
-
             bgstyle = `style="background-color:${G.V[arr[0]].bgcolor};"`
         }
         let cont = '';
@@ -621,10 +623,13 @@ function buildContent (tree) {
         cont += `<div class="container level${level}" ${bgstyle}>`;
         for (let a = 0; a < arr.length; a++){
 
+
+
             if (Array.isArray(arr[a])){
                 cont += buildContainer(arr[a], level+1)
             } else if (level === 0){
                 const num = arr[a]
+                if (!G.V[num]) continue
                 const html0 = rend(G.V[num])
                 if (G.V[num].typ === "page_break"){pageBreak.is = 'start'}
                 if (level === 0 && pageBreak.is){
@@ -638,6 +643,7 @@ function buildContent (tree) {
 
             } else {
                 const num = arr[a]
+
                 const html0 = rend(G.V[num])
                 cont += html0;
             }
@@ -952,7 +958,7 @@ function checkAll(){
         break;
         case 'q_checkbox':
         const numRegex = /[\D]{1,4}/g; const arr = questionObject.solution.split(numRegex).filter(e=>e).map(e=>Number(e));
-        // move throgh the whole boxes !!
+        // move throgh the whole boxes !!r
 
 
 
@@ -979,9 +985,11 @@ function checkAll(){
         }
             insertAfter (good,Id(name))
     }
-    const inputs = [...document.querySelectorAll('input')]
+    const inputs = [...document.querySelectorAll('input:not(.checkbox0)')]
     const orders = [...document.querySelectorAll('.orderList')]
     const placeing = [...document.querySelectorAll('.place-bank-element-in-container')]
+    const checkboxes = [...document.querySelectorAll('input.checkbox0')]
+    L(checkboxes)
 
 
     orders.forEach(o=>{
@@ -994,8 +1002,9 @@ function checkAll(){
         if (i.value !== i.defaultValue){
         ansAdd(i.id,i.value)
     } else if (i.checked !==  i.defaultChecked ){
+      if (i.type = 'checkbox'){L(i)}
 
-        ansAdd(i.id, i.checked )
+        ansAdd(i.id, i.checked)
         }
     })
     placeing.forEach(p=>{
@@ -1013,6 +1022,7 @@ function checkAll(){
 
 const virt = buildWorkSheet ();
 const tree = mapPageTree ()
+//L(tree)
 const cont = buildContent (tree);
 const final = cont;
 
