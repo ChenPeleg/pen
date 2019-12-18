@@ -625,15 +625,17 @@ function buildContent (tree) {
         }
 
         cont += `<div class="container level${level}" ${bgstyle}>`;
-        for (a = 0; a < arr.length; a++){
-          L(arr,arr[a])
+        //for (a = 0; a < arr.length; a++)
+        arr.forEach(e=>{
+            const a = arr.indexOf(e)
+
 
             if (Array.isArray(arr[a])){
 
                 cont += buildContainer(arr[a], level+1)
             } else if (level === 0){
                 const num = arr[a]
-                if (!G.V[num]) continue
+                //if (!G.V[num]) continue
                 const html0 = rend(G.V[num])
                 if (G.V[num].typ === "page_break"){pageBreak.is = 'start'}
                 if (level === 0 && pageBreak.is){
@@ -656,7 +658,7 @@ function buildContent (tree) {
             }
 
 
-        }
+        })
 
 
         cont += '</div>';
@@ -1097,20 +1099,19 @@ function saveState (){
        return false
 
       }
-  return false
+
       if (questionObject.typ === 'q_checkbox'){
         const answersLength = questionObject.answer.filter(e=>e).length
         let checkedArr = [];
          for (i = 0; i < answersLength; i++){
           const id = "Q"+qNum+"_"+i
-          L(id)
           let isChecked = Id(id).checked;
           if (isChecked) {checkedArr.push(i)}
          }
          if (checkedArr.length === 0) {return false } else {return checkedArr }
 
       }
-
+  return false
       if (questionObject.typ === 'q_order'){
         const ol = Id("Q"+qNum);
         const listItems = [...ol.querySelectorAll('li')]
@@ -1171,7 +1172,7 @@ function saveState (){
       }
     }
 
-//  L(f)
+
 
 }
 
