@@ -240,8 +240,8 @@ function buildWorkSheet (q) {
 
             answers = shuffle(answers);
             answers.forEach(ans=>{
-                const numberOfAns = answers.indexOf(ans)
-                const ansLbl = "Ol" + this.number + "_" + numberOfAns
+                const numberOfAns = this.answer.filter((e)=>e).indexOf(ans)
+                const ansLbl = "Q" + this.number + "_" + numberOfAns
                 const orderClass = "order0"; // draggable="true"
                 let formElm = `<li id="${ansLbl}"  class="${orderClass}" > ${ans}</li>`
                 html += formElm ;
@@ -329,7 +329,7 @@ function buildWorkSheet (q) {
             answers.forEach (ans=>{
                 const ansNum = this.answer.indexOf(ans)
                 const ansLower = ans.toLowerCase()
-                bankDiv += `<span id="Q${this.number}_A${ansNum}}" class="place-bank-element" ${seg}>${ans}</span>`
+                bankDiv += `<span id="Q${this.number}_A${ansNum}" class="place-bank-element" ${seg}>${ans}</span>`
             })
             bankDiv += '</div>';
 
@@ -472,16 +472,21 @@ function mapPageTree (){
     }
     var m = [];
     var mp;
+      L(G.V)
     for (let i = 1; i < G.V.length ;i++){
          let a = G.V[i].treePos;
+
         mp = m;
         for (let t = 0; t < a.length;t++) {
+
 
             let lv = a[t]
 
             if (!mp[lv]) {mp[lv] =  []}
             mp = mp[lv]
+
         }
+
         mp.push(i)
 
     }
@@ -979,20 +984,21 @@ function checkAll(){
       }
     }
     function ansAdd (name, value){
-
-
       const check = checkIfAnsCorrect (getQnumber (name), value)
-
+      if (check) {L(name) }
       if (!Id(name)){name += "_0"} // in the case of checkboxes
-    // L("is correct: " + name,  check)
-        let good = Elm (name + '_mark' ,'span'); good.classList.add("check-mark");
-        good.innerHTML =   checkSvg //Xsvg
-        amswerObj[name] = value
-        if (Id(name).type === 'checkbox' ) {good.style.left = '0px'}
-        if (Id(name).type === 'radio' ) {
-            good.childNodes[0].style.top = '-10px';
-        }
-            insertAfter (good,Id(name))
+      if (Id(name).type === 'radio'){name = "Q" + getQnumber(name).questNum + "_0"}
+      let grade = Elm (name + '_mark' ,'span'); grade.classList.add("check-mark");
+      grade.innerHTML =  check ? checkSvg : Xsvg
+
+      //amswerObj[name] = value
+      if (Id(name).type === 'checkbox' ) {grade.style.left = '0px'}
+      if (Id(name).type === 'radio' ) {
+
+
+          grade.childNodes[0].style.top = '-10px';
+      }
+            insertAfter (grade,Id(name))
     }
     const inputs = [...document.querySelectorAll('input:not(.checkbox0)')]
     const orders = [...document.querySelectorAll('.orderList')]
@@ -1017,9 +1023,7 @@ function checkAll(){
         if (i.value !== i.defaultValue){
         ansAdd(i.id,i.value)
     } else if (i.checked !==  i.defaultChecked ){
-      if (i.type === 'checkbox'){ }
-
-        ansAdd(i.id, i.checked)
+      if (i.type === 'checkbox'){ } else {ansAdd(i.id, i.checked)}
         }
     })
 
