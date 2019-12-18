@@ -236,7 +236,7 @@ function buildWorkSheet (q) {
         toOrderInput(){
             const shuffle = (array) => array.sort(() => Math.random() - 0.5);
             let answers =  this.answer.filter((e)=>e)
-            let html =`<ol class="orderList" id="Q_${this.number}">`;
+            let html =`<ol class="orderList" id="Q${this.number}">`;
 
             answers = shuffle(answers);
             answers.forEach(ans=>{
@@ -443,8 +443,8 @@ function buildWorkSheet (q) {
 
     }
     for (let i = 1; i < G.Q.length; i++ ) {
-        let addPosition = '1'
-        if (i>1){addPosition = G.Q[i-1][0]}
+        let addPosition = '1.1'
+        if (i>1){addPosition = G.Q[i-1][0] + ".1"}
         G.Q[i][0] = G.Q[i][0] || addPosition
         G.V[i] = new Segment (G.Q[i],i)
     }
@@ -471,23 +471,24 @@ function mapPageTree (){
         return mapped
     }
     var m = [];
-    var mp;
-      L(G.V)
+    var tempMap;
+
     for (let i = 1; i < G.V.length ;i++){
-         let a = G.V[i].treePos;
+         let posArray = G.V[i].treePos;
 
-        mp = m;
-        for (let t = 0; t < a.length;t++) {
+        tempMap = m;
+        for (let t = 0; t < posArray.length;t++) {
 
 
-            let lv = a[t]
+            let placeInBranch = posArray[t]
 
-            if (!mp[lv]) {mp[lv] =  []}
-            mp = mp[lv]
+            if (!tempMap[placeInBranch]) {tempMap[placeInBranch] =  []}
+            tempMap= tempMap[placeInBranch]
+
 
         }
+        if (Array.isArray(tempMap)){tempMap.push(i)}else {false}
 
-        mp.push(i)
 
     }
 
@@ -624,7 +625,7 @@ function buildContent (tree) {
         }
 
         cont += `<div class="container level${level}" ${bgstyle}>`;
-        for (let a = 0; a < arr.length; a++){
+        for (a = 0; a < arr.length; a++){
 
 
 
@@ -721,6 +722,7 @@ function enableElementPlacing (elemClass_, containerClass_, bankClass = 'word-pl
     }
     function chooseElement (ev){
         const seg = ev.target.getAttribute('data-seg')
+        if (ev.target.classList.contains('done')) {return}
         if (ev.target.classList.contains(elementThatIsplaced)){
             const previosParent = ev.target.parentNode;
             let dupe = Id(ev.target.id + fakeElementId)
@@ -925,11 +927,7 @@ function pageTransition (n = 1) {
 }
 function keyPressFunc (e) {if (e.charCode == 49) {checkAll()}}
 function checkAll(){
-    const insertAfter = function (newNode, nodeToinsertAfter) {//.nextSibling
-         nodeToinsertAfter.parentNode.insertBefore(newNode, nodeToinsertAfter )}
-    const checkSvg = `<svg version="1.1"  x="0px" y="0px"
-     	  viewBox="0 0 442.533 442.533" style="enable-background:new 0 0 442.533 442.533;"	 xml:space="preserve"> <g> 	<path d="M434.539,98.499l-38.828-38.828c-5.324-5.328-11.799-7.993-19.41-7.993c-7.618,0-14.093,2.665-19.417,7.993L169.59,247.248 l-83.939-84.225c-5.33-5.33-11.801-7.992-19.412-7.992c-7.616,0-14.087,2.662-19.417,7.992L7.994,201.852 C2.664,207.181,0,213.654,0,221.269c0,7.609, 2.664,14.088,7.994,19.416l103.351,103.349l38.831,38.828 c5.327,5.332, 11.8,7.994,19.414,7.994c7.611,0,14.084-2.669,19.414-7.994l38.83-38.828L434.539,137.33 c5.325-5.33,7.994-11.802,7.994-19.417C442.537,110.302,439.864,103.829,434.539,98.499z"><g><g><g><g><g><g><g><g> <g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><svg>`
-    const Xsvg = `<svg viewBox="0 0 24 24" style="fill:red;"><path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"/></svg>`
+
     let amswerObj = {};
     function getQnumber (id) {
     const reg = /Q([0123456789]{1,3})(_A?([0123456789]{1,3}))?/i
@@ -942,11 +940,13 @@ function checkAll(){
       return text.trim().toLowerCase();
     }
     function checkIfAnsCorrect (qObj, val){
+
       const questionObject = G.V[qObj.questNum];
       const ansObj =  questionObject ? questionObject.answer[qObj.PartNum-1] : false
       const solution = questionObject ? Number(questionObject.solution) : false;
       let finalCorretValue = ansObj
       if (solution){finalCorretValue = solution}
+
       switch (questionObject.typ) {
         case 'q_multi': case 'q_image':
         if (qObj.PartNum === solution){return true} else {return false}
@@ -978,24 +978,50 @@ function checkAll(){
 
 
         break;
+        case 'q_order':
+        const answersArr = val.map(v=>Number(v.replace("Q"+qObj.questNum + "_", "")))
+        const ordered = answersArr.every(e=>e===answersArr[e])
+        return ordered;
+        break;
+
 
         default:
 
       }
     }
     function ansAdd (name, value){
+      const insertAfter = function (newNode, nodeToinsertAfter) {//.nextSibling
+           nodeToinsertAfter.parentNode.insertBefore(newNode, nodeToinsertAfter )}
+      const checkSvg = `<svg version="1.1"  x="0px" y="0px"
+       	  viewBox="0 0 442.533 442.533" style="enable-background:new 0 0 442.533 442.533;"	 xml:space="preserve"> <g> 	<path d="M434.539,98.499l-38.828-38.828c-5.324-5.328-11.799-7.993-19.41-7.993c-7.618,0-14.093,2.665-19.417,7.993L169.59,247.248 l-83.939-84.225c-5.33-5.33-11.801-7.992-19.412-7.992c-7.616,0-14.087,2.662-19.417,7.992L7.994,201.852 C2.664,207.181,0,213.654,0,221.269c0,7.609, 2.664,14.088,7.994,19.416l103.351,103.349l38.831,38.828 c5.327,5.332, 11.8,7.994,19.414,7.994c7.611,0,14.084-2.669,19.414-7.994l38.83-38.828L434.539,137.33 c5.325-5.33,7.994-11.802,7.994-19.417C442.537,110.302,439.864,103.829,434.539,98.499z"><g><g><g><g><g><g><g><g> <g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><svg>`
+      const Xsvg = `<svg viewBox="0 0 24 24" style="fill:red;"><path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"/></svg>`
       const check = checkIfAnsCorrect (getQnumber (name), value)
-      if (check) {L(name) }
+
       if (!Id(name)){name += "_0"} // in the case of checkboxes
+
+      if (check) { // prevents futue change in queestion
+
+        Id(name).classList.add('done');
+        Id(name).readOnly = "readonly";
+        if (Id(name).type === 'radio'){
+         const radios = [...document.getElementsByName( Id(name).name)]
+         radios.forEach(r=>{
+           if (r.id !== name) { r.disabled = true; r.classList.add('done');}
+         })
+        }
+      }
+
       if (Id(name).type === 'radio'){name = "Q" + getQnumber(name).questNum + "_0"}
       let grade = Elm (name + '_mark' ,'span'); grade.classList.add("check-mark");
       grade.innerHTML =  check ? checkSvg : Xsvg
 
-      //amswerObj[name] = value
+
+      if (Id(name).tagName === 'OL') {
+       grade.style.paddingRight = '20px'
+       grade.style.paddingLeft = '20px'
+      }
       if (Id(name).type === 'checkbox' ) {grade.style.left = '0px'}
       if (Id(name).type === 'radio' ) {
-
-
           grade.childNodes[0].style.top = '-10px';
       }
             insertAfter (grade,Id(name))
@@ -1014,10 +1040,12 @@ function checkAll(){
 
     orders.forEach(o=>{
     var ansRy = [];
-    [...o.childNodes].forEach(c=>ansRy.push(c.innerHTML))
-    // ansAdd(o.id, ansRy)
-    })
+    [...o.childNodes].forEach(c=>ansRy.push(c.id))
 
+    ansAdd(o.id, ansRy)
+
+
+    })
     inputs.forEach(i=>{
 
         if (i.value !== i.defaultValue){
@@ -1026,7 +1054,6 @@ function checkAll(){
       if (i.type === 'checkbox'){ } else {ansAdd(i.id, i.checked)}
         }
     })
-
     placeing.forEach(p=>{
 
         ansAdd(p.id, p.parentNode.id)

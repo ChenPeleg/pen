@@ -61,7 +61,7 @@ label.radio2{
     margin: 2px;
     color: var(--main-answer-color);
 }
-label.radio2:hover{
+input:not(.done)+label.radio2:hover{
     animation-name: hoverButton2;
      animation-duration: 0.2s ;
      animation-fill-mode: forwards;
@@ -405,10 +405,10 @@ input[type=checkbox].checkbox0:checked+label>.checksigndecore{
         cursor: pointer;
 
 }
-.place-bank-element:hover:not(.choosen-place-element){
+.place-bank-element:hover:not(.choosen-place-element):not(.done){
 
     background-color: rgba(160,  210, 255,0.9);
-        box-shadow: 1px 1px 4px 4px rgba(0,0,0,0.2)
+    box-shadow: 1px 1px 4px 4px rgba(0,0,0,0.2)
 }
 .place-bank-element:active{
 
