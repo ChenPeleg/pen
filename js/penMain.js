@@ -603,8 +603,6 @@ function buildContent (tree) {
 
     }
     const rend = h => {
-      //L(h)
-
         let content0 =  h.toHtml()
         return  content0
     }
@@ -944,8 +942,6 @@ function checkAll(){
       const solution = questionObject ? Number(questionObject.solution) : false;
       let finalCorretValue = ansObj
       if (solution){finalCorretValue = solution}
-     //L(qObj, val)
-   //L("solution: " + finalCorretValue , "num : "+ qObj.PartNum,"value: "+  val)
       switch (questionObject.typ) {
         case 'q_multi': case 'q_image':
         if (qObj.PartNum === solution){return true} else {return false}
@@ -957,8 +953,21 @@ function checkAll(){
         if (trimAndLower (val) === trimAndLower (ansObj)){return true} else {return false};
         break;
         case 'q_checkbox':
-        const numRegex = /[\D]{1,4}/g; const arr = questionObject.solution.split(numRegex).filter(e=>e).map(e=>Number(e));
-        // move throgh the whole boxes !!r
+        const numRegex = /[\D]{1,4}/g;
+        const solutionArr = questionObject.solution .split(numRegex) .filter(e=>e) .map(e=>Number(e));
+        const checkBoxesArray = checkboxes.filter(e=>e.name === val).map(e=>e.checked);
+        let isAllRight = true;
+        for (e = 0; e < checkBoxesArray.length; e++){
+
+          if (checkBoxesArray[e] && solutionArr.includes(e+1)) {
+          } else if (!checkBoxesArray[e] && !solutionArr.includes(e+1)) { } else {
+            isAllRight =  false
+          }
+
+        }
+        //return checkBoxesArray
+        return isAllRight
+
 
 
 
@@ -969,17 +978,17 @@ function checkAll(){
 
       }
     }
-    const ansAdd = (name, value) =>{
+    function ansAdd (name, value){
+
+
       const check = checkIfAnsCorrect (getQnumber (name), value)
 
-     L("is correct: " + check)
+      if (!Id(name)){name += "_0"} // in the case of checkboxes
+    // L("is correct: " + name,  check)
         let good = Elm (name + '_mark' ,'span'); good.classList.add("check-mark");
         good.innerHTML =   checkSvg //Xsvg
         amswerObj[name] = value
-        if (Id(name).type === 'checkbox' ) {
-                good.style.left = '0px';
-
-        }
+        if (Id(name).type === 'checkbox' ) {good.style.left = '0px'}
         if (Id(name).type === 'radio' ) {
             good.childNodes[0].style.top = '-10px';
         }
@@ -989,29 +998,41 @@ function checkAll(){
     const orders = [...document.querySelectorAll('.orderList')]
     const placeing = [...document.querySelectorAll('.place-bank-element-in-container')]
     const checkboxes = [...document.querySelectorAll('input.checkbox0')]
-    L(checkboxes)
+    const checkQusetion = [...new Set(checkboxes.map(e=>e.name))]
 
+    let arrayOfCheckBoxes = [];
+    checkQusetion.forEach(n=> {
+    const oneQuestion = checkboxes.filter(c=>c.name===n)
+    arrayOfCheckBoxes.push(oneQuestion)
+    })
 
     orders.forEach(o=>{
-    ansRy = [];
+    var ansRy = [];
     [...o.childNodes].forEach(c=>ansRy.push(c.innerHTML))
     // ansAdd(o.id, ansRy)
     })
+
     inputs.forEach(i=>{
 
         if (i.value !== i.defaultValue){
         ansAdd(i.id,i.value)
     } else if (i.checked !==  i.defaultChecked ){
-      if (i.type = 'checkbox'){L(i)}
+      if (i.type === 'checkbox'){ }
 
         ansAdd(i.id, i.checked)
         }
     })
+
     placeing.forEach(p=>{
 
         ansAdd(p.id, p.parentNode.id)
     })
 
+    // returns the question id's that are checked at lease in ine place;
+    let activeCheckQue = arrayOfCheckBoxes.filter(a=>a.some(c=>c.checked)).map(e=>e[0].name)
+    activeCheckQue.forEach (p=>
+      ansAdd(p,p)
+    )
 
 
 
@@ -1022,7 +1043,6 @@ function checkAll(){
 
 const virt = buildWorkSheet ();
 const tree = mapPageTree ()
-//L(tree)
 const cont = buildContent (tree);
 const final = cont;
 
