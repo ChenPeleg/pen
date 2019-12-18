@@ -186,7 +186,8 @@ function buildWorkSheet (q) {
              this.sound = inf[12];
              this.solution = inf[13];
              this.bgcolor = inf[14]
-             this.elem = elementOfhtml (this.typ)
+             this.elem = elementOfhtml (this.typ);
+             this.save = false;
          };
         segNum () {return  `data-seg="${this.number}"`}
         toMultiInput(){
@@ -443,8 +444,8 @@ function buildWorkSheet (q) {
 
     }
     for (let i = 1; i < G.Q.length; i++ ) {
-        let addPosition = '1.1'
-        if (i>1){addPosition = G.Q[i-1][0] + ".1"}
+        let addPosition = 1
+        if (i>1){addPosition = G.Q[i-1][0] + ""}
         G.Q[i][0] = G.Q[i][0] || addPosition
         G.V[i] = new Segment (G.Q[i],i)
     }
@@ -470,30 +471,29 @@ function mapPageTree (){
 
         return mapped
     }
-    var m = [];
+    var map = [];
     var tempMap;
-
     for (let i = 1; i < G.V.length ;i++){
          let posArray = G.V[i].treePos;
-
-        tempMap = m;
+        tempMap = map;
         for (let t = 0; t < posArray.length;t++) {
 
-
-            let placeInBranch = posArray[t]
+            let placeInBranch = posArray[t];
 
             if (!tempMap[placeInBranch]) {tempMap[placeInBranch] =  []}
-            tempMap= tempMap[placeInBranch]
+            tempMap = tempMap[placeInBranch];
 
 
         }
-        if (Array.isArray(tempMap)){tempMap.push(i)}else {false}
+
+        tempMap.push(i)
 
 
     }
 
-    m.shift();
-    let deep = deepMapKillLast (m)
+    map.shift();
+    let deep = deepMapKillLast (map)
+
     return  deep
 
 
@@ -598,7 +598,7 @@ function writeNavBarAndFooter () {
 function buildContent (tree) {
     let pageBreak = {is:true, num:1}
     const makeSection = () => {
-        let output =  ''
+        let output =  '';
         if (pageBreak.num - 1){output += `</section>`}
         let disp = 'none'
         if (pageBreak.num === 1){disp = 'block'}
@@ -614,10 +614,10 @@ function buildContent (tree) {
     }
     const buildContainer = (arr, level = 0) => {
 
-
         let bgstyle = '';
-        if (level && G.V[arr[0]].bgcolor){
+        if ( G.V[arr[0]] && G.V[arr[0]].bgcolor){
             bgstyle = `style="background-color:${G.V[arr[0]].bgcolor};"`
+
         }
         let cont = '';
         if (level === 1 && pageBreak.is){
@@ -626,10 +626,10 @@ function buildContent (tree) {
 
         cont += `<div class="container level${level}" ${bgstyle}>`;
         for (a = 0; a < arr.length; a++){
-
-
+          L(arr,arr[a])
 
             if (Array.isArray(arr[a])){
+
                 cont += buildContainer(arr[a], level+1)
             } else if (level === 0){
                 const num = arr[a]
@@ -639,6 +639,10 @@ function buildContent (tree) {
                 if (level === 0 && pageBreak.is){
                  cont += makeSection ()
                 }
+                if (G.V[num].bgcolor){
+                  bgstyle = `style="background-color:${G.V[num].bgcolor};"`
+
+                }
                 let addedCont = `<div class="container level${level+1}" ${bgstyle}>` + html0 + '</div>';
                 if (G.V[num].typ === "page_break"){addedCont = ''}
 
@@ -647,7 +651,6 @@ function buildContent (tree) {
 
             } else {
                 const num = arr[a]
-
                 const html0 = rend(G.V[num])
                 cont += html0;
             }
@@ -927,6 +930,8 @@ function pageTransition (n = 1) {
 }
 function keyPressFunc (e) {if (e.charCode == 49) {checkAll()}}
 function checkAll(){
+  saveState()
+
 
     let amswerObj = {};
     function getQnumber (id) {
@@ -942,6 +947,7 @@ function checkAll(){
     function checkIfAnsCorrect (qObj, val){
 
       const questionObject = G.V[qObj.questNum];
+
       const ansObj =  questionObject ? questionObject.answer[qObj.PartNum-1] : false
       const solution = questionObject ? Number(questionObject.solution) : false;
       let finalCorretValue = ansObj
@@ -1037,7 +1043,6 @@ function checkAll(){
     const oneQuestion = checkboxes.filter(c=>c.name===n)
     arrayOfCheckBoxes.push(oneQuestion)
     })
-
     orders.forEach(o=>{
     var ansRy = [];
     [...o.childNodes].forEach(c=>ansRy.push(c.id))
@@ -1058,7 +1063,6 @@ function checkAll(){
 
         ansAdd(p.id, p.parentNode.id)
     })
-
     // returns the question id's that are checked at lease in ine place;
     let activeCheckQue = arrayOfCheckBoxes.filter(a=>a.some(c=>c.checked)).map(e=>e[0].name)
     activeCheckQue.forEach (p=>
@@ -1066,6 +1070,108 @@ function checkAll(){
     )
 
 
+
+}
+function saveState (){
+  //var f = [...Id('mainForm').querySelectorAll('input')]
+
+    function getQnumber (id) {
+    const reg = /Q([0123456789]{1,3})(_A?([0123456789]{1,3}))?/i
+    const theMatch = id.match(reg);
+    const questNum = theMatch ? Number(theMatch[1]) : false;
+    const PartNum = theMatch ? Number(theMatch[3]) + 1 || false : false;
+      return {questNum,PartNum}
+    }
+    function trimAndLower (text) {
+      return text.trim().toLowerCase();
+    }
+    function getInputFromAns (qNum){
+      const questionObject = G.V[qNum];
+      if (questionObject.typ === 'q_multi'){
+      const answers = questionObject.answer.filter(e=>e).length
+       for (i = 0; i < answers; i++){
+        const id = "Q"+qNum+"_"+i
+        let isChecked = Id(id).checked;
+        if (isChecked) return i;
+       }
+       return false
+
+      }
+  return false
+      if (questionObject.typ === 'q_checkbox'){
+        const answersLength = questionObject.answer.filter(e=>e).length
+        let checkedArr = [];
+         for (i = 0; i < answersLength; i++){
+          const id = "Q"+qNum+"_"+i
+          L(id)
+          let isChecked = Id(id).checked;
+          if (isChecked) {checkedArr.push(i)}
+         }
+         if (checkedArr.length === 0) {return false } else {return checkedArr }
+
+      }
+
+      if (questionObject.typ === 'q_order'){
+        const ol = Id("Q"+qNum);
+        const listItems = [...ol.querySelectorAll('li')]
+        const order = listItems.map(i=>Number(i.id.replace("Q"+qNum+"_",""))) //.repalce("Q"+qNum+"_")
+        return order
+      }
+
+
+
+
+      const solution = questionObject ? Number(questionObject.solution) : false;
+      let finalCorretValue = ansObj;
+      if (solution){finalCorretValue = solution}
+
+      switch (questionObject.typ) {
+        case 'q_multi': case 'q_image':
+        if (qObj.PartNum === solution){return true} else {return false}
+        break;
+        case 'q_dropbank':
+        let numberOfAns = getQnumber(val);
+        if (qObj.PartNum === numberOfAns.PartNum){return true} else {return false};
+        case 'q_fillbank':
+        if (trimAndLower (val) === trimAndLower (ansObj)){return true} else {return false};
+        break;
+        case 'q_checkbox':
+        const numRegex = /[\D]{1,4}/g;
+        const solutionArr = questionObject.solution .split(numRegex) .filter(e=>e) .map(e=>Number(e));
+        const checkBoxesArray = checkboxes.filter(e=>e.name === val).map(e=>e.checked);
+        let isAllRight = true;
+        for (e = 0; e < checkBoxesArray.length; e++){
+
+          if (checkBoxesArray[e] && solutionArr.includes(e+1)) {
+          } else if (!checkBoxesArray[e] && !solutionArr.includes(e+1)) { } else {
+            isAllRight =  false
+          }
+
+        }
+        //return checkBoxesArray
+        return isAllRight;
+        break;
+        case 'q_order':
+        const answersArr = val.map(v=>Number(v.replace("Q"+qObj.questNum + "_", "")))
+        const ordered = answersArr.every(e=>e===answersArr[e])
+        return ordered;
+        break;
+
+
+        default:
+
+      }
+    }
+    for (let i = 1; i < G.V.length ;i++){
+      if (G.V[i].typ.includes("q_") ){
+      G.V[i].save =  getInputFromAns(i);
+
+
+      if (G.V[i].save) { L(i, G.V[i].save)}
+      }
+    }
+
+//  L(f)
 
 }
 
@@ -1099,6 +1205,8 @@ function t (n){
   const arr = n.split(numRegex).filter(e=>e).map(e=>Number(e));
   return arr
 }
+
+
 
 
 //things to add: after in-text images add spaces acording to width relation;
