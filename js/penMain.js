@@ -515,13 +515,16 @@ function writePage (html = 'bla') {
 }
 function writeNavBarAndFooter () {
     var fullscreenToggler = false;
-
+    function clickMenu (){
+      alert ('menu')
+    }
     function clickNav (ev){
         const id = ev.target.id
         if (id.includes('page_')){
             pageTransition(Number(id.replace ('page_',"")))
 
-        }
+        } else if (id === 'menuBtn'){clickMenu()}
+
     }
     function clickfoot (ev){
         const id = ev.target.id
@@ -535,7 +538,7 @@ function writeNavBarAndFooter () {
         const nav = Id('navbar');
         if (nav.classList.contains('hovering')) {return};
         nav.classList.add('hovering')
-        setTimeout(()=>{nav.classList.remove('hovering')}, 1500)
+        //setTimeout(()=>{nav.classList.remove('hovering')}, 1500)
     }
     function toggleFullscreen() {
       const elem = document.documentElement;
@@ -598,7 +601,7 @@ function writeNavBarAndFooter () {
     }
 
     let html = `<span id="pages_select">${pageslinks}</span>
-  <a href="#news">תפריט</a>
+  <a href="#menu" id="menuBtn">תפריט</a>
   <a href="#contact">התקדמות</a>
   <a href="#fullscreen" id ="fullscreenBtn">${fullScreenSVG}&nbsp&nbsp&nbsp&nbsp מסך מלא </a>
 `
