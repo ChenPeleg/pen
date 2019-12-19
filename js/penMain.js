@@ -178,7 +178,7 @@ function buildWorkSheet (q) {
 
         constructor (inf,num) {
              this.number = num;
-             this.posNumber = inf[0] ;
+             this.posNumber = inf[0];
              this.treePos = this.posNumber.split('.').map(x=>Number(x)) || false;
              this.typ = inf[2];
              this.content = inf[3];
@@ -444,7 +444,7 @@ function buildWorkSheet (q) {
 
     }
     for (let i = 1; i < G.Q.length; i++ ) {
-        let addPosition = 1
+        let addPosition = "1"
         if (i>1){addPosition = G.Q[i-1][0] + ""}
         G.Q[i][0] = G.Q[i][0] || addPosition
         G.V[i] = new Segment (G.Q[i],i)
@@ -1089,17 +1089,19 @@ function saveState (){
     }
     function getInputFromAns (qNum){
       const questionObject = G.V[qNum];
-      if (questionObject.typ === 'q_multi'){
+      if (questionObject.typ === 'q_word'){
+        return  Id("Q"+qNum).value
+      }
+      if (questionObject.typ === 'q_multi' || questionObject.typ === 'q_image'){
       const answers = questionObject.answer.filter(e=>e).length
        for (i = 0; i < answers; i++){
-        const id = "Q"+qNum+"_"+i
+        const id = "Q"+qNum+"_" +i
         let isChecked = Id(id).checked;
         if (isChecked) return i;
        }
        return false
 
       }
-
       if (questionObject.typ === 'q_checkbox'){
         const answersLength = questionObject.answer.filter(e=>e).length
         let checkedArr = [];
@@ -1111,7 +1113,34 @@ function saveState (){
          if (checkedArr.length === 0) {return false } else {return checkedArr }
 
       }
-  return false
+      return false
+      if (questionObject.typ === 'q_dropbank') {
+      containers = [...document.querySelectorAll('.placeInputWithBank')].filter(e=>e.dataset.seg === (qNum+"") )
+      arrayOfInputs = []
+      containers.forEach(c=>{
+        let input = '';
+      if (c.querySelectorAll('.place-bank-element-in-container')[0]){
+         const idOfWord = c.querySelectorAll('.place-bank-element-in-container')[0].id
+         input = Number(idOfWord.replace("Q"+qNum+"_A",""))
+      }
+      arrayOfInputs.push(input)
+
+      })
+      return arrayOfInputs
+
+
+      }
+      if (questionObject.typ === 'q_fillbank'){
+        const answersLength = questionObject.answer.filter(e=>e).length
+        const inputs  = [...document.querySelectorAll('input[type=text]')].filter(e=>e.name===("Q"+qNum))
+        allAnswers = []
+         for (i = 0; i < inputs.length; i++){
+           allAnswers.push(inputs[i].value)
+         }
+        return allAnswers
+
+
+      }
       if (questionObject.typ === 'q_order'){
         const ol = Id("Q"+qNum);
         const listItems = [...ol.querySelectorAll('li')]
@@ -1168,7 +1197,9 @@ function saveState (){
       G.V[i].save =  getInputFromAns(i);
 
 
-      if (G.V[i].save) { L(i, G.V[i].save)}
+
+
+      if (G.V[i].save === 0 || G.V[i].save) { L(i, G.V[i].save)}
       }
     }
 
