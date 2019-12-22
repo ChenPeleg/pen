@@ -4,6 +4,7 @@
   --main-soft-shadow: 1px 1px 6px 1px rgba(0,0,0,0.5);
   --main-inText-image-height: 150px;
   --main-font-size:26px;
+  --main-navbar-font-size : 17px;
   --main-pageContainer-width:70%;
   --navbar-height:50px;
   --navbar-bg: #333;
@@ -21,7 +22,7 @@ div {
 }
 
 body {
-//    white-space: pre-wrap;
+
     font-family: 'Quicksand', sans-serif;
     font-size: var(--main-font-size)
 }
@@ -49,6 +50,64 @@ footer a.allow-hover:hover{
 }
 footer a:hover {
 
+}
+.menu {
+  display: none;
+  flex-direction: row-reverse;
+
+  position: fixed;
+  width: 40%;
+  right: calc(30%);
+  height: 300px;
+  background-color: inherit;
+  background:linear-gradient(to bottom, rgba(40,40,40) 0%, rgba(50,50,50) 44%, rgb(40,40,40) 60%, rgba(30,30,30) 100%);
+  border-radius: 0px 0px 3px 3px;
+  z-index: 30;
+  overflow: hidden;
+}
+
+
+/* Handle */
+
+.menu-button{
+  display: inline-flex;
+}
+#menuCommands{
+  display: flex;
+  width: 35%;
+  flex-direction: column;
+  height: 100%;
+
+}
+#menuContent{
+  word-wrap: break-word;
+  padding: 15px;
+  width: 65%;
+  height: 100%;
+  overflow-y:  scroll;
+}
+#menuContent::-webkit-scrollbar-thumb {
+   background: rgb(90,90,90);
+  border-radius: 10px;
+}
+div::-webkit-scrollbar {
+    width: 12px;
+}
+
+div::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 10px;
+}
+
+div::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+}
+#helptxt{
+
+  font-size: calc(var(--main-navbar-font-size)*0.8);
+  line-height: 140%;
+  text-align: right;
 }
 
 #pageContainer {
@@ -91,7 +150,7 @@ footer a:hover {
   color: var(--navbar-color);
   text-align: center;
   text-decoration: none;
-  font-size: 17px;
+  font-size: var(--main-navbar-font-size);
   background:linear-gradient(to bottom, rgba(40,40,40) 0%, rgba(60,60,60) 44%, rgb(40,40,40) 60%, rgba(10,10,10) 100%);
 
 

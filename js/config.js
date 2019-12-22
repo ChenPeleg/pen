@@ -4,8 +4,8 @@
 G = {}; // the global data object
 
    G.devMode = false; // developer mode => 1 = endlevel
-   G.name_of_game = "האקר"
-   G.name_of_gameEN = 'Hacker';
+   G.name_of_game = "דף עבודה"
+   G.name_of_gameEN = 'Worksheet';
    G.dev_mode = 1; //change back to 0
    G.EN = 1; // english
 

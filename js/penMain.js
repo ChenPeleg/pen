@@ -1,7 +1,8 @@
 
-var G = {};
+var G = G || {};
 G.Q = _Q_object.QuestionsArray;
 G.V = [];
+G.saves = false;
 utils:{
     function L (...args){
         return console.log(...args)
@@ -145,6 +146,115 @@ function setDirectionBylanguage (element, text) {
     } else {
         //{element.style.direction = "ltr"; element.style.textAlign = "left"}
     }
+
+}
+function langSet (){
+     G.textDir = "rtl"
+     G.textAlign = "right"
+     G.TXT = {
+ /////
+             ableTosave : "ניתן לשמור את ההתקדמות על המחשב הזה",
+             yourProgWasSaved: ' ההתקדמות שלך במשחק נשמרת',
+             onWebSite : ' באתר ',
+             ifYouAreNot:  'אם את/ה לא ',
+             pressBeginNewGame : 'ניתן ללחוץ על התחלת משחק חדש',
+             connectedThroughSite: ' מחובר דרך האתר. יש להתנתק מהאתר ולהתחיל משחק חדש. ' ,
+             save:"שמירה",
+             beginNewGame: "התחלת משחק חדש",
+             youFinishedLevel :   'סיימת את שלב',
+             timeIsUp: 'נגמר הזמן',
+             IAmNot: 'אני לא   ',
+             tryToShootTargetsByWords : 'נסו לירות על המטרות לפי המילה שמופיעה בשלט למעלה',
+             quickDraw: 'שליפה מהירה!',
+             youMustHitAt : ' עליכם לפגוע ב ' ,
+             targetsBeforeTimeUp:  'מטרות לפני שנגמר הזמן ',
+             youMustHitInCorrectOrder: ' עליכם לפגוע בכל המטרות בסדר הנכון ',
+             youMustHit: 'עליכם לפגוע ',
+             correctHitsInArow: ' פגיעות נכונות ברצף ',
+
+             cantResteGameDoWithClicl : 'לא ניתן לאפס משחק, נא לאפס דרך ממשק קליק',
+             rank: "דרגה ",
+             youGainedRank : "עלית בדרגה ! שיפורים חדשים זמינים",
+             youGainedRankAndYouHave : 'עלית בדרגה ויש לך',
+             existigngUpgradesAreIncolor: "השיפורים הקיימים מופיעים בצבע:",
+             upgradesAvalable:  'שיפורים זמינים.',
+             targetBank: "בנק מטרות",
+             upgrades: "שיפורים",
+             theGoalOfTheGameIs: "המטרה במשחק לעבור את השלבים, על ידי ירי על התמונות הנכונות. חלק מהשלבים מוגבלים בזמן. אחרי צבירת נקודות, אפשר להרוויח דרגות, ולזכות בשיפורים.",
+             savingToThisPC: "שמירה למחשב זה",
+             youFinishedTheGame : "  🏆🏆 סיימת את המשחק ! 🏆🏆 ",
+             youCanStartAnewGame:  "ניתן להתחיל משחק חדש על ידי : שמירה למחשב זה -> התחלת משחק חדש.",
+             youCanContinueButItsHard: "אפשר גם להמשיך לשחק אך השלבים יהיו קשים יותר !",
+             connectedThroughSiteYouMustLogout: 'מחובר דרך האתר.  יש להתנתק דרך האתר או לאפס את המשחק דרך הממשק.' ,
+             nameMustHave2chars: 'שם צריך להכיל לפחות 2 אותיות',
+             fromNowtourProgWillBeSaved : ", מעכשיו ההתקדמות שלך במשחק תישמר",
+             saveWasNotFoundRefreshThewindow : 'לא נמצא מידע שמור. ניתן להתחיל משחק חדש על ידי רענון החלון.',
+             doYouWantToDeleteAndStartNew:  'האם אתם מעוניינים למחוק את כל ההתקדמות ולהתחיל משחק חדש ?',
+             theseAre: "אלו ה",
+             instructions0:  "הוראות:",
+             beginLevel: "התחל שלב",
+             cantResteGameDoWithClicl : "מחובר דרך האתר. יש לאפס משחק דרך ממשק האתר."
+
+
+
+
+
+
+
+
+
+
+     };
+     if (!G.EN) return
+     G.textDir = "ltr"
+     G.textAlign = "left"
+     G.TXT = {
+
+            ableTosave :  " You can save your progress on this computer, " ,
+             yourProgWasSaved:  " Your progress is now saved " ,
+             onWebSite :  " on website " ,
+             ifYouAreNot:   " If you are not " ,
+             pressBeginNewGame :  " You can press  ‘ begin new game'  " ,
+             connectedThroughSite:  " Connected through the site " ,
+             save: " Save " ,
+             beginNewGame:  " Begin a new game " ,
+             youFinishedLevel :    " You've finish level " ,
+             timeIsUp:  " Time is up " ,
+             IAmNot:  " I am not " ,
+             tryToShootTargetsByWords :  " Shoot the targets according to the sign  " ,
+             quickDraw:  " Quick draw! " ,
+             youMustHitAt :  " Hit " ,
+             targetsBeforeTimeUp:   " targets before the time is up " ,
+             youMustHitInCorrectOrder:  " Hit all targets in the correct order " ,
+             youMustHit:  " Hit " ,
+             correctHitsInArow:  " correct hits in a streak " ,
+             cantResteGameDoWithClicl :  " Can't reset, please reset through the site interface " ,
+             rank:  " Rank " ,
+             youGainedRank :  " You've gained a new rank! New upgrqdes available " ,
+             youGainedRankAndYouHave :  " You've gained a rank and have " ,
+             existigngUpgradesAreIncolor:  " Your current upgrades are in full color: " ,
+             upgradesAvalable:   " upgrades available " ,
+             targetBank:  " Target bank " ,
+             upgrades:  " Upgrades " ,
+             theGoalOfTheGameIs:  " Your goal is to finish all the levels by shooting at the right objects. Some of the levels have a time limit. After gaining points, you can advance in rank and win upgrade options. " ,
+             savingToThisPC:  " Save to this PC " ,
+             youFinishedTheGame :  "   🏆🏆 You've finished the game! 🏆🏆  " ,
+             youCanStartAnewGame:   " You can start a new game by: save to this pc -> start a new game. " ,
+             youCanContinueButItsHard:  " You can also continue playing but the levels would be harder " ,
+             connectedThroughSiteYouMustLogout:  " Connected through the site. Please reset using the site interface. " ,
+             nameMustHave2chars:  " Name has to  " ,
+             fromNowtourProgWillBeSaved :  " From now on, your game progress would be saved. " ,
+             saveWasNotFoundRefreshThewindow :  " No saved game was found. You can start a new game by refreshing the tab. " ,
+             doYouWantToDeleteAndStartNew:   " Are you sure you want to delete all progress and start a new game? " ,
+             theseAre:  " These are " ,
+             instructions0:   " Instruction: " ,
+             beginLevel:  " Begin level  " ,
+
+
+
+
+
+     };
 
 }
 function buildWorkSheet (q) {
@@ -516,8 +626,104 @@ function writePage (html = 'bla') {
 function writeNavBarAndFooter () {
     var fullscreenToggler = false;
     function clickMenu (){
-      alert ('menu')
+
+     if (Id('menu').style.display === 'none'){
+       Id('menu').style.display = 'flex'
+     } else {
+        Id('menu').style.display = 'none'
+     }
     }
+    function createMenu (html) {
+      const menuContent = Id('menuContent')
+      menuContent.innerHTML = html
+      if (Id('saveButton') && Id('clear')){
+        let save = Id('saveButton');  save.addEventListener('click',(f)=>{submitF(f)})
+        let clear = Id('clear');  clear.addEventListener('click',(f)=>{submitF('clear')})
+      }
+
+
+    }
+    function clickSave (){
+      let userMessage = G.TXT.ableTosave;
+      G.TXT.newGame = 'התחלה מחדש'
+
+      let formStyle = ` color:rgba(100,100,100); opacity:0.9;border-radius:1vmin;vfont-weight:bold;`
+
+     if (storeInLocal ('check')){userMessage = G.saves.nameOfplayer + ', ';
+     userMessage  += G.TXT.yourAdvanceIsSavedAtEachLevel
+     }
+     userMessage += ' <br>'
+
+
+      let form = `<form id='saveForm' method="post" action="javascript:" style="text-align: center ;font-size: 3vmins">
+<div id ="Formtext" style="height:7vmin;"> ${userMessage}</div><br>
+<input id='input' type="text" name="name" value="" style="${formStyle} ; color:rgba(250,250,250) ;background: transparent; border-radius: 0.5vmin ; width:70%; font-size:3vmin;" ><br>
+
+<br>
+
+<input id="saveButton" type="submit" value="${G.TXT. save}" style=" ${formStyle}">&nbsp&nbsp
+<input id="clear" type="submit" value="${G.TXT.newGame}" style=" ${formStyle}">
+</form><br><br>`
+let op =   form;
+createMenu (op)
+    }
+    function clickHelp (){
+      G.TXT.fullHelpText1 = `עליך לענות על השאלות. ישנן סוגים שונים של שאלות: שאלות עם אפשרות אחת בלבד, שהיא טקסט או תמונה. שאלות עם מספר אפשרויות, בהן בדרך כלל יותר מתשובה אחת נכונה. בשאלות אלו יופיע סימון V לצ ליד התשובות. שאלות עם מילים שצריך למקם בטקסט - יש ללחוץ על המילה ואז על המקום שבו רוצים לשים אותה. מילוי מילים עם בנק מילים - לאחר שכותבים את המילה היא תימחק מהבנק. שאלות של סידור תשובות בסדר הנכון - יש לגרור את התשובות למקום הנכון, עם העכבר. `
+      G.TXT.fullHelpText2 = G.TXT.fullHelpText1 // ``
+      let helpText = `${G.TXT.fullHelpText1}
+${G.TXT.fullHelpText2}<br><br>
+<br> ${G.TXT.fullHelpText3}
+<br><br>
+`
+      let op = `<div id="helptxt">${helpText}</div>`  //style="overflow:scroll"
+      createMenu (op)
+    }
+    function helpMenu  (){
+
+
+
+    }
+    function clickProg (){
+      let text = saveState ();
+      L(text)
+      createMenu(JSON.stringify(text))
+    }
+    function submitF(formArray) {
+
+        let Formtext = Id('Formtext');
+       if (formArray === 'clear'){
+
+           if (!storeInLocal ('check')){ Formtext.innerHTML = G.TXT.saveWasNotFoundRefreshThewindow ;
+           return;
+       }
+       if (G.isTheGameConnectedToClick) {
+           Formtext.innerHTML = '<span style="color:red;">' +  G.TXT.cantResteGameDoWithClicl + "</span>";
+           return;
+       }
+
+           storeInLocal('confirmReset');
+           return
+       }
+       if (G.isTheGameConnectedToClick) {
+           Formtext.innerHTML = '<span style="color:red;">' +  G.TXT.cantSaveGameDoWithClicl + "</span>";
+           return;
+       }
+       let input = Id('input').value
+       if (input.length < 2){Formtext.innerHTML = G.TXT.nameMustHave2chars + '<br>'; return}
+       G.saves.nameOfplayer = input;
+       //visuaGamelLoader (true);
+       Formtext.innerHTML = '&nbsp';
+       let inputName = input;
+       inputName += G.TXT.fromNowtourProgWillBeSaved
+
+       Formtext.innerHTML = inputName
+       storeInLocal ('save')
+
+
+
+    }
+
+
     function clickNav (ev){
         const id = ev.target.id
         if (id.includes('page_')){
@@ -564,6 +770,7 @@ function writeNavBarAndFooter () {
   }
     }
 
+
     //document.addEventListener("fullscreenchange", function() {alert ('event')});
     const oldSVG = `<svg  width="20" height="20" viewBox="0 0 24 24"><path d="M24 9h-2v-4h-4v-2h6v6zm-6 12v-2h4v-4h2v6h-6zm-18-6h2v4h4v2h-6v-6zm6-12v2h-4v4h-2v-6h6z"/></svg>`;
     const fullScreenSVG = `<svg version="1.1" viewBox="0 0 36 36" class="fullscreen"><g>< xlink:href="#ytp-id-27"></use><path  d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" id="ytp-id-27"></path></g><g><path d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" id="ytp-id-28"></path></g><g><path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" id="ytp-id-29"></path></g><g ><path class="ytp-svg-fill" d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" id="ytp-id-30"></path></g></svg>`;
@@ -603,20 +810,40 @@ function writeNavBarAndFooter () {
     let html = `<span id="pages_select">${pageslinks}</span>
   <a href="#menu" id="menuBtn">תפריט</a>
   <a href="#contact">התקדמות</a>
-  <a href="#fullscreen" id ="fullscreenBtn">${fullScreenSVG}&nbsp&nbsp&nbsp&nbsp מסך מלא </a>
-`
+  <a href="#fullscreen" id ="fullscreenBtn">${fullScreenSVG}&nbsp&nbsp&nbsp&nbsp מסך מלא </a>`
+
+  let htmlOfmenu = `
+<a href="#menu"  id="saveBtn" class="menu-button" id="menuBtn">שמירה</a>
+<a href="#contact" id="helpBtn" class="menu-button">עזרה</a>
+<a href="#fullscreen" id="progBtn" class="menu-button">התקדמות</a>
+<a href="#fullscreen" id="closeMenu" class="menu-button">חזרה</a>`
+
     const navbarhinter = Elm('navbarhinter');
     const navbar = Elm ('navbar');
+    const menu = Elm ('menu');
+    const menuCommands = Elm('menuCommands');
+    const menuContent = Elm('menuContent');
     const navbarContatiner = Elm ('navbarContatiner');
     navbarContatiner.addEventListener('mouseover', hovering)
     navbar.addEventListener('click', clickNav)
     formFooter.addEventListener('click', clickfoot)
     navbar.innerHTML = html;
+    menu.appendChild(menuContent);
+    menu.appendChild(menuCommands);
+    menuCommands.innerHTML = htmlOfmenu;
+    menu.classList.add('menu')
     navbarContatiner.appendChild(navbar);
+    navbar.appendChild(menu)
     navbar.appendChild(navbarhinter);
-    const pageMetaContainer = Id('pageMetaContainer')
-    pageMetaContainer.insertBefore(navbarContatiner, pageMetaContainer.childNodes[0])
-    Id('fullscreenBtn').addEventListener('click', toggleFullscreen)
+
+    const pageMetaContainer = Id('pageMetaContainer');
+    pageMetaContainer.insertBefore(navbarContatiner, pageMetaContainer.childNodes[0]);
+    Id('fullscreenBtn').addEventListener('click', toggleFullscreen);
+    Id('closeMenu').addEventListener('click', clickMenu );
+    Id('progBtn').addEventListener('click', clickProg );
+    Id('helpBtn').addEventListener('click', clickHelp );
+    Id('saveBtn').addEventListener('click', clickSave );
+
 
 
 }
@@ -925,7 +1152,7 @@ function pageTransition (n = 1) {
     if (n === 'next') {n = allSects.indexOf(currentPage) + 2} else if (n === 'pre') {
         n = allSects.indexOf(currentPage)}
     if (n > allSects.length  || n < 1) {
-    //alert ('no such page');
+
     return}
     if (currentPageList.length !== 1 || (currentPage === allSects[n-1])) {return}
 
@@ -1100,7 +1327,7 @@ function checkAll(){
 
 }
 function saveState (){
-  //var f = [...Id('mainForm').querySelectorAll('input')]
+
 
     function getQnumber (id) {
     const reg = /Q([0123456789]{1,3})(_A?([0123456789]{1,3}))?/i
@@ -1138,7 +1365,6 @@ function saveState (){
          if (checkedArr.length === 0) {return false } else {return checkedArr }
 
       }
-      return false
       if (questionObject.typ === 'q_dropbank') {
       containers = [...document.querySelectorAll('.placeInputWithBank')].filter(e=>e.dataset.seg === (qNum+"") )
       arrayOfInputs = []
@@ -1174,57 +1400,98 @@ function saveState (){
       }
 
 
-
-
-      const solution = questionObject ? Number(questionObject.solution) : false;
-      let finalCorretValue = ansObj;
-      if (solution){finalCorretValue = solution}
-
-      switch (questionObject.typ) {
-        case 'q_multi': case 'q_image':
-        if (qObj.PartNum === solution){return true} else {return false}
-        break;
-        case 'q_dropbank':
-        let numberOfAns = getQnumber(val);
-        if (qObj.PartNum === numberOfAns.PartNum){return true} else {return false};
-        case 'q_fillbank':
-        if (trimAndLower (val) === trimAndLower (ansObj)){return true} else {return false};
-        break;
-        case 'q_checkbox':
-        const numRegex = /[\D]{1,4}/g;
-        const solutionArr = questionObject.solution .split(numRegex) .filter(e=>e) .map(e=>Number(e));
-        const checkBoxesArray = checkboxes.filter(e=>e.name === val).map(e=>e.checked);
-        let isAllRight = true;
-        for (e = 0; e < checkBoxesArray.length; e++){
-
-          if (checkBoxesArray[e] && solutionArr.includes(e+1)) {
-          } else if (!checkBoxesArray[e] && !solutionArr.includes(e+1)) { } else {
-            isAllRight =  false
-          }
-
-        }
-        //return checkBoxesArray
-        return isAllRight;
-        break;
-        case 'q_order':
-        const answersArr = val.map(v=>Number(v.replace("Q"+qObj.questNum + "_", "")))
-        const ordered = answersArr.every(e=>e===answersArr[e])
-        return ordered;
-        break;
-
-
-        default:
-
-      }
+      //
+      //
+      // const solution = questionObject ? Number(questionObject.solution) : false;
+      // let finalCorretValue = ansObj;
+      // if (solution){finalCorretValue = solution}
+      //
+      // switch (questionObject.typ) {
+      //   case 'q_multi': case 'q_image':
+      //   if (qObj.PartNum === solution){return true} else {return false}
+      //   break;
+      //   case 'q_dropbank':
+      //   let numberOfAns = getQnumber(val);
+      //   if (qObj.PartNum === numberOfAns.PartNum){return true} else {return false};
+      //   case 'q_fillbank':
+      //   if (trimAndLower (val) === trimAndLower (ansObj)){return true} else {return false};
+      //   break;
+      //   case 'q_checkbox':
+      //   const numRegex = /[\D]{1,4}/g;
+      //   const solutionArr = questionObject.solution .split(numRegex) .filter(e=>e) .map(e=>Number(e));
+      //   const checkBoxesArray = checkboxes.filter(e=>e.name === val).map(e=>e.checked);
+      //   let isAllRight = true;
+      //   for (e = 0; e < checkBoxesArray.length; e++){
+      //
+      //     if (checkBoxesArray[e] && solutionArr.includes(e+1)) {
+      //     } else if (!checkBoxesArray[e] && !solutionArr.includes(e+1)) { } else {
+      //       isAllRight =  false
+      //     }
+      //
+      //   }
+      //   //return checkBoxesArray
+      //   return isAllRight;
+      //   break;
+      //   case 'q_order':
+      //   const answersArr = val.map(v=>Number(v.replace("Q"+qObj.questNum + "_", "")))
+      //   const ordered = answersArr.every(e=>e===answersArr[e])
+      //   return ordered;
+      //   break;
+      //
+      //
+      //   default:}
     }
+    let saveObject = {}
     for (let i = 1; i < G.V.length ;i++){
       if (G.V[i].typ.includes("q_") ){
-      if (G.V[i].save === 0 || G.V[i].save) { L(i, G.V[i].save)}
+        let input = getInputFromAns (i)
+      if (G.V[i].save === 0 || G.V[i].save) { }
+   saveObject[i] = input
       }
     }
+   G.saves = saveObject;
+   return saveObject
 
 
+}
+function storeInLocal (command){
+    function storeInLocalFROMSHOOTER (command){
+        var createEvent  = (actionType, key, value)  => {let ev = new Event ('storage'); ev.key = key; ev.value = value
+        ev.actionType = actionType; return window.dispatchEvent(ev)}
 
+
+        switch (command){
+            case 'save':
+
+            localStorage.setItem(G.saveInLocalStorageKey, JSON.stringify(G.saves));
+            createEvent  ('save',G.saveInLocalStorageKey , JSON.stringify(G.saves));
+            break;
+            case 'check':
+            if (G.saves.nameOfplayer) {return true} else {return false}
+
+            break;
+
+            case 'load':
+            var retrievedObject = localStorage.getItem(G.saveInLocalStorageKey);
+            if (retrievedObject) {G.saves = JSON.parse(retrievedObject); }
+
+
+            break;
+
+            case 'reset':
+            if (G.isTheGameConnectedToClick) {alert (G.TXT.cantResteGameDoWithClicl); break}
+            localStorage.removeItem(G.saveInLocalStorageKey);
+``
+            break;
+
+            case 'confirmReset':
+            if (G.isTheGameConnectedToClick) {alert (G.TXT.cantResteGameDoWithClicl); break}
+            let tx = G.TXT.wouldYouLikeToReset
+            if (confirm(tx)) { storeInLocal ('reset'); location.reload()};
+            break;
+        }
+    }
+    return  storeInLocalFROMSHOOTER (command)
 }
 
 
@@ -1235,7 +1502,7 @@ const tree = mapPageTree ()
 const cont = buildContent (tree);
 const final = cont;
 
-
+langSet ();
 writePage ( final )
 setDirection ()
 enableDragSort('orderList');
@@ -1257,7 +1524,7 @@ function t (n){
   const arr = n.split(numRegex).filter(e=>e).map(e=>Number(e));
   return arr
 }
-
+Id('menu').style.display = 'flex'
 
 
 
