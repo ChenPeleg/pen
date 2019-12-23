@@ -257,7 +257,7 @@ function langSet (){
      };
 
 }
-function buildWorkSheet (q) {
+function buildObjectsOfWorkSheet (q) {
     const elementOfhtml = (t)=>{
         switch(t){
             case "h_page": return 'h1';
@@ -785,7 +785,7 @@ ${G.TXT.fullHelpText2}<br><br>
             const num = (allSects.indexOf(s)+1);
             let cls = '';
             if (num === 1){cls = 'currentPageInd'}
-            pageslinks += `<a herf="#page_${num}" id="page_${num}" class="${cls}"> ${num} </a>`
+            pageslinks += `<a href="#page${num}" id="page_${num}" class="${cls}"> ${num} </a>`
         })
     }
 
@@ -796,28 +796,28 @@ ${G.TXT.fullHelpText2}<br><br>
 
     if (pageslinks){
         const footcls = 'allow-hover'
-        let pageslinks2 = ' עמוד '
-            pageslinks2 += `<a herf="#page_${2}" id="fpage_next" class="${footcls}"> הבא </a>`
-            pageslinks2 += `<a herf="#page_${1}" id="fpage_pre" class="${footcls}"> הקודם </a>`
+        let pageslinks2 = '<span style="direction: rtl;"> עמוד '
+            pageslinks2 += `<a href="#page_${2}" id="fpage_next" class="${footcls}">הבא</a>`
+            pageslinks2 += `<a href="#page_${1}" id="fpage_pre" class="${footcls}">הקודם</a>`
             allSects.forEach(s=>{
             const num = (allSects.indexOf(s)+1);
             let cls = '';
             if (num === 1){cls = 'currentPageInd'}
-            pageslinks2 += `<a herf="#page_${num}" id="fpage_${num}" class="${footcls}"> ${num} </a>`
+            pageslinks2 += `<a href="#page_${num}" id="fpage_${num}" class="${footcls}">${num}</a> </span>`
         })
         formFooter.innerHTML += pageslinks2;
     }
 
     let html = `<span id="pages_select">${pageslinks}</span>
   <a href="#menu" id="menuBtn">תפריט</a>
-  <a href="#contact">התקדמות</a>
-  <a href="#fullscreen" id ="fullscreenBtn">${fullScreenSVG}&nbsp&nbsp&nbsp&nbsp מסך מלא </a>`
+  <a href="javascript:void(0)">התקדמות</a>
+  <a href="javascript:void(0)" id ="fullscreenBtn">${fullScreenSVG}&nbsp&nbsp&nbsp&nbsp מסך מלא </a>`
 
   let htmlOfmenu = `
-<a href="#menu"  id="saveBtn" class="menu-button" id="menuBtn">שמירה</a>
-<a href="#contact" id="helpBtn" class="menu-button">עזרה</a>
-<a href="#fullscreen" id="progBtn" class="menu-button">התקדמות</a>
-<a href="#fullscreen" id="closeMenu" class="menu-button">חזרה</a>`
+<a href="javascript:void(0)"  id="saveBtn" class="menu-button" id="menuBtn">שמירה</a>
+<a href="javascript:void(0)" id="helpBtn" class="menu-button">עזרה</a>
+<a href="javascript:void(0)" id="progBtn" class="menu-button">התקדמות</a>
+<a href="javascript:void(0)" id="closeMenu" class="menu-button">חזרה</a>`
 
     const navbarhinter = Elm('navbarhinter');
     const navbar = Elm ('navbar');
@@ -1408,7 +1408,8 @@ function saveState (){
     for (let i = 1; i < G.V.length ;i++){
       if (G.V[i].typ.includes("q_") ){
         let input = getInputFromAns (i)
-      if (G.V[i].save === 0 || G.V[i].save) { }
+
+
    saveObject[i] = input
       }
     }
@@ -1467,7 +1468,7 @@ function assignLoadedContent (){
   function puInputInAns (qNum){
     const questionObject = G.V[qNum];
     if (questionObject.typ === 'q_word'){
-      Id("Q"+qNum).value = questionObject.save;
+      Id("Q"+qNum).value = G.saves[qNum] || "";
       return
     }
     if (questionObject.typ === 'q_multi' || questionObject.typ === 'q_image'){
@@ -1527,10 +1528,16 @@ function assignLoadedContent (){
       return allAnswers
     }
     if (questionObject.typ === 'q_order'){
+      if (qNum > 3) return
       const ol = Id("Q"+qNum);
       const listItems = [...ol.querySelectorAll('li')];
-      const order = listItems.map(i=>Number(i.id.replace("Q"+qNum+"_",""))) //.repalce("Q"+qNum+"_")
-      return order
+       //listItems.forEach(e=>e.remove())
+      G.saves[qNum].forEach(n=>{
+      const li =  Id("Q"+qNum+"_"+n);
+
+      ol.appendChild(li)
+
+      })
     }
 
 
@@ -1545,16 +1552,37 @@ function assignLoadedContent (){
 
 
 }
+function checkHashParam (){
+  if (!window.location.hash) return
+  pageNum = Number(window.location.hash.replace('#page',""))
+  pageTransition(pageNum)
 
 
+}
+function advanceSummary () {
+  function arrayStats (arr) {
+    let answers = []
+    arr.forEach(a=>{
+      if (Array.isArray(a)){answers.push( arrayStats(a)) ; return }
+      if (a === 0 || a && a != ""){answers.push(1)} else {answers.push(0)}
+    })
 
-const virt = buildWorkSheet ();
-const tree = mapPageTree ()
-const cont = buildContent (tree);
-const final = cont;
+    const avarage = answers.reduce((a,b) => a + b, 0) / answers.length;
+    return avarage
+
+  }
+  const filteredQuestions = Object.keys(G.saves).filter(e=>e==Number(e)).map(e=>G.saves[e])
+  /* this array dowsnt consider question numbers */
+  const answerAverage = arrayStats(filteredQuestions)
+  L(answerAverage)
+}
+
+buildObjectsOfWorkSheet ();
+const cont = buildContent (mapPageTree ());
+
 
 langSet ();
-writePage ( final )
+writePage ( cont )
 setDirection ()
 enableDragSort('orderList');
 addListnerToBank('textFillInputClass')
@@ -1588,7 +1616,9 @@ setInterval(()=>{
   }
 
 }, 500)
+checkHashParam ()
 
+const urlParams = new URLSearchParams(window.location.search)
 
-
+ advanceSummary ()
 //things to add: after in-text images add spaces acording to width relation;
