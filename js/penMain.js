@@ -2,7 +2,7 @@
 var G = G || {};
 G.Q = _Q_object.QuestionsArray;
 G.V = [];
-G.saves = false;
+G.saves = {};
 utils:{
     function L (...args){
         return console.log(...args)
@@ -157,10 +157,10 @@ function langSet (){
              yourProgWasSaved: ' ההתקדמות שלך במשחק נשמרת',
              onWebSite : ' באתר ',
              ifYouAreNot:  'אם את/ה לא ',
-             pressBeginNewGame : 'ניתן ללחוץ על התחלת משחק חדש',
-             connectedThroughSite: ' מחובר דרך האתר. יש להתנתק מהאתר ולהתחיל משחק חדש. ' ,
+             pressBeginNewGame : 'ניתן ללחוץ על התחלה מחדש',
+             connectedThroughSite: ' מחובר דרך האתר. יש להתנתק מהאתר ולהתחיל מחדש. ' ,
              save:"שמירה",
-             beginNewGame: "התחלת משחק חדש",
+             beginNewGame: "התחלה מחדש",
              youFinishedLevel :   'סיימת את שלב',
              timeIsUp: 'נגמר הזמן',
              IAmNot: 'אני לא   ',
@@ -183,13 +183,13 @@ function langSet (){
              theGoalOfTheGameIs: "המטרה במשחק לעבור את השלבים, על ידי ירי על התמונות הנכונות. חלק מהשלבים מוגבלים בזמן. אחרי צבירת נקודות, אפשר להרוויח דרגות, ולזכות בשיפורים.",
              savingToThisPC: "שמירה למחשב זה",
              youFinishedTheGame : "  🏆🏆 סיימת את המשחק ! 🏆🏆 ",
-             youCanStartAnewGame:  "ניתן להתחיל משחק חדש על ידי : שמירה למחשב זה -> התחלת משחק חדש.",
+             youCanStartAnewGame:  "ניתן להתחיל מחדש על ידי : שמירה למחשב זה -> התחלה מחדש.",
              youCanContinueButItsHard: "אפשר גם להמשיך לשחק אך השלבים יהיו קשים יותר !",
              connectedThroughSiteYouMustLogout: 'מחובר דרך האתר.  יש להתנתק דרך האתר או לאפס את המשחק דרך הממשק.' ,
              nameMustHave2chars: 'שם צריך להכיל לפחות 2 אותיות',
              fromNowtourProgWillBeSaved : ", מעכשיו ההתקדמות שלך במשחק תישמר",
-             saveWasNotFoundRefreshThewindow : 'לא נמצא מידע שמור. ניתן להתחיל משחק חדש על ידי רענון החלון.',
-             doYouWantToDeleteAndStartNew:  'האם אתם מעוניינים למחוק את כל ההתקדמות ולהתחיל משחק חדש ?',
+             saveWasNotFoundRefreshThewindow : 'לא נמצא מידע שמור. ניתן להתחיל מחדש על ידי רענון החלון.',
+             doYouWantToDeleteAndStartNew:  'האם אתם מעוניינים למחוק את כל ההתקדמות ולהתחיל מחדש ?',
              theseAre: "אלו ה",
              instructions0:  "הוראות:",
              beginLevel: "התחל שלב",
@@ -645,19 +645,20 @@ function writeNavBarAndFooter () {
     }
     function clickSave (){
       let userMessage = G.TXT.ableTosave;
+      G.TXT.yourAdvanceIsSavedAtEachLevel = ' ההתקדמות שלך נשמרת.'
       G.TXT.newGame = 'התחלה מחדש'
 
       let formStyle = ` color:rgba(100,100,100); opacity:0.9;border-radius:1vmin;vfont-weight:bold;`
-
      if (storeInLocal ('check')){userMessage = G.saves.nameOfplayer + ', ';
-     userMessage  += G.TXT.yourAdvanceIsSavedAtEachLevel
+     userMessage  += G.TXT.yourAdvanceIsSavedAtEachLevel;
+
      }
      userMessage += ' <br>'
 
 
       let form = `<form id='saveForm' method="post" action="javascript:" style="text-align: center ;font-size: 3vmins">
 <div id ="Formtext" style="height:7vmin;"> ${userMessage}</div><br>
-<input id='input' type="text" name="name" value="" style="${formStyle} ; color:rgba(250,250,250) ;background: transparent; border-radius: 0.5vmin ; width:70%; font-size:3vmin;" ><br>
+<input id='nameOfPlayerInput' type="text" name="name" value="" style="${formStyle} ; color:rgba(250,250,250) ;background: transparent; border-radius: 0.5vmin ; width:70%; font-size:3vmin;" ><br>
 
 <br>
 
@@ -685,7 +686,7 @@ ${G.TXT.fullHelpText2}<br><br>
     }
     function clickProg (){
       let text = saveState ();
-      L(text)
+
       createMenu(JSON.stringify(text))
     }
     function submitF(formArray) {
@@ -708,10 +709,10 @@ ${G.TXT.fullHelpText2}<br><br>
            Formtext.innerHTML = '<span style="color:red;">' +  G.TXT.cantSaveGameDoWithClicl + "</span>";
            return;
        }
-       let input = Id('input').value
+       let input = Id('nameOfPlayerInput').value
        if (input.length < 2){Formtext.innerHTML = G.TXT.nameMustHave2chars + '<br>'; return}
        G.saves.nameOfplayer = input;
-       //visuaGamelLoader (true);
+
        Formtext.innerHTML = '&nbsp';
        let inputName = input;
        inputName += G.TXT.fromNowtourProgWillBeSaved
@@ -1207,6 +1208,7 @@ function checkAll(){
       let finalCorretValue = ansObj
       if (solution){finalCorretValue = solution}
 
+
       switch (questionObject.typ) {
         case 'q_multi': case 'q_image':
         if (qObj.PartNum === solution){return true} else {return false}
@@ -1255,6 +1257,7 @@ function checkAll(){
       const checkSvg = `<svg version="1.1"  x="0px" y="0px"
        	  viewBox="0 0 442.533 442.533" style="enable-background:new 0 0 442.533 442.533;"	 xml:space="preserve"> <g> 	<path d="M434.539,98.499l-38.828-38.828c-5.324-5.328-11.799-7.993-19.41-7.993c-7.618,0-14.093,2.665-19.417,7.993L169.59,247.248 l-83.939-84.225c-5.33-5.33-11.801-7.992-19.412-7.992c-7.616,0-14.087,2.662-19.417,7.992L7.994,201.852 C2.664,207.181,0,213.654,0,221.269c0,7.609, 2.664,14.088,7.994,19.416l103.351,103.349l38.831,38.828 c5.327,5.332, 11.8,7.994,19.414,7.994c7.611,0,14.084-2.669,19.414-7.994l38.83-38.828L434.539,137.33 c5.325-5.33,7.994-11.802,7.994-19.417C442.537,110.302,439.864,103.829,434.539,98.499z"><g><g><g><g><g><g><g><g> <g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><g><svg>`
       const Xsvg = `<svg viewBox="0 0 24 24" style="fill:red;"><path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"/></svg>`
+
       const check = checkIfAnsCorrect (getQnumber (name), value)
 
       if (!Id(name)){name += "_0"} // in the case of checkboxes
@@ -1306,6 +1309,7 @@ function checkAll(){
 
     })
     inputs.forEach(i=>{
+      if(i.id === 'nameOfPlayerInput'){return}
 
         if (i.value !== i.defaultValue){
         ansAdd(i.id,i.value)
@@ -1399,47 +1403,6 @@ function saveState (){
         return order
       }
 
-
-      //
-      //
-      // const solution = questionObject ? Number(questionObject.solution) : false;
-      // let finalCorretValue = ansObj;
-      // if (solution){finalCorretValue = solution}
-      //
-      // switch (questionObject.typ) {
-      //   case 'q_multi': case 'q_image':
-      //   if (qObj.PartNum === solution){return true} else {return false}
-      //   break;
-      //   case 'q_dropbank':
-      //   let numberOfAns = getQnumber(val);
-      //   if (qObj.PartNum === numberOfAns.PartNum){return true} else {return false};
-      //   case 'q_fillbank':
-      //   if (trimAndLower (val) === trimAndLower (ansObj)){return true} else {return false};
-      //   break;
-      //   case 'q_checkbox':
-      //   const numRegex = /[\D]{1,4}/g;
-      //   const solutionArr = questionObject.solution .split(numRegex) .filter(e=>e) .map(e=>Number(e));
-      //   const checkBoxesArray = checkboxes.filter(e=>e.name === val).map(e=>e.checked);
-      //   let isAllRight = true;
-      //   for (e = 0; e < checkBoxesArray.length; e++){
-      //
-      //     if (checkBoxesArray[e] && solutionArr.includes(e+1)) {
-      //     } else if (!checkBoxesArray[e] && !solutionArr.includes(e+1)) { } else {
-      //       isAllRight =  false
-      //     }
-      //
-      //   }
-      //   //return checkBoxesArray
-      //   return isAllRight;
-      //   break;
-      //   case 'q_order':
-      //   const answersArr = val.map(v=>Number(v.replace("Q"+qObj.questNum + "_", "")))
-      //   const ordered = answersArr.every(e=>e===answersArr[e])
-      //   return ordered;
-      //   break;
-      //
-      //
-      //   default:}
     }
     let saveObject = {}
     for (let i = 1; i < G.V.length ;i++){
@@ -1449,7 +1412,14 @@ function saveState (){
    saveObject[i] = input
       }
     }
-   G.saves = saveObject;
+
+   const tar = Object.assign(G.saves,saveObject)
+
+
+
+   //const returnedTarget = Object.assign( G.saves , saveObject);
+
+
    return saveObject
 
 
@@ -1493,7 +1463,88 @@ function storeInLocal (command){
     }
     return  storeInLocalFROMSHOOTER (command)
 }
+function assignLoadedContent (){
+  function puInputInAns (qNum){
+    const questionObject = G.V[qNum];
+    if (questionObject.typ === 'q_word'){
+      Id("Q"+qNum).value = questionObject.save;
+      return
+    }
+    if (questionObject.typ === 'q_multi' || questionObject.typ === 'q_image'){
+    const answers = questionObject.answer.filter(e=>e).length
+     for (i = 0; i < answers; i++){
 
+      const id = "Q"+qNum+"_" +i
+      if ( G.saves[qNum] === i){
+
+        Id(id).checked = true;
+      }
+
+     }
+     return false
+
+    }
+    if (questionObject.typ === 'q_checkbox'){
+      const answersLength = questionObject.answer.filter(e=>e).length
+      let checkedArr = [];
+       for (i = 0; i < answersLength; i++){
+        const id = "Q"+qNum+"_"+i
+        if(!Array.isArray (G.saves[qNum])) {continue}
+        let checked = G.saves[qNum].includes(i )
+        Id(id).checked =checked
+
+       }
+       if (checkedArr.length === 0) {return false } else {return checkedArr }
+
+    }
+    if (questionObject.typ === 'q_dropbank') {
+    containers = [...document.querySelectorAll('.placeInputWithBank')].filter(e=>e.dataset.seg === (qNum+"") )
+    arrayOfInputs = []
+    containers.forEach(c=>{
+      numOfContainer = containers.indexOf(c);
+      if(G.saves[qNum][numOfContainer] === 0 || G.saves[qNum][numOfContainer] ){
+        wordObject = Id("Q"+qNum+"_A"+ G.saves[qNum][numOfContainer])
+        wordObject.classList.add('place-bank-element-in-container')
+        c.innerHTML = '';
+        c.appendChild(wordObject);
+        //place-bank-element-in-container
+
+
+      }
+
+    })
+    return arrayOfInputs
+
+
+    }
+    if (questionObject.typ === 'q_fillbank'){
+      const answersLength = questionObject.answer.filter(e=>e).length
+      const inputs  = [...document.querySelectorAll('input[type=text]')].filter(e=>e.name===("Q"+qNum))
+      allAnswers = [];
+       for (i = 0; i < inputs.length; i++){
+         inputs[i].value = G.saves[qNum][i]
+       }
+      return allAnswers
+    }
+    if (questionObject.typ === 'q_order'){
+      const ol = Id("Q"+qNum);
+      const listItems = [...ol.querySelectorAll('li')];
+      const order = listItems.map(i=>Number(i.id.replace("Q"+qNum+"_",""))) //.repalce("Q"+qNum+"_")
+      return order
+    }
+
+
+  }
+  let saveObject = {}
+  for (let i = 1; i < G.V.length ;i++){
+    if (G.V[i].typ.includes("q_") ){
+       puInputInAns (i)
+
+    }
+  }
+
+
+}
 
 
 
@@ -1517,14 +1568,26 @@ writeNavBarAndFooter ()
 pageTransition (1)
 
 document.body.addEventListener("keypress", keyPressFunc);
-checkAll()
+
+
+//checkAll()
 
 function t (n){
   const numRegex = /[\D]{1,4}/g
   const arr = n.split(numRegex).filter(e=>e).map(e=>Number(e));
   return arr
 }
-Id('menu').style.display = 'flex'
+//Id('menu').style.display = 'flex'
+
+storeInLocal ('load')
+assignLoadedContent ()
+setInterval(()=>{
+  if (G.saves.nameOfplayer){
+    saveState ();
+    storeInLocal('save')
+  }
+
+}, 500)
 
 
 
