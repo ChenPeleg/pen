@@ -2,6 +2,7 @@
 var G = G || {};
 G.Q = _Q_object.QuestionsArray;
 G.V = [];
+ 
 G.saves = {};
 utils:{
     function L (...args){
@@ -656,15 +657,15 @@ function writeNavBarAndFooter () {
      userMessage += ' <br>'
 
 
-      let form = `<form id='saveForm' method="post" action="javascript:" style="text-align: center ;font-size: 3vmins">
-<div id ="Formtext" style="height:7vmin;"> ${userMessage}</div><br>
-<input id='nameOfPlayerInput' type="text" name="name" value="" style="${formStyle} ; color:rgba(250,250,250) ;background: transparent; border-radius: 0.5vmin ; width:70%; font-size:3vmin;" ><br>
+        let form = `<form id='saveForm' method="post" action="javascript:" style="text-align: center ;font-size: 3vmins">
+            <div id ="Formtext" style="height:7vmin;"> ${userMessage}</div><br>
+            <input id='nameOfPlayerInput' type="text" name="name" value="" style="${formStyle} ; color:rgba(250,250,250) ;background: transparent; border-radius: 0.5vmin ; width:70%; font-size:3vmin;" ><br>
 
-<br>
+        <br>
 
-<input id="saveButton" type="submit" value="${G.TXT. save}" style=" ${formStyle}">&nbsp&nbsp
-<input id="clear" type="submit" value="${G.TXT.newGame}" style=" ${formStyle}">
-</form><br><br>`
+        <input id="saveButton" type="submit" value="${G.TXT. save}" style=" ${formStyle}">&nbsp&nbsp
+        <input id="clear" type="submit" value="${G.TXT.newGame}" style=" ${formStyle}">
+        </form><br><br>`
 let op =   form;
 createMenu (op)
     }
@@ -810,7 +811,7 @@ ${G.TXT.fullHelpText2}<br><br>
 
     let html = `<span id="pages_select">${pageslinks}</span>
   <a href="#menu" id="menuBtn">תפריט</a>
-  <a href="javascript:void(0)">התקדמות</a>
+  <a href="javascript:void(0)" id="progressBarTop">התקדמות</a>
   <a href="javascript:void(0)" id ="fullscreenBtn">${fullScreenSVG}&nbsp&nbsp&nbsp&nbsp מסך מלא </a>`
 
   let htmlOfmenu = `
@@ -1575,6 +1576,9 @@ function advanceSummary () {
   /* this array dowsnt consider question numbers */
   const answerAverage = arrayStats(filteredQuestions)
   L(answerAverage)
+}
+function updateProgress () {
+  //progressBarTop
 }
 
 buildObjectsOfWorkSheet ();
