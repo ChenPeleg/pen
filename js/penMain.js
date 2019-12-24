@@ -1602,7 +1602,7 @@ pageTransition (1)
 document.body.addEventListener("keypress", keyPressFunc);
 
 
-//checkAll()
+ 
 
 function t (n){
   const numRegex = /[\D]{1,4}/g
@@ -1611,9 +1611,7 @@ function t (n){
 }
 //Id('menu').style.display = 'flex'
 
-storeInLocal ('load')
-assignLoadedContent ()
-setInterval(()=>{
+storeInLocal ('load') ; assignLoadedContent () ; setInterval(()=>{
   if (G.saves.nameOfplayer){
     saveState ();
     storeInLocal('save')
