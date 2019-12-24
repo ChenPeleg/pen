@@ -2,7 +2,6 @@
 var G = G || {};
 G.Q = _Q_object.QuestionsArray;
 G.V = [];
- 
 G.saves = {};
 utils:{
     function L (...args){
@@ -657,15 +656,15 @@ function writeNavBarAndFooter () {
      userMessage += ' <br>'
 
 
-        let form = `<form id='saveForm' method="post" action="javascript:" style="text-align: center ;font-size: 3vmins">
-            <div id ="Formtext" style="height:7vmin;"> ${userMessage}</div><br>
-            <input id='nameOfPlayerInput' type="text" name="name" value="" style="${formStyle} ; color:rgba(250,250,250) ;background: transparent; border-radius: 0.5vmin ; width:70%; font-size:3vmin;" ><br>
+      let form = `<form id='saveForm' method="post" action="javascript:" style="text-align: center ;font-size: 3vmins">
+<div id ="Formtext" style="height:7vmin;"> ${userMessage}</div><br>
+<input id='nameOfPlayerInput' type="text" name="name" value="" style="${formStyle} ; color:rgba(250,250,250) ;background: transparent; border-radius: 0.5vmin ; width:70%; font-size:3vmin;" ><br>
 
-        <br>
+<br>
 
-        <input id="saveButton" type="submit" value="${G.TXT. save}" style=" ${formStyle}">&nbsp&nbsp
-        <input id="clear" type="submit" value="${G.TXT.newGame}" style=" ${formStyle}">
-        </form><br><br>`
+<input id="saveButton" type="submit" value="${G.TXT. save}" style=" ${formStyle}">&nbsp&nbsp
+<input id="clear" type="submit" value="${G.TXT.newGame}" style=" ${formStyle}">
+</form><br><br>`
 let op =   form;
 createMenu (op)
     }
@@ -1578,9 +1577,10 @@ function advanceSummary () {
   L(answerAverage)
 }
 function updateProgress () {
-  //progressBarTop
-}
+    Id('progressBarTop').innerHTML = 'prog'
 
+  }
+  
 buildObjectsOfWorkSheet ();
 const cont = buildContent (mapPageTree ());
 
@@ -1625,4 +1625,5 @@ checkHashParam ()
 const urlParams = new URLSearchParams(window.location.search)
 
  advanceSummary ()
+ updateProgress()
 //things to add: after in-text images add spaces acording to width relation;
