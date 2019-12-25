@@ -2,7 +2,10 @@
 var G = G || {};
 G.Q = _Q_object.QuestionsArray;
 G.V = [];
-/*  fsdfsfsdf*/
+/*  fsdfsfsdf
+G.numberOfChecksAllowed = 10;
+G.canCheckFrom = 0.70; // precentage of filled ansewers;
+*/
 G.saves = {};
 utils: {
     function L(...args) {
@@ -677,7 +680,19 @@ function writeNavBarAndFooter() {
         createMenu(op)
     }
     function clickCheck() {
-        alert('יש לסיים את המענה על השאלות לפני שבודקים')
+        const pre = Math.round(progressSummary() * 100);
+        // G.numberOfChecksAllowed = 10;
+        // G.canCheckFrom = 0.70; // precentage of filled ansewers;
+        //const precentOfQuest = 
+        if (pre < (G.canCheckFrom * 100)) {
+            const preSouldBe = Math.round(G.canCheckFrom * 100)
+            const finishFirstText = `יש לסיים את המענה על  ${preSouldBe + "%"} מהשאלות לפני בדיקה`
+            alert(finishFirstText)
+        } else if (!G.saves.checks || G.saves.checks < G.numberOfChecksAllowed) {
+            if (!G.saves.checks) { G.saves.checks = 1 } else { G.saves.checks++ }
+            checkProcessWithAnimation()
+        }
+
     }
     function clickHelp() {
         G.TXT.fullHelpText1 = `עליך לענות על השאלות. ישנן סוגים שונים של שאלות: שאלות עם אפשרות אחת בלבד, שהיא טקסט או תמונה. שאלות עם מספר אפשרויות, בהן בדרך כלל יותר מתשובה אחת נכונה. בשאלות אלו יופיע סימון V לצ ליד התשובות. שאלות עם מילים שצריך למקם בטקסט - יש ללחוץ על המילה ואז על המקום שבו רוצים לשים אותה. מילוי מילים עם בנק מילים - לאחר שכותבים את המילה היא תימחק מהבנק. שאלות של סידור תשובות בסדר הנכון - יש לגרור את התשובות למקום הנכון, עם העכבר. `
@@ -690,11 +705,7 @@ ${G.TXT.fullHelpText2}<br><br>
         let op = `<div id="helptxt">${helpText}</div>`  //style="overflow:scroll"
         createMenu(op)
     }
-    function helpMenu() {
 
-
-
-    }
     function clickProg() {
         let text = saveState();
 
@@ -1203,10 +1214,33 @@ function pageTransition(n = 1) {
 
 }
 function keyPressFunc(e) { if (e.charCode == 49) { checkAll() } }
+function checkProcessWithAnimation() {
+    const checkingProcess = Elm('checkingProcess')
+    const animationBar = Elm('animationBar')
+    const checkTxt1 = Elm('checkTxt1'); // innerAnimationBar
+    const checkTxt2 = Elm('checkTxt2'); // innerAnimationBar
+    const innerAnimationBar = Elm('innerAnimationBar')
+    const numOfQuestion = Object.keys(saveState()).length
+    L(numOfQuestion)
+    let fulltext = `מתוך ` + numOfQuestion + "  שאלות, ענית על: " + "<br>"
+    //fulltext += 
+    checkTxt1.innerHTML = 'התשובות נבדקות ';
+    animationBar.innerHTML = "  "
+    animationBar.appendChild(innerAnimationBar)
+    checkingProcess.appendChild(checkTxt1);
+    checkingProcess.appendChild(animationBar)
+    checkingProcess.appendChild(checkTxt2);
+
+
+    Id('pageMetaContainer').appendChild(checkingProcess)
+    setTimeout(() => {
+        innerAnimationBar.remove()
+        animationBar.classList.add('shrink-animation-bar')
+
+    }, 1000)
+}
 function checkAll() {
     saveState()
-
-
     let amswerObj = {};
     function getQnumber(id) {
         const reg = /Q([0123456789]{1,3})(_A?([0123456789]{1,3}))?/i
@@ -1607,8 +1641,10 @@ function progressSummary() {
 function updateProgress() {
 
     const progInprecent = Math.round(progressSummary() * 100);
+    let colorStl = '';
+    if (progInprecent < (G.canCheckFrom * 100)) { colorStl = "color:grey" }
     const heb = 'בדיקה';
-    const txtHeb = `<span style="color:grey">${heb}</span>`;
+    const txtHeb = `<span style="${colorStl}">${heb}</span>`;
 
     const pre = progInprecent
 
@@ -1674,5 +1710,5 @@ const tryProg = (n) => {
     }, 100)
 }
 //tryProg(1)
-
+checkProcessWithAnimation()
 //things to add: after in-text images add spaces acording to width relation;
