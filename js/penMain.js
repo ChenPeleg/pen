@@ -676,6 +676,9 @@ function writeNavBarAndFooter() {
         let op = form;
         createMenu(op)
     }
+    function clickCheck() {
+        alert('יש לסיים את המענה על השאלות לפני שבודקים')
+    }
     function clickHelp() {
         G.TXT.fullHelpText1 = `עליך לענות על השאלות. ישנן סוגים שונים של שאלות: שאלות עם אפשרות אחת בלבד, שהיא טקסט או תמונה. שאלות עם מספר אפשרויות, בהן בדרך כלל יותר מתשובה אחת נכונה. בשאלות אלו יופיע סימון V לצ ליד התשובות. שאלות עם מילים שצריך למקם בטקסט - יש ללחוץ על המילה ואז על המקום שבו רוצים לשים אותה. מילוי מילים עם בנק מילים - לאחר שכותבים את המילה היא תימחק מהבנק. שאלות של סידור תשובות בסדר הנכון - יש לגרור את התשובות למקום הנכון, עם העכבר. `
         G.TXT.fullHelpText2 = G.TXT.fullHelpText1 // ``
@@ -817,9 +820,10 @@ ${G.TXT.fullHelpText2}<br><br>
         formFooter.innerHTML += pageslinks2;
     }
 
+
     let html = `<span id="pages_select">${pageslinks}</span>
   <a href="#menu" id="menuBtn">תפריט</a>
-  <a href="javascript:void(0)" id="progressBarTop">התקדמות</a>
+  <a href="javascript:void(0)"   id="progressBarTop">בדיקה</a>
   <a href="javascript:void(0)" id ="fullscreenBtn">${fullScreenSVG}&nbsp&nbsp&nbsp&nbsp מסך מלא </a>`
 
     let htmlOfmenu = `
@@ -852,7 +856,9 @@ ${G.TXT.fullHelpText2}<br><br>
     Id('closeMenu').addEventListener('click', clickMenu);
     Id('progBtn').addEventListener('click', clickProg);
     Id('helpBtn').addEventListener('click', clickHelp);
-    Id('saveBtn').addEventListener('click', clickSave);
+    Id('saveBtn').addEventListener('click', clickSave); // progressBarTop
+    Id('progressBarTop').addEventListener('click', clickCheck)
+
 
 
 
@@ -1212,6 +1218,7 @@ function checkAll() {
     function trimAndLower(text) {
         return text.trim().toLowerCase();
     }
+
     function checkIfAnsCorrect(qObj, val) {
 
         const questionObject = G.V[qObj.questNum];
@@ -1468,13 +1475,18 @@ function storeInLocal(command) {
             case 'reset':
                 if (G.isTheGameConnectedToClick) { alert(G.TXT.cantResteGameDoWithClicl); break }
                 localStorage.removeItem(G.saveInLocalStorageKey);
-                ``
+                G.saves.nameOfplayer = false;
+
+
                 break;
 
             case 'confirmReset':
                 if (G.isTheGameConnectedToClick) { alert(G.TXT.cantResteGameDoWithClicl); break }
                 let tx = G.TXT.wouldYouLikeToReset
-                if (confirm(tx)) { storeInLocal('reset'); location.reload() };
+                if (confirm(tx)) {
+                    storeInLocal('reset');
+                    location.reload()
+                };
                 break;
         }
     }
@@ -1575,7 +1587,7 @@ function checkHashParam() {
 
 
 }
-function advanceSummary() {
+function progressSummary() {
     function arrayStats(arr) {
         let answers = []
         arr.forEach(a => {
@@ -1590,10 +1602,20 @@ function advanceSummary() {
     const filteredQuestions = Object.keys(G.saves).filter(e => e == Number(e)).map(e => G.saves[e])
     /* this array dowsnt consider question numbers */
     const answerAverage = arrayStats(filteredQuestions)
-    L(answerAverage)
+    return answerAverage
 }
 function updateProgress() {
-    Id('progressBarTop').innerHTML = 'prog'
+
+    const progInprecent = Math.round(progressSummary() * 100);
+    const heb = 'בדיקה';
+    const txtHeb = `<span style="color:grey">${heb}</span>`;
+
+    const pre = progInprecent
+
+    const baseColor = `rgb(${(362 / (pre / 14)) + 150},${(pre * 2) + 50}, ${(pre * 0.2) + 50}  )`
+    const fullText = `<div>${txtHeb} &nbsp<div style="background-image:linear-gradient(${baseColor} 0%, rgb(50,50,50) 100%); padding: 0px; background-size:${progInprecent}% 100%; background-repeat:no-repeat; background-position: right; border:1px solid white; display: inline-block; width:40px; border-radius:3px;">${progInprecent}%</div></div>`
+    Id('progressBarTop').innerHTML = fullText;
+
 
 }
 
@@ -1627,17 +1649,30 @@ function t(n) {
 }
 //Id('menu').style.display = 'flex'
 
-storeInLocal('load'); assignLoadedContent(); setInterval(() => {
+storeInLocal('load');
+if (G.saves.nameOfplayer) { assignLoadedContent() };
+
+setInterval(() => {
+    updateProgress()
     if (G.saves.nameOfplayer) {
         saveState();
         storeInLocal('save')
     }
 
-}, 500)
+}, 1000)
 checkHashParam()
 
 const urlParams = new URLSearchParams(window.location.search)
 
-advanceSummary()
+progressSummary()
 updateProgress()
+Id('navbar').classList.add('hovering')
+const tryProg = (n) => {
+    setTimeout(() => {
+        updateProgress(n)
+        if (n < 99) { tryProg(n + 2) }
+    }, 100)
+}
+//tryProg(1)
+
 //things to add: after in-text images add spaces acording to width relation;
