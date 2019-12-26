@@ -1057,6 +1057,7 @@ function enableElementPlacing(elemClass_, containerClass_, bankClass = 'word-pla
     Array.prototype.map.call(elements, (list) => { addclickListner(list) });
 }
 function enableDragSort(listClass) {
+    L(listClass)
     function enableDragList(list) {
         Array.prototype.map.call(list.children, (item) => { enableDragItem(item) });
     }
@@ -1068,18 +1069,21 @@ function enableDragSort(listClass) {
         item.ondragover = onDragOver
     }
     function onDragStart(item) {
+        if (item.target.parentNode.classList.contains('done')) { return }
 
         item.dataTransfer.dropEffect = "link";
         item.dataTransfer.setData("link", item.target.id);
 
     }
     function onDragOver(item) {
+        if (item.target.parentNode.classList.contains('done')) { return }
         let target = item.target;
         item.preventDefault();
         item.dataTransfer.dropEffect = "link";
 
     }
     function handleDrag(item) {
+        if (item.target.parentNode.classList.contains('done')) { return }
         const selectedItem = item.target,
             list = selectedItem.parentNode,
             x = event.clientX,
@@ -1271,7 +1275,7 @@ function informationCheckBox(action) {
         checkTxt2.innerHTML = fulltext;
         if (!shouldCheck) { return }
         animationBar.classList.add('shrink-animation-bar');
-        checkAll(true)
+        setTimeout(() => { checkAll(true) }, 10)
 
 
     }, timeTowait)
@@ -1343,7 +1347,9 @@ function checkAll(toMark = true) {
         }
     }
     function ansAdd(name, value) {
-        const insertAfter = function (newNode, nodeToinsertAfter) {//.nextSibling
+        const insertAfter = function (newNode, nodeToinsertAfter) {
+
+
             nodeToinsertAfter.parentNode.insertBefore(newNode, nodeToinsertAfter)
         }
         const checkSvg = svgGetter('good')
@@ -1354,7 +1360,7 @@ function checkAll(toMark = true) {
 
         if (!Id(name)) { name += "_0" } // in the case of checkboxes
 
-        if (check) { // prevents futue change in queestion
+        if (check) { //  
 
             Id(name).classList.add('done');
             Id(name).readOnly = "readonly";
@@ -1364,11 +1370,22 @@ function checkAll(toMark = true) {
                     if (r.id !== name) { r.disabled = true; r.classList.add('done'); }
                 })
             }
+            if (Id(name).type === 'checkbox') {
+                const checkboxes = [...document.getElementsByName(Id(name).name)]
+                checkboxes.forEach(r => {
+                    r.classList.add('done');
+                    r.disabled = "disabled";
+
+                })
+
+            }
         }
 
         if (Id(name).type === 'radio') { name = "Q" + getQnumber(name).questNum + "_0" }
         let grade = Elm(name + '_mark', 'span'); grade.classList.add("check-mark");
-        grade.innerHTML = check ? checkSvg : Xsvg
+
+
+        if (toMark) { grade.innerHTML = check ? checkSvg : Xsvg }
 
 
         if (Id(name).tagName === 'OL') {
@@ -1379,7 +1396,7 @@ function checkAll(toMark = true) {
         if (Id(name).type === 'radio') {
             grade.childNodes[0].style.top = '-10px';
         }
-        if (toMark) { insertAfter(grade, Id(name)) }
+        if (toMark) { insertAfter(grade, Id(name)); }
     }
     const inputs = [...document.querySelectorAll('input:not(.checkbox0)')]
     const orders = [...document.querySelectorAll('.orderList')]
@@ -1740,7 +1757,6 @@ const urlParams = new URLSearchParams(window.location.search)
 progressSummary()
 updateProgress()
 Id('navbar').classList.add('hovering')
+if (G.saves.checks) { checkAll(true) }
 
-//tryProg(1)
-informationCheckBox()
 //things to add: after in-text images add spaces acording to width relation;
