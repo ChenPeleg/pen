@@ -7,6 +7,7 @@ G.numberOfChecksAllowed = 10;
 G.canCheckFrom = 0.70; // precentage of filled ansewers;
 */
 G.saves = {};
+
 utils: {
     function L(...args) {
         return console.log(...args)
@@ -687,18 +688,9 @@ function writeNavBarAndFooter() {
         createMenu(op)
     }
     function clickCheck() {
-        const pre = Math.round(progressSummary() * 100);
-        // G.numberOfChecksAllowed = 10;
-        // G.canCheckFrom = 0.70; // precentage of filled ansewers;
-        //const precentOfQuest = 
-        if (pre < (G.canCheckFrom * 100)) {
-            const preSouldBe = Math.round(G.canCheckFrom * 100)
-            const finishFirstText = `יש לסיים את המענה על  ${preSouldBe + "%"} מהשאלות לפני בדיקה`
-            alert(finishFirstText)
-        } else if (!G.saves.checks || G.saves.checks < G.numberOfChecksAllowed) {
-            if (!G.saves.checks) { G.saves.checks = 1 } else { G.saves.checks++ }
-            checkProcessWithAnimation()
-        }
+        informationCheckBox()
+        return
+
 
     }
     function clickHelp() {
@@ -1221,7 +1213,9 @@ function pageTransition(n = 1) {
 
 }
 function keyPressFunc(e) { if (e.charCode == 49) { checkAll() } }
-function checkProcessWithAnimation() {
+function informationCheckBox(action) {
+
+    const pre = Math.round(progressSummary() * 100);
     const checkingProcess = Elm('checkingProcess')
     const animationBar = Elm('animationBar')
     const checkTxt1 = Elm('checkTxt1'); // innerAnimationBar
@@ -1234,14 +1228,31 @@ function checkProcessWithAnimation() {
     const rightAnswers = allAnswers - wrongAnswers;
     const goodMark = svgGetter('good')
     const badMark = svgGetter('bad')
+    let timeTowait = 2000;
+    let shouldCheck = true;
+
 
     let fulltext = `מתוך ` + allAnswers + "  שאלות, ענית על: " + "<br>"
     fulltext += `<span style="font-weight:bolder;"><span class="check-mark-general">${goodMark} </span> ` + rightAnswers + ' נכון מאד ' + "<br>"
     fulltext += `<span class="check-mark-general">${badMark} </span> ` + wrongAnswers + ' לא נכון או חלקי ' + "</span><br><br>";
-    fulltext += 'נותרו עוד ' + G.saves.checks + ' בדיקות '
+    fulltext += 'נותרו עוד ' + (G.numberOfChecksAllowed - G.saves.checks) + ' בדיקות '
 
 
-    checkTxt1.innerHTML = 'התשובות נבדקות ';
+    checkTxt1.innerHTML = 'בדיקת תשובות  ';
+
+    if (pre < (G.canCheckFrom * 100)) {
+        const preSouldBe = Math.round(G.canCheckFrom * 100)
+        fulltext = `יש לסיים את המענה על  ${preSouldBe + "%"} מהשאלות לפני בדיקה`;
+        timeTowait = 0; shouldCheck = false; animationBar.classList.add('shrink-bar');
+
+    } else if (!G.saves.checks || (G.saves.checks < G.numberOfChecksAllowed)) {
+        if (!G.saves.checks) { G.saves.checks = 1 } else { G.saves.checks++ }
+
+    } else {
+        fulltext = 'לא נותרו לך עוד בדיקות. ניתן להתחיל מחדש וכך למלא שוב את הבדיקות. התחלה מחדש תמחק את כל ההתקדמות שלך !'
+        timeTowait = 0; shouldCheck = false; animationBar.classList.add('shrink-bar');
+    }
+
     checkClosebutton.innerHTML = 'סגירה'
     animationBar.innerHTML = "  "
     animationBar.appendChild(innerAnimationBar)
@@ -1249,17 +1260,21 @@ function checkProcessWithAnimation() {
     checkingProcess.appendChild(animationBar)
     checkingProcess.appendChild(checkTxt2);
     checkingProcess.appendChild(checkClosebutton);
+    checkClosebutton.addEventListener('click', () => { checkingProcess.remove() })
 
 
     Id('pageMetaContainer').appendChild(checkingProcess)
     setTimeout(() => {
+        if (!Id('checkingProcess')) { return }
         innerAnimationBar.remove()
-        animationBar.classList.add('shrink-animation-bar');
+
         checkTxt2.innerHTML = fulltext;
+        if (!shouldCheck) { return }
+        animationBar.classList.add('shrink-animation-bar');
         checkAll(true)
 
 
-    }, 100)
+    }, timeTowait)
 }
 function checkAll(toMark = true) {
     saveState()
@@ -1712,7 +1727,7 @@ if (G.saves.nameOfplayer) { assignLoadedContent() };
 
 setInterval(() => {
     updateProgress()
-    if (G.saves.nameOfplayer) {
+    if (G.saves.nameOfplayer || true) {
         saveState();
         storeInLocal('save')
     }
@@ -1725,12 +1740,7 @@ const urlParams = new URLSearchParams(window.location.search)
 progressSummary()
 updateProgress()
 Id('navbar').classList.add('hovering')
-const tryProg = (n) => {
-    setTimeout(() => {
-        updateProgress(n)
-        if (n < 99) { tryProg(n + 2) }
-    }, 100)
-}
+
 //tryProg(1)
-checkProcessWithAnimation()
+informationCheckBox()
 //things to add: after in-text images add spaces acording to width relation;

@@ -537,6 +537,11 @@ h3{
  background-color:rgba(255, 228, 196, 0.9);
  box-shadow: 1px 1px 4px 2px rgba(0,0,0,0.1), 1px 1px 4px 2px rgba(0,0,0,0.1);
  z-index: 35;
+ animation: fade-in 0.2s  forwards;
+ }
+ @keyframes fade-in {
+     0%{opacity: 0;}
+     100%{opacity: 1;}
  }
  #animationBar{
     position: relative;
@@ -551,36 +556,42 @@ h3{
     box-shadow: 1px 1px 4px 2px rgba(255,255,255,0.2), 1px 1px 4px 2px rgba(255,255,255,0.2);
     overflow: hidden;
  }
+.shrink-bar {
+    animation-name: shrinker;
+     animation-duration: 0.0s;
+     animation-fill-mode: forwards;
+    
+}
  .shrink-animation-bar {
       
      animation-name: shrinker;
-     animation-duration: 0.2s;
+     animation-duration: 0.3s;
      animation-fill-mode: forwards;
  }
  #innerAnimationBar {
     position: relative;
-    left: -25%;
+    left: -0%;
     height: 110%;
     width: 50%;
     border-radius: inherit;
     background:linear-gradient(to right,transparent 0%, rgb(137, 173, 228) 35%, rgb(16, 155, 219) 50%, rgb(137, 173, 228)  70%, transparent 100%);
     animation-name: checkBar;
-    animation-duration: 1.1s;
+    animation-duration: 0.9s;
     animation-iteration-count: 9;
     
  }
  @keyframes checkBar{
      0%{
-         left: -20%;
+         left: -100%;
          opacity: 1;
      }
      50%{
          left: 90%;
-         opacity: 0.8;
+         opacity: 1;
         }
      100%{
-             left :-20%;
-             opacity: 0.6;
+             left :-100%;
+             opacity: 1;
          }
 
     
@@ -590,3 +601,18 @@ h3{
  
      100% {height: 0px;}
  }
+#checkClosebutton{
+    position: relative;
+    display: inline-block;
+    padding: 2px;
+    margin: 4px;
+    margin-top: 10px;
+    background-color: rgba(0,0,0,0.15);
+    border-radius: inherit;
+    border: 2px solid black;
+}
+#checkClosebutton:hover{
+    cursor: pointer;
+    box-shadow: var(--main-soft-shadow) ;
+
+}
