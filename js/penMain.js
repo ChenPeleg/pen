@@ -2,10 +2,7 @@
 var G = G || {};
 G.Q = _Q_object.QuestionsArray;
 G.V = [];
-/*  fsdfsfsdf
-G.numberOfChecksAllowed = 10;
-G.canCheckFrom = 0.70; // precentage of filled ansewers;
-*/
+
 G.saves = {};
 
 utils: {
@@ -827,13 +824,14 @@ ${G.TXT.fullHelpText2}<br><br>
             if (num === 1) { cls = 'currentPageInd' }
             pageslinks2 += `<a href="#page_${num}" id="fpage_${num}" class="${footcls}">${num}</a> </span>`
         })
+
         formFooter.innerHTML += pageslinks2;
     }
-
+    formFooter.innerHTML += '<a href="javascript:void(0)"  id="footerCheckButton"> בדיקה </a>'
 
     let html = `<span id="pages_select">${pageslinks}</span>
   <a href="#menu" id="menuBtn">תפריט</a>
-  <a href="javascript:void(0)"   id="progressBarTop">בדיקה</a>
+  <a href="javascript:void(0)"  id="checkButtonTop"><span id="advanceBar" style="display:inline-block;">בדיקה</span ><span style="display:inline-block;" id="markProgBar"> </span></a>
   <a href="javascript:void(0)" id ="fullscreenBtn">${fullScreenSVG}&nbsp&nbsp&nbsp&nbsp מסך מלא </a>`
 
     let htmlOfmenu = `
@@ -866,9 +864,9 @@ ${G.TXT.fullHelpText2}<br><br>
     Id('closeMenu').addEventListener('click', clickMenu);
     Id('progBtn').addEventListener('click', clickProg);
     Id('helpBtn').addEventListener('click', clickHelp);
-    Id('saveBtn').addEventListener('click', clickSave); // progressBarTop
-    Id('progressBarTop').addEventListener('click', clickCheck)
-
+    Id('saveBtn').addEventListener('click', clickSave);
+    Id('checkButtonTop').addEventListener('click', clickCheck)
+    Id('footerCheckButton').addEventListener('click', clickCheck)
 
 
 
@@ -1217,6 +1215,7 @@ function pageTransition(n = 1) {
 
 }
 function keyPressFunc(e) { if (e.charCode == 49) { checkAll() } }
+
 function informationCheckBox(action) {
 
     const pre = Math.round(progressSummary() * 100);
@@ -1231,14 +1230,15 @@ function informationCheckBox(action) {
     const wrongAnswers = boolArray.filter(e => e === false).length;
     const rightAnswers = allAnswers - wrongAnswers;
     const goodMark = svgGetter('good')
-    const badMark = svgGetter('bad')
-    let timeTowait = 2000;
+    const badMark = svgGetter('bad');
+
+    let timeTowait = 800;
     let shouldCheck = true;
 
 
     let fulltext = `מתוך ` + allAnswers + "  שאלות, ענית על: " + "<br>"
     fulltext += `<span style="font-weight:bolder;"><span class="check-mark-general">${goodMark} </span> ` + rightAnswers + ' נכון מאד ' + "<br>"
-    fulltext += `<span class="check-mark-general">${badMark} </span> ` + wrongAnswers + ' לא נכון או חלקי ' + "</span><br><br>";
+    fulltext += `<span class="check-mark-general" >${badMark} </span> ` + wrongAnswers + ' לא נכון או חלקי ' + "</span><br><br>";
     fulltext += 'נותרו עוד ' + (G.numberOfChecksAllowed - G.saves.checks) + ' בדיקות '
 
 
@@ -1251,6 +1251,7 @@ function informationCheckBox(action) {
 
     } else if (!G.saves.checks || (G.saves.checks < G.numberOfChecksAllowed)) {
         if (!G.saves.checks) { G.saves.checks = 1 } else { G.saves.checks++ }
+        Id('markProgBar').innerHTML = `<span class="littleMark">${rightAnswers}</span><span class="littleMark" style="bottom:-17px; background-color:red;">${wrongAnswers}</span>` // goodMark
 
     } else {
         fulltext = 'לא נותרו לך עוד בדיקות. ניתן להתחיל מחדש וכך למלא שוב את הבדיקות. התחלה מחדש תמחק את כל ההתקדמות שלך !'
@@ -1357,9 +1358,9 @@ function checkAll(toMark = true) {
 
         const check = checkIfAnsCorrect(getQnumber(name), value)
         answerBoolArray.push(check)
+        if (!toMark) { return }
 
         if (!Id(name)) { name += "_0" } // in the case of checkboxes
-
         if (check) { //  
 
             Id(name).classList.add('done');
@@ -1380,7 +1381,6 @@ function checkAll(toMark = true) {
 
             }
         }
-
         if (Id(name).type === 'radio') { name = "Q" + getQnumber(name).questNum + "_0" }
         let grade = Elm(name + '_mark', 'span'); grade.classList.add("check-mark");
 
@@ -1695,8 +1695,8 @@ function progressSummary() {
 function updateProgress() {
 
     const progInprecent = Math.round(progressSummary() * 100);
-    let colorStl = '';
-    if (progInprecent < (G.canCheckFrom * 100)) { colorStl = "color:grey" }
+    let colorStl = ''; let opac = 1;
+    if (progInprecent < (G.canCheckFrom * 100)) { colorStl = "color:grey"; opac = 0.5 }
     const heb = 'בדיקה';
     const txtHeb = `<span style="${colorStl}">${heb}</span>`;
 
@@ -1704,7 +1704,9 @@ function updateProgress() {
 
     const baseColor = `rgb(${(362 / (pre / 14)) + 150},${(pre * 2) + 50}, ${(pre * 0.2) + 50}  )`
     const fullText = `<div>${txtHeb} &nbsp<div style="background-image:linear-gradient(${baseColor} 0%, rgb(50,50,50) 100%); padding: 0px; background-size:${progInprecent}% 100%; background-repeat:no-repeat; background-position: right; border:1px solid white; display: inline-block; width:40px; border-radius:3px;">${progInprecent}%</div></div>`
-    Id('progressBarTop').innerHTML = fullText;
+    Id('advanceBar').innerHTML = fullText;
+
+    Id('footerCheckButton').style.opacity = opac + " "
 
 
 }
@@ -1758,5 +1760,6 @@ progressSummary()
 updateProgress()
 Id('navbar').classList.add('hovering')
 if (G.saves.checks) { checkAll(true) }
+//informationCheckBox();
 
 //things to add: after in-text images add spaces acording to width relation;

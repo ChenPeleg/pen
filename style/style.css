@@ -44,6 +44,7 @@ footer{
 }
 footer a{
         padding: 10px;
+        color: black;
 }
 footer a.allow-hover:hover{
  background-color: rgba(200,200,200,0.8);
@@ -58,7 +59,7 @@ footer a:hover {
   position: fixed;
   width: 40%;
   right: calc(30%);
-  height: 300px;
+  /* height: 300px; */
   background-color: inherit;
   background:linear-gradient(to bottom, rgba(40,40,40) 0%, rgba(50,50,50) 44%, rgb(40,40,40) 60%, rgba(30,30,30) 100%);
   border-radius: 0px 0px 3px 3px;
@@ -615,4 +616,20 @@ h3{
     cursor: pointer;
     box-shadow: var(--main-soft-shadow) ;
 
+}
+#markProgBar{
+position: relative;
+width:calc(var(--main-font-size)*0.3);
+margin-left: 5px;
+}
+.littleMark{
+    background-color: rgb(31, 141, 3);
+    position: absolute;
+    bottom: 6px;
+    right: -2px;
+
+    
+    border:white;
+    width: var(--main-font-size); 
+    border-radius: 50%;
 }
