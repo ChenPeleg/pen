@@ -1252,11 +1252,23 @@ function informationCheckBox(action) {
         fulltext = `יש לסיים את המענה על  ${preSouldBe + "%"} מהשאלות לפני בדיקה`;
         timeTowait = 0; shouldCheck = false; animationBar.classList.add('shrink-bar');
 
-    } else { showResolts() }
+    } else { showResults() }
 }
 
-function showResolts() {
-    L(saveState())
+function showResults() {
+    const saves = saveState()
+    const arrayOfKeys = Object.keys(saves)
+    let html = '<div style = "direction: rtl; text-align:right;">'
+    arrayOfKeys.forEach(s => {
+        const Q = (G.V[[s]]);
+        html += Q.content + '<br>'
+        Q.answer.filter(e => e).forEach(a => {
+            html += `<div class = "graph">${a} <br><br></div>`
+        })
+    })
+    html += '</div>'
+
+    Id('mainForm').innerHTML = html
 
 }
 
@@ -1673,6 +1685,7 @@ function progressSummary() {
 }
 function updateProgress() {
 
+
     const progInprecent = Math.round(progressSummary() * 100);
 
     let colorStl = ''; let opac = 1;
@@ -1726,8 +1739,10 @@ storeInLocal('load');
 if (G.saves.nameOfplayer) { assignLoadedContent() };
 
 setInterval(() => {
+    return
     updateProgress()
     if (G.saves.nameOfplayer || true) {
+
         saveState();
         storeInLocal('save')
     }
