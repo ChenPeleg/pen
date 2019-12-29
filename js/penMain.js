@@ -1256,10 +1256,20 @@ function informationCheckBox(action) {
 }
 
 function showResults() {
+    tm = 10;
     function getPrecent(arr, ans) {
         const amount = arr.filter(a => a === ans).length;
         const precent = Math.ceil((amount / arr.length) * 1000) / 10
         return precent
+
+    }
+    function precentAnimation(id, final, current) {
+        Id(id + "T").innerHTML = current + "%";
+        //Id(id).style.width = current + "%";
+        current++;
+        if (current > final) { return }
+
+        setTimeout(() => { precentAnimation(id, final, current) }, tm)
 
     }
     const storageKey = "cell";
@@ -1272,7 +1282,8 @@ function showResults() {
     G.project = G.project || {}
 
     const arrayOfKeys = Object.keys(saves)
-    let html = '<div style = "direction: rtl; text-align:right;">'
+    let html = '<div style = "direction: rtl; text-align:right; ">'
+    document.body.style = "  background: linear-gradient(to left, rgba(190,173,241,1) 0%, rgba(105,190,205,1) 100%);"
     arrayOfKeys.forEach(s => {
         const Q = (G.V[[s]]);
         html += Q.content + '<br>'
@@ -1281,12 +1292,19 @@ function showResults() {
         Q.answer.filter(e => e).forEach(a => {
             let choiceStl = '';
             const pre = getPrecent(G.project[s], Q.answer.indexOf(a));
-            let text = `${a}&nbsp&nbsp&nbsp&nbsp${pre}%`
+            let text = `${a}&nbsp&nbsp`
             const num = Q.answer.indexOf(a)
             let rc = 200 * num, bc = 210 - (num * 10), gc = 200 - (num * 5);
-            const graphStl = `background:rgb(${rc}, ${bc}, ${gc} ); width:${pre}%;`
+            let graphStl = `background:rgb(${rc}, ${bc}, ${gc} );` //  width:${pre}%;
+            graphStl = ''
             if (Q.answer.indexOf(a) === saves[s]) { choiceStl = "color:brown; font-weight:bolder;" }
-            html += `<div class="graph_container"><span class="graph-text" style="${choiceStl}">${text}</span><div id = "Q${s}_${Q.answer.indexOf(a)}" class = "graph" style="${graphStl}"></div></div>`
+            html += `<div class="graph_container"><span class="graph-text " style="${choiceStl}">${text}</span><span class="graph-text" id = "Q${s}_${Q.answer.indexOf(a) + "T"}">&nbsp&nbsp${pre}%</span><div id = "Q${s}_${Q.answer.indexOf(a)}" class = "graph bg${num}" style="${graphStl}"></div></div>`;
+            setTimeout(() => {
+                precentAnimation(`Q${s}_${Q.answer.indexOf(a)}`, pre, 0);
+                Id(`Q${s}_${Q.answer.indexOf(a)}`).style.width = pre + "%";
+
+            }, 100)
+
 
         })
     })
@@ -1717,12 +1735,12 @@ function updateProgress() {
     let colorStl = ''; let opac = 1;
     if (progInprecent < (G.canCheckFrom * 100)) { colorStl = "color:grey"; opac = 0.5 }
     const heb = 'בדיקה';
-    const txtHeb = `<span style="${colorStl}">${heb}</span>`;
+    const txtHeb = `< span style = "${colorStl}" > ${heb}</span > `;
 
     const pre = progInprecent
 
-    const baseColor = `rgb(${(362 / (pre / 14)) + 150},${(pre * 2) + 50}, ${(pre * 0.2) + 50}  )`
-    const fullText = `<div>${txtHeb} &nbsp<div style="background-image:linear-gradient(${baseColor} 0%, rgb(50,50,50) 100%); padding: 0px; background-size:${progInprecent}% 100%; background-repeat:no-repeat; background-position: right; border:1px solid white; display: inline-block; width:40px; border-radius:3px;">${progInprecent}%</div></div>`
+    const baseColor = `rgb(${(362 / (pre / 14)) + 150}, ${(pre * 2) + 50}, ${(pre * 0.2) + 50}  )`
+    const fullText = `< div > ${txtHeb} & nbsp < div style = "background-image:linear-gradient(${baseColor} 0%, rgb(50,50,50) 100%); padding: 0px; background-size:${progInprecent}% 100%; background-repeat:no-repeat; background-position: right; border:1px solid white; display: inline-block; width:40px; border-radius:3px;" > ${progInprecent}%</div ></div > `
     // Id('advanceBar').innerHTML = fullText;
 
 
@@ -1783,6 +1801,6 @@ updateProgress()
 
 //Id('navbar').classList.add('hovering')
 //if (G.saves.checks) { checkAll(true) }
-informationCheckBox();
+//informationCheckBox();
 
 //things to add: after in-text images add spaces acording to width relation;
