@@ -1256,19 +1256,45 @@ function informationCheckBox(action) {
 }
 
 function showResults() {
+    function getPrecent(arr, ans) {
+        const amount = arr.filter(a => a === ans).length;
+        const precent = Math.ceil((amount / arr.length) * 1000) / 10
+        return precent
+
+    }
+    const storageKey = "cell";
+    const lsData = localStorage.getItem(storageKey);
+    if (lsData) { G.project = JSON.parse(lsData) }
+
     const saves = saveState()
+    //L(saves)
+    //if ()
+    G.project = G.project || {}
+
     const arrayOfKeys = Object.keys(saves)
     let html = '<div style = "direction: rtl; text-align:right;">'
     arrayOfKeys.forEach(s => {
         const Q = (G.V[[s]]);
         html += Q.content + '<br>'
+        G.project[s] = G.project[s] || []
+        G.project[s].push(saves[s])
         Q.answer.filter(e => e).forEach(a => {
-            html += `<div class = "graph">${a} <br><br></div>`
+            let choiceStl = '';
+            const pre = getPrecent(G.project[s], Q.answer.indexOf(a));
+            let text = `${a}&nbsp&nbsp&nbsp&nbsp${pre}%`
+            const num = Q.answer.indexOf(a)
+            let rc = 200 * num, bc = 210 - (num * 10), gc = 200 - (num * 5);
+            const graphStl = `background:rgb(${rc}, ${bc}, ${gc} ); width:${pre}%;`
+            if (Q.answer.indexOf(a) === saves[s]) { choiceStl = "color:brown; font-weight:bolder;" }
+            html += `<div class="graph_container"><span class="graph-text" style="${choiceStl}">${text}</span><div id = "Q${s}_${Q.answer.indexOf(a)}" class = "graph" style="${graphStl}"></div></div>`
+
         })
     })
     html += '</div>'
 
     Id('mainForm').innerHTML = html
+    L(G.project)
+    localStorage.setItem(storageKey, JSON.stringify(G.project))
 
 }
 
@@ -1754,8 +1780,9 @@ const urlParams = new URLSearchParams(window.location.search)
 
 progressSummary()
 updateProgress()
+
 //Id('navbar').classList.add('hovering')
 //if (G.saves.checks) { checkAll(true) }
-//informationCheckBox();
+informationCheckBox();
 
 //things to add: after in-text images add spaces acording to width relation;
