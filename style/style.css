@@ -23,7 +23,7 @@ div {
 
 body {
 
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'David', sans-serif;
     font-size: var(--main-font-size)
 }
 section div:first-child {
@@ -39,11 +39,19 @@ footer{
     cursor: pointer;
     position: relative;
     display:inline-block;
-    padding: 10px;
+    padding: 20px;
     z-index: 3;
 }
 footer a{
-        padding: 10px;
+        padding: 14px;
+        width: 100%;
+        height: 100%;
+        color: darkblue;
+        font-weight: bold;
+        margin: 30px;
+        background-color: burlywood;
+        border-radius: 20px;
+        border: 10px solid  darkblue;
         color: black;
 }
 footer a.allow-hover:hover{
@@ -112,11 +120,10 @@ div::-webkit-scrollbar-thumb {
 }
 
 #pageContainer {
-    align-self: center;
+  
     position: relative;
-    align-self: center;
-    display: flex;
-    align-items: flex-start;
+    text-align: center;
+ 
     width: var(--main-pageContainer-width);
     margin: 0 auto;
 }

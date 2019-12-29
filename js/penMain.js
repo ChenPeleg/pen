@@ -854,19 +854,22 @@ ${G.TXT.fullHelpText2}<br><br>
     menu.appendChild(menuCommands);
     menuCommands.innerHTML = htmlOfmenu;
     menu.classList.add('menu')
-    navbarContatiner.appendChild(navbar);
+    //navbarContatiner.appendChild(navbar);
     navbar.appendChild(menu)
     navbar.appendChild(navbarhinter);
 
     const pageMetaContainer = Id('pageMetaContainer');
     pageMetaContainer.insertBefore(navbarContatiner, pageMetaContainer.childNodes[0]);
+    Id('footerCheckButton').addEventListener('click', clickCheck)
+    return
+
     Id('fullscreenBtn').addEventListener('click', toggleFullscreen);
     Id('closeMenu').addEventListener('click', clickMenu);
     Id('progBtn').addEventListener('click', clickProg);
     Id('helpBtn').addEventListener('click', clickHelp);
     Id('saveBtn').addEventListener('click', clickSave);
     Id('checkButtonTop').addEventListener('click', clickCheck)
-    Id('footerCheckButton').addEventListener('click', clickCheck)
+
 
 
 
@@ -878,7 +881,7 @@ function buildContent(tree) {
         if (pageBreak.num - 1) { output += `</section>` }
         let disp = 'none'
         if (pageBreak.num === 1) { disp = 'block' }
-        output += `<section id="sect${pageBreak.num}" style="display:${disp}" class="sectionClass">`;
+        output += `<section id="sect${pageBreak.num}" style="display:${disp}; direction: rtl; display:block;" class="sectionClass">`;
         pageBreak.is = false;
         pageBreak.num++;
         return output
@@ -1055,7 +1058,7 @@ function enableElementPlacing(elemClass_, containerClass_, bankClass = 'word-pla
     Array.prototype.map.call(elements, (list) => { addclickListner(list) });
 }
 function enableDragSort(listClass) {
-    L(listClass)
+
     function enableDragList(list) {
         Array.prototype.map.call(list.children, (item) => { enableDragItem(item) });
     }
@@ -1249,38 +1252,14 @@ function informationCheckBox(action) {
         fulltext = `יש לסיים את המענה על  ${preSouldBe + "%"} מהשאלות לפני בדיקה`;
         timeTowait = 0; shouldCheck = false; animationBar.classList.add('shrink-bar');
 
-    } else if (!G.saves.checks || (G.saves.checks < G.numberOfChecksAllowed)) {
-        if (!G.saves.checks) { G.saves.checks = 1 } else { G.saves.checks++ }
-        Id('markProgBar').innerHTML = `<span class="littleMark">${rightAnswers}</span><span class="littleMark" style="bottom:-17px; background-color:red;">${wrongAnswers}</span>` // goodMark
-
-    } else {
-        fulltext = 'לא נותרו לך עוד בדיקות. ניתן להתחיל מחדש וכך למלא שוב את הבדיקות. התחלה מחדש תמחק את כל ההתקדמות שלך !'
-        timeTowait = 0; shouldCheck = false; animationBar.classList.add('shrink-bar');
-    }
-
-    checkClosebutton.innerHTML = 'סגירה'
-    animationBar.innerHTML = "  "
-    animationBar.appendChild(innerAnimationBar)
-    checkingProcess.appendChild(checkTxt1);
-    checkingProcess.appendChild(animationBar)
-    checkingProcess.appendChild(checkTxt2);
-    checkingProcess.appendChild(checkClosebutton);
-    checkClosebutton.addEventListener('click', () => { checkingProcess.remove() })
-
-
-    Id('pageMetaContainer').appendChild(checkingProcess)
-    setTimeout(() => {
-        if (!Id('checkingProcess')) { return }
-        innerAnimationBar.remove()
-
-        checkTxt2.innerHTML = fulltext;
-        if (!shouldCheck) { return }
-        animationBar.classList.add('shrink-animation-bar');
-        setTimeout(() => { checkAll(true) }, 10)
-
-
-    }, timeTowait)
+    } else { showResolts() }
 }
+
+function showResolts() {
+    L(saveState())
+
+}
+
 function checkAll(toMark = true) {
     saveState()
     let answerBoolArray = [];
@@ -1695,6 +1674,7 @@ function progressSummary() {
 function updateProgress() {
 
     const progInprecent = Math.round(progressSummary() * 100);
+
     let colorStl = ''; let opac = 1;
     if (progInprecent < (G.canCheckFrom * 100)) { colorStl = "color:grey"; opac = 0.5 }
     const heb = 'בדיקה';
@@ -1704,7 +1684,8 @@ function updateProgress() {
 
     const baseColor = `rgb(${(362 / (pre / 14)) + 150},${(pre * 2) + 50}, ${(pre * 0.2) + 50}  )`
     const fullText = `<div>${txtHeb} &nbsp<div style="background-image:linear-gradient(${baseColor} 0%, rgb(50,50,50) 100%); padding: 0px; background-size:${progInprecent}% 100%; background-repeat:no-repeat; background-position: right; border:1px solid white; display: inline-block; width:40px; border-radius:3px;">${progInprecent}%</div></div>`
-    Id('advanceBar').innerHTML = fullText;
+    // Id('advanceBar').innerHTML = fullText;
+
 
     Id('footerCheckButton').style.opacity = opac + " "
 
@@ -1751,15 +1732,15 @@ setInterval(() => {
         storeInLocal('save')
     }
 
-}, 1000)
+}, 500)
 checkHashParam()
 
 const urlParams = new URLSearchParams(window.location.search)
 
 progressSummary()
 updateProgress()
-Id('navbar').classList.add('hovering')
-if (G.saves.checks) { checkAll(true) }
+//Id('navbar').classList.add('hovering')
+//if (G.saves.checks) { checkAll(true) }
 //informationCheckBox();
 
 //things to add: after in-text images add spaces acording to width relation;

@@ -7,7 +7,7 @@ G.devMode = false; // developer mode => 1 = endlevel
 G.name_of_game = "דף עבודה"
 G.name_of_gameEN = 'Worksheet';
 G.numberOfChecksAllowed = 10;
-G.canCheckFrom = 0.75; // precentage of filled ansewers;
+G.canCheckFrom = 1; // precentage of filled ansewers;
 G.dev_mode = 1; //change back to 0
 G.EN = 0; // english
 
