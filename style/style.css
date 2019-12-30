@@ -83,9 +83,11 @@ footer a:hover {
 
 }
 #menuContent{
+  position: relative;
   word-wrap: break-word;
   padding: 15px;
   width: 65%;
+  height: 120px;
   height: inherit;
   overflow: hidden;
   overflow-y:  scroll;
@@ -549,7 +551,7 @@ h3{
     position:fixed;
     text-align: center;
     font-family: arial;
-    font-size: 17px ;
+    font-size: 22px ;
     border-radius: 5px;
     border: medium;
     padding: 10px;

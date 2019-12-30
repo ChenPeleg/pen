@@ -1376,6 +1376,7 @@ function checkAll(toMark = true) {
         }
     }
     function ansAdd(name, value) {
+        L(name, value)
         const insertAfter = function (newNode, nodeToinsertAfter) {
 
 
@@ -1462,7 +1463,7 @@ function checkAll(toMark = true) {
             ansAdd(i.id, i.value)
         } else if (i.checked !== i.defaultChecked) {
             if (i.type === 'checkbox') { } else { ansAdd(i.id, i.checked) }
-        }
+        } else { ansAdd(i.id, '') }
     })
     placeing.forEach(p => {
 
@@ -1753,13 +1754,17 @@ function updateProgress() {
 }
 function finishFinal() {
     const finishAllMsg = Elm('finishAllMsg');
-
+    const checkClosebutton = Elm('checkClosebutton', 'span');
+    checkClosebutton.innerHTML = 'סגירה'
 
     Id('pageMetaContainer').appendChild(finishAllMsg);
-    let html = `<H1>סיימת בהצלחה !</H1><br><br><br> כל הכבוד ! ענית נכון על כל השאלות בדף.`
+    let html = `<H1>סיימת בהצלחה !</H1><br><br><br> כל הכבוד ! ענית נכון על כל השאלות בדף.` + '<br><br>'
+    html += `ניתן למלא את הדף שוב על ידי איפוס ההתקדמות והתחלה מחדש.` + '<br><br><br>'
     finishAllMsg.innerHTML = html;
     confetti.start();
     setTimeout(() => { confetti.stop(); }, 5000)
+    finishAllMsg.appendChild(checkClosebutton);
+    checkClosebutton.addEventListener('click', () => { finishAllMsg.remove(); confetti.stop() })
 
 
 
@@ -1809,7 +1814,7 @@ progressSummary()
 updateProgress()
 Id('navbar').classList.add('hovering')
 if (G.saves.checks) { checkAll(true) }
-finishFinal()
+//finishFinal()
 //informationCheckBox();
 
 //things to add: after in-text images add spaces acording to width relation;
