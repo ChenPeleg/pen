@@ -642,10 +642,14 @@ function writeNavBarAndFooter() {
     var fullscreenToggler = false;
     function clickMenu() {
 
-        if (Id('menu').style.display === 'none') {
+        if (Id('menu').style.display == 'none' || !Id('menu').style.display) {
             Id('menu').style.display = 'flex'
+            Id('menu').style.opacity = '0'
+            setTimeout(() => { Id('menu').style.opacity = '1' }, 2)
+
         } else {
-            Id('menu').style.display = 'none'
+
+            Id('menu').style.display = 'none';
         }
     }
     function createMenu(html) {
@@ -703,9 +707,14 @@ ${G.TXT.fullHelpText2}<br><br>
     }
 
     function clickProg() {
-        let text = saveState();
+        let text = ""
+        const progInprecent = Math.round(progressSummary() * 100)
+        text += G.saves.nameOfplayer ? G.saves.nameOfplayer + ',<br><br>' : ''
+        text += ` ענית על ${progInprecent}% אחוז מהשאלות. ` + ' <br><br>'
 
-        createMenu(JSON.stringify(text))
+        text += G.checkText ? G.checkText : "";
+
+        createMenu(text)
     }
     function submitF(formArray) {
 
@@ -1055,7 +1064,7 @@ function enableElementPlacing(elemClass_, containerClass_, bankClass = 'word-pla
     Array.prototype.map.call(elements, (list) => { addclickListner(list) });
 }
 function enableDragSort(listClass) {
-    L(listClass)
+
     function enableDragList(list) {
         Array.prototype.map.call(list.children, (item) => { enableDragItem(item) });
     }
@@ -1217,20 +1226,24 @@ function pageTransition(n = 1) {
 function keyPressFunc(e) { if (e.charCode == 49) { checkAll() } }
 
 function informationCheckBox(action) {
+    Id('menu').style.display = 'none'
+
 
     const pre = Math.round(progressSummary() * 100);
     const checkingProcess = Elm('checkingProcess')
     const animationBar = Elm('animationBar')
     const checkTxt1 = Elm('checkTxt1'); // innerAnimationBar
     const checkTxt2 = Elm('checkTxt2'); // innerAnimationBar
-    const checkClosebutton = Elm('checkClosebutton', 'span')
+    const checkClosebutton = Elm('checkClosebutton', 'span');
     const innerAnimationBar = Elm('innerAnimationBar');
-    const boolArray = checkAll(false).map(e => e || false)
+    const boolArray = Object.values(checkAll(false))
     const allAnswers = boolArray.length;
-    const wrongAnswers = boolArray.filter(e => e === false).length;
-    const rightAnswers = allAnswers - wrongAnswers;
-    const goodMark = svgGetter('good')
+
+    const rightAnswers = boolArray.filter(e => e === true).length;
+    const wrongAnswers = allAnswers - rightAnswers;
+    const goodMark = svgGetter('good');
     const badMark = svgGetter('bad');
+    const allQuestionQuantity = Object.keys(G.saves).filter(e => e == Number(e)).length
 
     let timeTowait = 800;
     let shouldCheck = true;
@@ -1238,11 +1251,14 @@ function informationCheckBox(action) {
 
     let fulltext = `מתוך ` + allAnswers + "  שאלות, ענית על: " + "<br>"
     fulltext += `<span style="font-weight:bolder;"><span class="check-mark-general">${goodMark} </span> ` + rightAnswers + ' נכון מאד ' + "<br>"
-    fulltext += `<span class="check-mark-general" >${badMark} </span> ` + wrongAnswers + ' לא נכון או חלקי ' + "</span><br><br>";
+    fulltext += `<span class="check-mark-general" >${badMark} </span> ` + wrongAnswers + ' לא נכון או חסר ' + "</span><br><br>";
+
+    G.saves.checks = G.saves.checks || 1
     fulltext += 'נותרו עוד ' + (G.numberOfChecksAllowed - G.saves.checks) + ' בדיקות '
 
 
     checkTxt1.innerHTML = 'בדיקת תשובות  ';
+    let chanegeHeader = false;
 
     if (pre < (G.canCheckFrom * 100)) {
         const preSouldBe = Math.round(G.canCheckFrom * 100)
@@ -1251,7 +1267,9 @@ function informationCheckBox(action) {
 
     } else if (!G.saves.checks || (G.saves.checks < G.numberOfChecksAllowed)) {
         if (!G.saves.checks) { G.saves.checks = 1 } else { G.saves.checks++ }
-        Id('markProgBar').innerHTML = `<span class="littleMark">${rightAnswers}</span><span class="littleMark" style="bottom:-17px; background-color:red;">${wrongAnswers}</span>` // goodMark
+        chanegeHeader = true;
+
+        // goodMark
 
     } else {
         fulltext = 'לא נותרו לך עוד בדיקות. ניתן להתחיל מחדש וכך למלא שוב את הבדיקות. התחלה מחדש תמחק את כל ההתקדמות שלך !'
@@ -1275,15 +1293,20 @@ function informationCheckBox(action) {
 
         checkTxt2.innerHTML = fulltext;
         if (!shouldCheck) { return }
+
         animationBar.classList.add('shrink-animation-bar');
+        if (chanegeHeader) {
+            Id('markProgBar').innerHTML = `<span class="littleMark">${rightAnswers}</span><span class="littleMark" style="bottom:-17px; background-color:red;">${wrongAnswers}</span>`
+        }
         setTimeout(() => { checkAll(true) }, 10)
 
 
     }, timeTowait)
+    G.checkText = `תוצאות הבדיקה האחרונה: <br>` + fulltext;
 }
 function checkAll(toMark = true) {
     saveState()
-    let answerBoolArray = [];
+    let answerBoolObject = {};
     function getQnumber(id) {
         const reg = /Q([0123456789]{1,3})(_A?([0123456789]{1,3}))?/i
         const theMatch = id.match(reg);
@@ -1296,6 +1319,7 @@ function checkAll(toMark = true) {
     }
 
     function checkIfAnsCorrect(qObj, val) {
+
 
         const questionObject = G.V[qObj.questNum];
 
@@ -1315,6 +1339,10 @@ function checkAll(toMark = true) {
             case 'q_fillbank':
                 if (trimAndLower(val) === trimAndLower(ansObj)) { return true } else { return false };
                 break;
+            case 'q_word':
+
+                if (trimAndLower(val) === trimAndLower(questionObject.answer[solution - 1])) { return true } else { return false };
+
             case 'q_checkbox':
                 const numRegex = /[\D]{1,4}/g;
                 const solutionArr = questionObject.solution.split(numRegex).filter(e => e).map(e => Number(e));
@@ -1356,8 +1384,13 @@ function checkAll(toMark = true) {
         const checkSvg = svgGetter('good')
         const Xsvg = svgGetter('bad')
 
-        const check = checkIfAnsCorrect(getQnumber(name), value)
-        answerBoolArray.push(check)
+        const check = checkIfAnsCorrect(getQnumber(name), value);
+        if (check) {
+
+        } else {
+            answerBoolObject[getQnumber(name).questNum] = false;
+        }
+
         if (!toMark) { return }
 
         if (!Id(name)) { name += "_0" } // in the case of checkboxes
@@ -1403,8 +1436,13 @@ function checkAll(toMark = true) {
     const placeing = [...document.querySelectorAll('.place-bank-element-in-container')]
     const checkboxes = [...document.querySelectorAll('input.checkbox0')]
     const checkQusetion = [...new Set(checkboxes.map(e => e.name))]
-
     let arrayOfCheckBoxes = [];
+    for (let i = 1; i < G.V.length; i++) {
+        if (G.V[i].typ.includes("q_")) {
+
+            answerBoolObject[i] = true
+        }
+    }
     checkQusetion.forEach(n => {
         const oneQuestion = checkboxes.filter(c => c.name === n)
         arrayOfCheckBoxes.push(oneQuestion)
@@ -1436,7 +1474,7 @@ function checkAll(toMark = true) {
         ansAdd(p, p)
     )
 
-    return answerBoolArray
+    return answerBoolObject
 
 }
 function saveState() {
