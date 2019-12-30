@@ -1621,6 +1621,7 @@ function storeInLocal(command) {
 function assignLoadedContent() {
     function puInputInAns(qNum) {
         const questionObject = G.V[qNum];
+
         if (questionObject.typ === 'q_word') {
             Id("Q" + qNum).value = G.saves[qNum] || "";
             return
@@ -1682,12 +1683,13 @@ function assignLoadedContent() {
             return allAnswers
         }
         if (questionObject.typ === 'q_order') {
-            if (qNum > 3) return
+
             const ol = Id("Q" + qNum);
             const listItems = [...ol.querySelectorAll('li')];
             //listItems.forEach(e=>e.remove())
             G.saves[qNum].forEach(n => {
                 const li = Id("Q" + qNum + "_" + n);
+
 
                 ol.appendChild(li)
 
@@ -1699,6 +1701,7 @@ function assignLoadedContent() {
     let saveObject = {}
     for (let i = 1; i < G.V.length; i++) {
         if (G.V[i].typ.includes("q_")) {
+
             puInputInAns(i)
 
         }
@@ -1748,7 +1751,19 @@ function updateProgress() {
 
 
 }
+function finishFinal() {
+    const finishAllMsg = Elm('finishAllMsg');
 
+
+    Id('pageMetaContainer').appendChild(finishAllMsg);
+    let html = `<H1>סיימת בהצלחה !</H1><br><br><br> כל הכבוד ! ענית נכון על כל השאלות בדף.`
+    finishAllMsg.innerHTML = html;
+    confetti.start();
+    setTimeout(() => { confetti.stop(); }, 5000)
+
+
+
+}
 buildObjectsOfWorkSheet();
 const cont = buildContent(mapPageTree());
 
@@ -1760,10 +1775,6 @@ enableDragSort('orderList');
 addListnerToBank('textFillInputClass')
 enableElementPlacing('place-bank-element', 'placeInputWithBank');
 addSoundsListeners('soundBtn')
-
-
-
-
 writeNavBarAndFooter()
 pageTransition(1)
 
@@ -1777,7 +1788,7 @@ function t(n) {
     const arr = n.split(numRegex).filter(e => e).map(e => Number(e));
     return arr
 }
-//Id('menu').style.display = 'flex'
+
 
 storeInLocal('load');
 if (G.saves.nameOfplayer) { assignLoadedContent() };
@@ -1798,6 +1809,7 @@ progressSummary()
 updateProgress()
 Id('navbar').classList.add('hovering')
 if (G.saves.checks) { checkAll(true) }
+finishFinal()
 //informationCheckBox();
 
 //things to add: after in-text images add spaces acording to width relation;
