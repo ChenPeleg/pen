@@ -22,6 +22,7 @@ div {
 }
 
 body {
+    background-image: url("abs.jpg");
 
     font-family: 'David', sans-serif;
     font-size: var(--main-font-size)
@@ -38,27 +39,36 @@ body {
     transition: all 3s;
 
 }
-.bg0{background-color: rgb(255, 239, 10);}
-.bg1{background-color: rgb(11, 68, 255);}
-.bg2{background-color: rgb(255, 19, 11);}
+.bg0{background:linear-gradient(to bottom, rgba(240,140,140) 0%, rgba(250,150,150) 44%, rgba(230,130,230) 100%);}
+.bg1{background:linear-gradient(to bottom, rgb(238, 235, 136) 0%,rgb(208, 205, 100) 44%, rgb(208, 205, 140) 60%,rgb(208, 195, 100) 100%);}
+.bg2{background:linear-gradient(to bottom, rgb(138, 235, 136) 0%,rgb(108, 245, 100) 44%, rgb(108, 205, 140) 60%,rgb(108, 195, 100) 100%);}
 .bg3{background-color: rgb(255, 76, 216);}
+
 .graph_container{
+    overflow: hidden;
     position: relative;
     border: darkblue 1px solid;
-    margin:1px;
+    margin:3px;
     width: 70%;
     height: 50px;
     border-radius: 9px;
-    box-shadow:1px 1px 1px black;
+    box-shadow:0px 0px 3px 0px black;
+   
     background: linear-gradient(to right, rgba(194, 194, 211, 0.9),rgba(118, 221, 235, 0.9) );
 }
-
+#mainForm{
+    background-color: rgba(253, 255, 158, 0.2);
+    border-radius: 5px;
+    box-shadow: -5px 5px 5px 2px  rgba(253, 255, 158, 0.2);
+    text-align: center;
+   
+}
 .graph-text{
     position: relative;
     top: 10px;
-    padding: 20px;
+    padding: 5px;
     padding-top: 40px;
-  margin: 35px;
+  margin: 10px;
 z-index: 10;
 }
 section div:first-child {
@@ -69,7 +79,7 @@ footer{
 
     direction: rtl;
     text-align: center;
-    font-size: 20px;
+    font-size: 30px;
     font-family: arial;
     cursor: pointer;
     position: relative;
@@ -78,22 +88,28 @@ footer{
     z-index: 3;
 }
 footer a{
-        padding: 14px;
-        width: 100%;
-        height: 100%;
-        color: darkblue;
-        font-weight: bold;
-        margin: 30px;
-        background-color: burlywood;
-        border-radius: 20px;
-        border: 10px solid  darkblue;
-        color: black;
+        
 }
+
 footer a.allow-hover:hover{
  background-color: rgba(200,200,200,0.8);
 }
 footer a:hover {
 
+}
+
+.goldBtn{
+    display: inline-block;
+    width: 300px;
+    padding: 14px;
+    height: 100%;
+    color: darkblue;
+    font-weight: bold;
+    
+    background-color: rgb(255, 249, 194);
+    border-radius: 20px;
+    border: 10px solid  darkblue;
+    color: black;
 }
 .menu {
   display: none;

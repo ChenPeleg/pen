@@ -827,11 +827,11 @@ ${G.TXT.fullHelpText2}<br><br>
 
         formFooter.innerHTML += pageslinks2;
     }
-    formFooter.innerHTML += '<a href="javascript:void(0)"  id="footerCheckButton"> בדיקה </a>'
+    formFooter.innerHTML += '<div class="goldBtn" Id="footerDivBtn">  צפייה בתוצאות  </div>'
 
     let html = `<span id="pages_select">${pageslinks}</span>
   <a href="#menu" id="menuBtn">תפריט</a>
-  <a href="javascript:void(0)"  id="checkButtonTop"><span id="advanceBar" style="display:inline-block;">בדיקה</span ><span style="display:inline-block;" id="markProgBar"> </span></a>
+  <a href="javascript:void(0)"  id="checkButtonTop"><span id="advanceBar" style="display:inline-block;">צפייה בתוצאות</span ><span style="display:inline-block;" id="markProgBar"> </span></a>
   <a href="javascript:void(0)" id ="fullscreenBtn">${fullScreenSVG}&nbsp&nbsp&nbsp&nbsp מסך מלא </a>`
 
     let htmlOfmenu = `
@@ -860,7 +860,9 @@ ${G.TXT.fullHelpText2}<br><br>
 
     const pageMetaContainer = Id('pageMetaContainer');
     pageMetaContainer.insertBefore(navbarContatiner, pageMetaContainer.childNodes[0]);
-    Id('footerCheckButton').addEventListener('click', clickCheck)
+    Id('footerDivBtn').addEventListener('click', clickCheck);
+    //Id('footerCheckButton').addEventListener('click', clickCheck, false)
+
     return
 
     Id('fullscreenBtn').addEventListener('click', toggleFullscreen);
@@ -1220,8 +1222,11 @@ function pageTransition(n = 1) {
 function keyPressFunc(e) { if (e.charCode == 49) { checkAll() } }
 
 function informationCheckBox(action) {
+    saveState()
+    updateProgress()
+    const pre = Math.round(progressSummary() * 100) || 0;
 
-    const pre = Math.round(progressSummary() * 100);
+
     const checkingProcess = Elm('checkingProcess')
     const animationBar = Elm('animationBar')
     const checkTxt1 = Elm('checkTxt1'); // innerAnimationBar
@@ -1235,7 +1240,7 @@ function informationCheckBox(action) {
     const goodMark = svgGetter('good')
     const badMark = svgGetter('bad');
 
-    let timeTowait = 800;
+    let timeTowait = 100;
     let shouldCheck = true;
 
 
@@ -1249,14 +1254,16 @@ function informationCheckBox(action) {
 
     if (pre < (G.canCheckFrom * 100)) {
         const preSouldBe = Math.round(G.canCheckFrom * 100)
-        fulltext = `יש לסיים את המענה על  ${preSouldBe + "%"} מהשאלות לפני בדיקה`;
+        fulltext = `יש לסיים את המענה על  ${preSouldBe + "%"} מהשאלות לפני צפייה בתוצאות`;
         timeTowait = 0; shouldCheck = false; animationBar.classList.add('shrink-bar');
 
     } else { showResults() }
 }
 
 function showResults() {
+
     tm = 10;
+    window.scrollTo(0, 0);
     function getPrecent(arr, ans) {
         const amount = arr.filter(a => a === ans).length;
         const precent = Math.ceil((amount / arr.length) * 1000) / 10
@@ -1283,22 +1290,26 @@ function showResults() {
 
     const arrayOfKeys = Object.keys(saves)
     let html = '<div style = "direction: rtl; text-align:right; ">'
-    document.body.style = "  background: linear-gradient(to left, rgba(190,173,241,1) 0%, rgba(105,190,205,1) 100%);"
+    const emphasisOnChioce = ` font-weight:bold`
     arrayOfKeys.forEach(s => {
         const Q = (G.V[[s]]);
-        html += Q.content + '<br>'
+        html += `<span style="font-weight:bold;">${Q.content} </span><br> `
         G.project[s] = G.project[s] || []
         G.project[s].push(saves[s])
         Q.answer.filter(e => e).forEach(a => {
-            let choiceStl = '';
+            let choiceStl = '', containerChice = '';
             const pre = getPrecent(G.project[s], Q.answer.indexOf(a));
             let text = `${a}&nbsp&nbsp`
             const num = Q.answer.indexOf(a)
             let rc = 200 * num, bc = 210 - (num * 10), gc = 200 - (num * 5);
             let graphStl = `background:rgb(${rc}, ${bc}, ${gc} );` //  width:${pre}%;
             graphStl = ''
-            if (Q.answer.indexOf(a) === saves[s]) { choiceStl = "color:brown; font-weight:bolder;" }
-            html += `<div class="graph_container"><span class="graph-text " style="${choiceStl}">${text}</span><span class="graph-text" id = "Q${s}_${Q.answer.indexOf(a) + "T"}">&nbsp&nbsp${pre}%</span><div id = "Q${s}_${Q.answer.indexOf(a)}" class = "graph bg${num}" style="${graphStl}"></div></div>`;
+            if (Q.answer.indexOf(a) === saves[s]) {
+                choiceStl = emphasisOnChioce;
+                containerChice = `box-shadow:1px 1px 4px 2px black;`
+
+            }
+            html += `<div class="graph_container" style="${containerChice}"><span class="graph-text " style="${choiceStl}">${text}</span><span class="graph-text" id = "Q${s}_${Q.answer.indexOf(a) + "T"}" style="${choiceStl}">&nbsp&nbsp${pre}%</span><div id = "Q${s}_${Q.answer.indexOf(a)}" class = "graph bg${num}" style="${graphStl}"></div></div>`;
             setTimeout(() => {
                 precentAnimation(`Q${s}_${Q.answer.indexOf(a)}`, pre, 0);
                 Id(`Q${s}_${Q.answer.indexOf(a)}`).style.width = pre + "%";
@@ -1313,6 +1324,9 @@ function showResults() {
     Id('mainForm').innerHTML = html
     L(G.project)
     localStorage.setItem(storageKey, JSON.stringify(G.project))
+    setTimeout(() => {
+        location.reload()
+    }, 20000)
 
 }
 
@@ -1734,7 +1748,7 @@ function updateProgress() {
 
     let colorStl = ''; let opac = 1;
     if (progInprecent < (G.canCheckFrom * 100)) { colorStl = "color:grey"; opac = 0.5 }
-    const heb = 'בדיקה';
+    const heb = 'צפייה בתוצאות';
     const txtHeb = `< span style = "${colorStl}" > ${heb}</span > `;
 
     const pre = progInprecent
@@ -1743,8 +1757,10 @@ function updateProgress() {
     const fullText = `< div > ${txtHeb} & nbsp < div style = "background-image:linear-gradient(${baseColor} 0%, rgb(50,50,50) 100%); padding: 0px; background-size:${progInprecent}% 100%; background-repeat:no-repeat; background-position: right; border:1px solid white; display: inline-block; width:40px; border-radius:3px;" > ${progInprecent}%</div ></div > `
     // Id('advanceBar').innerHTML = fullText;
 
+    if (Id('footerCheckButton')) {
+        Id('footerCheckButton').style.opacity = opac + " "
+    }
 
-    Id('footerCheckButton').style.opacity = opac + " "
 
 
 }
@@ -1779,12 +1795,13 @@ function t(n) {
 }
 //Id('menu').style.display = 'flex'
 
-storeInLocal('load');
-if (G.saves.nameOfplayer) { assignLoadedContent() };
+//storeInLocal('load');
+//if (G.saves.nameOfplayer) { assignLoadedContent() };
 
 setInterval(() => {
+
+    updateProgress();
     return
-    updateProgress()
     if (G.saves.nameOfplayer || true) {
 
         saveState();
@@ -1799,8 +1816,5 @@ const urlParams = new URLSearchParams(window.location.search)
 progressSummary()
 updateProgress()
 
-//Id('navbar').classList.add('hovering')
-//if (G.saves.checks) { checkAll(true) }
-//informationCheckBox();
 
-//things to add: after in-text images add spaces acording to width relation;
+//informationCheckBox();
