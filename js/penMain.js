@@ -511,6 +511,7 @@ function buildObjectsOfWorkSheet(q) {
 
             }
             if (this.typ.includes("h_")) {
+                if (this.typ === 'h_page' && this.number < 5) { document.title = this.content }
                 let txtWithimageMarkup = imageIntext(content)
                 let imageInTextClass = '';
                 const unerline = '<div class="header-underline"></div>'
@@ -625,7 +626,12 @@ function mapPageTree() {
 
 }
 function writePage(html = 'bla') {
-    const widthPx = Math.round(screen.width * 0.68);
+    const widthOfAllWorksheet = 0.58; // 0.68
+    const enlargeHorizontal = 1.125;
+    let widthPx = Math.round(screen.width * widthOfAllWorksheet);
+    widthPx = Math.round(screen.width > screen.height ? screen.height : screen.width);
+
+    widthPx = screen.width > screen.height ? widthPx * enlargeHorizontal : widthPx
     const pageMetaContainer = Elm('pageMetaContainer')
     const pageContainer = Elm('pageContainer');
     const errorCheck = Id('ErrorCheck');
@@ -773,7 +779,7 @@ ${G.TXT.fullHelpText2}<br><br>
         const nav = Id('navbar');
         if (nav.classList.contains('hovering')) { return };
         nav.classList.add('hovering')
-        //setTimeout(()=>{nav.classList.remove('hovering')}, 1500)
+        setTimeout(() => { nav.classList.remove('hovering') }, 1500)
     }
     function toggleFullscreen() {
         const elem = document.documentElement;
@@ -1769,6 +1775,12 @@ function finishFinal() {
 
 
 }
+function disablePngSahdow() {
+    const images = [...document.querySelectorAll('img')]
+    let pngs = images.filter(i => i.src.includes('.png'))
+    pngs.forEach(p => p.classList.add('no-shadow'))
+
+}
 buildObjectsOfWorkSheet();
 const cont = buildContent(mapPageTree());
 
@@ -1781,6 +1793,7 @@ addListnerToBank('textFillInputClass')
 enableElementPlacing('place-bank-element', 'placeInputWithBank');
 addSoundsListeners('soundBtn')
 writeNavBarAndFooter()
+disablePngSahdow()
 pageTransition(1)
 
 document.body.addEventListener("keypress", keyPressFunc);
@@ -1812,7 +1825,7 @@ const urlParams = new URLSearchParams(window.location.search)
 
 progressSummary()
 updateProgress()
-Id('navbar').classList.add('hovering')
+//Id('navbar').classList.add('hovering')
 if (G.saves.checks) { checkAll(true) }
 //finishFinal()
 //informationCheckBox();
