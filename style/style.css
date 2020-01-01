@@ -26,7 +26,7 @@ body {
 
     font-family: 'Quicksand','Alef'  ,sans-serif;
     font-size: var(--main-font-size);
-    white-space: pre-wrap;
+    
 }
 section>div:first-child {
     padding-top: calc(var(--main-font-size)*1.5);
@@ -79,6 +79,9 @@ footer a:hover {
 
 .menu-button{
   display: inline-flex;
+}
+.fill-text{
+    white-space: pre-wrap;
 }
 #menuCommands{
   display: flex;

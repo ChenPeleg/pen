@@ -135,6 +135,7 @@ utils: {
 }
 function setDirectionBylanguage(element, text) {
     if (text && element) { } else return
+    const lagnguageRelationModifier = 2 // towards hebrew
     function isHebrew(qtext) {
         if (typeof qtext !== 'string') { return false }
         var hebLetters = /\s?[אבגדהוזחטיכלמנסעפצקרשתםןץףך]{1,30}\s?/g
@@ -143,7 +144,7 @@ function setDirectionBylanguage(element, text) {
         if (matchArryEnglsh === null) { matchArryEnglsh = [] }
         let matchArryHebrew = qtext.match(hebLetters)
 
-        if (matchArryHebrew !== null && matchArryHebrew.length > matchArryEnglsh.length) { return true } else { return false }
+        if (matchArryHebrew !== null && (matchArryHebrew.length * lagnguageRelationModifier) > matchArryEnglsh.length) { return true } else { return false }
 
     }
     if (isHebrew(text)) {
@@ -434,7 +435,7 @@ function buildObjectsOfWorkSheet(q) {
                 const num = txtArr.indexOf(e)
                 let input = `<div class="bottom-input-border"><input id = "${"Q" + this.number + "_" + num}" type="text" class="${textInputClass}" name="${"Q" + this.number}" size="${maxLetters}" value="" ${seg}></div>`
                 if (!answers[num]) { input = '' }
-                let formElm = `<span class="${imageInTextClass}">${e}${input}</span>`
+                let formElm = `<span class="${imageInTextClass} fill-text">${e}${input}</span>`
                 comleteElem += formElm
             })
 
@@ -962,9 +963,15 @@ function buildContent(tree) {
     return fullHtml
 }
 function setDirection() {
+    function removeHtmlTags(html) {
+        regex = /<[^>]*>|&nbsp/gi
+        const onlyText = html.replace(regex, "")
+        L(onlyText)
+        return onlyText
+    }
     const mainForm = Id('mainForm');
     const collection = mainForm.querySelectorAll('span, h1, h2, h3, div');
-    collection.forEach(e => setDirectionBylanguage(e, e.innerHTML))
+    collection.forEach(e => setDirectionBylanguage(e, removeHtmlTags(e.innerHTML)))
 }
 function enableElementPlacing(elemClass_, containerClass_, bankClass = 'word-place-bank') {
     const chooseClass = 'choosen-place-element'
