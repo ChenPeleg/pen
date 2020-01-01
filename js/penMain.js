@@ -413,6 +413,7 @@ function buildObjectsOfWorkSheet(q) {
             const segnumber = this.number
 
 
+
             answers.forEach(ans => {
                 const ansLower = ans.toLowerCase()
                 bankDiv += `<span id="${'bank_' + ansLower + "_" + segnumber}" class="" ${seg}>${ans}</span>${spaces}`
@@ -425,11 +426,12 @@ function buildObjectsOfWorkSheet(q) {
             let imageInTextClass = ''
             if (content !== txtWithimageMarkup) { imageInTextClass = 'text-containig-images' };
             const rgex = /\$[123456789]/g; let comleteElem = bankDiv;
-            let txtArr = txtWithimageMarkup.split(rgex)
+            let txtArr = txtWithimageMarkup.split(rgex).filter(e => e.trim())
             let answersCode = this.content.match(rgex)
             answersCode = answersCode.map(a => Number(a.replace('$', '')))
             const textInputClass = 'textFillInputClass';
             comleteElem += this.creadSoundButton();
+
 
             txtArr.forEach(e => {
                 const num = txtArr.indexOf(e)
@@ -439,7 +441,7 @@ function buildObjectsOfWorkSheet(q) {
                 comleteElem += formElm
             })
 
-            return comleteElem + '<br>';
+            return comleteElem + '<br>' + '<div class="separator"></div>';
         }
         toPlaceFromBank() {
             const seg = this.segNum();
@@ -966,7 +968,7 @@ function setDirection() {
     function removeHtmlTags(html) {
         regex = /<[^>]*>|&nbsp/gi
         const onlyText = html.replace(regex, "")
-        L(onlyText)
+
         return onlyText
     }
     const mainForm = Id('mainForm');

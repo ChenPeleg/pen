@@ -83,6 +83,14 @@ footer a:hover {
 .fill-text{
     white-space: pre-wrap;
 }
+span.fill-text:last-of-type{
+
+    
+}
+.separator{
+    height: 10px;
+    width: 50px;
+}
 #menuCommands{
   display: flex;
   width: 35%;
@@ -438,12 +446,13 @@ h2{
 h2+.header-underline{
    position: relative;
    width: 93%;
+   top: -4px;
    height: calc(var(--main-font-size)/6);
    background: linear-gradient(to bottom ,
        black, rgba(50,50,50,0.7)  );
    left: 20px;
    background-repeat: no-repeat;
-   margin-bottom:calc(var(--main-font-size)*1);
+   margin-bottom:calc(var(--main-font-size)*0.4);
    border-radius: 20px;
    z-index: 0;
 }
@@ -487,6 +496,7 @@ h3{
     padding-right: 10px; */
     padding-left: 40px;
     padding-right: 10px;
+    margin-bottom: 5px;
     
     background: linear-gradient(to left, rgba(230,213,241,1) 0%, rgba(205,190,205,1) 100%);
     font-weight: 600;
