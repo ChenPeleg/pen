@@ -1376,7 +1376,7 @@ function checkAll(toMark = true) {
         }
     }
     function ansAdd(name, value) {
-        L(name, value)
+
         const insertAfter = function (newNode, nodeToinsertAfter) {
 
 
@@ -1392,7 +1392,7 @@ function checkAll(toMark = true) {
             answerBoolObject[getQnumber(name).questNum] = false;
         }
 
-        if (!toMark) { return }
+        if (!toMark || (!value)) { return }
 
         if (!Id(name)) { name += "_0" } // in the case of checkboxes
         if (check) { //  
@@ -1470,7 +1470,7 @@ function checkAll(toMark = true) {
         ansAdd(p.id, p.parentNode.id)
     })
     // returns the question id's that are checked at lease in ine place;
-    let activeCheckQue = arrayOfCheckBoxes.filter(a => a.some(c => c.checked)).map(e => e[0].name)
+    let activeCheckQue = arrayOfCheckBoxes.map(e => e[0].name)
     activeCheckQue.forEach(p =>
         ansAdd(p, p)
     )
