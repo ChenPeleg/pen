@@ -8,7 +8,7 @@ G.name_of_game = "דף עבודה"
 G.name_of_gameEN = 'Worksheet';
 G.numberOfChecksAllowed = 10;
 G.canCheckFrom = 0.75; // precentage of filled ansewers;
-G.dev_mode = 0; //change back to 0
+G.dev_mode = 1; //change back to 0
 G.EN = 0; // english
 
 G.fileName = location.pathname.split("/").slice(-1)[0].replace(/\.html/ig, "")

@@ -1342,9 +1342,7 @@ function checkAll(toMark = true) {
 
     function checkIfAnsCorrect(qObj, val) {
 
-
         const questionObject = G.V[qObj.questNum];
-
         const ansObj = questionObject ? questionObject.answer[qObj.PartNum - 1] : false
         const solution = questionObject ? Number(questionObject.solution) : false;
         let finalCorretValue = ansObj
@@ -1353,7 +1351,9 @@ function checkAll(toMark = true) {
 
         switch (questionObject.typ) {
             case 'q_multi': case 'q_image':
-                if (qObj.PartNum === solution) { return true } else { return false }
+                const wasChecked = Id(`Q${qObj.questNum}_${qObj.PartNum - 1}`).checked
+
+                if (qObj.PartNum === solution && wasChecked || qObj.PartNum !== solution && !wasChecked) { return true } else { return false }
                 break;
             case 'q_dropbank':
                 let numberOfAns = getQnumber(val);
@@ -1407,28 +1407,36 @@ function checkAll(toMark = true) {
         const checkSvg = svgGetter('good')
         const Xsvg = svgGetter('bad')
 
-        const check = checkIfAnsCorrect(getQnumber(name), value);
+        let check = checkIfAnsCorrect(getQnumber(name), value);
+
         if (check) {
 
         } else {
             answerBoolObject[getQnumber(name).questNum] = false;
         }
 
+
         if (!toMark || (!value)) { return }
 
         if (!Id(name)) { name += "_0" } // in the case of checkboxes
-        if (check) { //  
 
-            Id(name).classList.add('done');
-            Id(name).readOnly = "readonly";
-            if (Id(name).type === 'radio') {
-                const radios = [...document.getElementsByName(Id(name).name)]
+        const oldName = name;
+        if (Id(name).type === 'radio') {
+            name = "Q" + getQnumber(name).questNum + "_0";
+            check = answerBoolObject[getQnumber(name).questNum]
+        }
+        if (check) {
+
+            Id(oldName).classList.add('done');
+            Id(oldName).readOnly = "readonly";
+            if (Id(oldName).type === 'radio') {
+                const radios = [...document.getElementsByName(Id(oldName).name)]
                 radios.forEach(r => {
-                    if (r.id !== name) { r.disabled = true; r.classList.add('done'); }
+                    if (r.id !== oldName) { r.disabled = true; r.classList.add('done'); }
                 })
             }
-            if (Id(name).type === 'checkbox') {
-                const checkboxes = [...document.getElementsByName(Id(name).name)]
+            if (Id(oldName).type === 'checkbox') {
+                const checkboxes = [...document.getElementsByName(Id(oldName).name)]
                 checkboxes.forEach(r => {
                     r.classList.add('done');
                     r.disabled = "disabled";
@@ -1436,8 +1444,13 @@ function checkAll(toMark = true) {
                 })
 
             }
+        } else if (!check && Id(name).type === 'radio') {
+            const radios = [...document.getElementsByName(Id(oldName).name)]
+            radios.forEach(r => {
+                r.disabled = false; r.classList.remove('done');
+            })
+
         }
-        if (Id(name).type === 'radio') { name = "Q" + getQnumber(name).questNum + "_0" }
         let grade = Elm(name + '_mark', 'span'); grade.classList.add("check-mark");
 
 
@@ -1479,15 +1492,22 @@ function checkAll(toMark = true) {
 
     })
     inputs.forEach(i => {
+
         if (i.id === 'nameOfPlayerInput' || !i.id.match(/Q[\d]/)) { return }
-        L(i.value)
+
+
 
 
         if (i.type === 'text') { // && i.value !== i.defaultValue
             ansAdd(i.id, i.value)
-        } else if (i.checked !== i.defaultChecked) {
-            if (i.type === 'checkbox') { } else { ansAdd(i.id, i.checked) }
-        } else { ansAdd(i.id, '') }
+        } else if (i.type === 'radio') {
+            // (i.checked !== i.defaultChecked)
+
+            ansAdd(i.id, i.value)
+        } else if (i.type === 'checkbox') {
+            ansAdd(i.id, i.checked)
+        }
+
     })
     placeing.forEach(p => {
 
