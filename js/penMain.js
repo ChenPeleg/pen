@@ -5,6 +5,7 @@ G.V = [];
 
 G.saves = {};
 
+
 utils: {
     function L(...args) {
         return console.log(...args)
@@ -1238,7 +1239,7 @@ function pageTransition(n = 1) {
     if (n === allSects.length) { Id('fpage_next').classList.remove('allow-hover') }
 
 }
-function keyPressFunc(e) { if (e.charCode == 49) { checkAll() } }
+function keyPressFunc(e) { if (e.charCode == 49 && G.dev_mode) { checkAll() } }
 
 function informationCheckBox(action) {
     Id('menu').style.display = 'none'
@@ -1303,6 +1304,12 @@ function informationCheckBox(action) {
 
     Id('pageMetaContainer').appendChild(checkingProcess)
     setTimeout(() => {
+        if (wrongAnswers < 1) {
+            checkingProcess.remove();
+            finishFinal();
+
+            return
+        }
         if (!Id('checkingProcess')) { return }
         innerAnimationBar.remove()
 
@@ -1472,9 +1479,11 @@ function checkAll(toMark = true) {
 
     })
     inputs.forEach(i => {
-        if (i.id === 'nameOfPlayerInput') { return }
+        if (i.id === 'nameOfPlayerInput' || !i.id.match(/Q[\d]/)) { return }
+        L(i.value)
 
-        if (i.value !== i.defaultValue) {
+
+        if (i.type === 'text') { // && i.value !== i.defaultValue
             ansAdd(i.id, i.value)
         } else if (i.checked !== i.defaultChecked) {
             if (i.type === 'checkbox') { } else { ansAdd(i.id, i.checked) }
@@ -1836,7 +1845,7 @@ progressSummary()
 updateProgress()
 //Id('navbar').classList.add('hovering')
 if (G.saves.checks) { checkAll(true) }
-//finishFinal()
+
 //informationCheckBox();
 
 //things to add: after in-text images add spaces acording to width relation;
