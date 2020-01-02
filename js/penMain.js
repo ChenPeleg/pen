@@ -1309,7 +1309,7 @@ function informationCheckBox(action) {
         if (!G.saves.checks) { G.saves.checks = 1 } else { G.saves.checks++ }
         chanegeHeader = true;
 
-         
+
 
     } else {
         fulltext = 'לא נותרו לך עוד בדיקות. ניתן להתחיל מחדש וכך למלא שוב את הבדיקות. התחלה מחדש תמחק את כל ההתקדמות שלך !'
@@ -1328,7 +1328,7 @@ function informationCheckBox(action) {
 
     Id('pageMetaContainer').appendChild(checkingProcess)
     setTimeout(() => {
-        if (wrongAnswers < 1 && false) {
+        if (wrongAnswers < 1) {
             checkingProcess.remove();
             finishFinal();
 
@@ -1351,7 +1351,8 @@ function informationCheckBox(action) {
     G.checkText = `תוצאות הבדיקה האחרונה: <br>` + fulltext;
 }
 function checkAll(toMark = true) {
-    L(toMark)
+
+
     saveState()
     let answerBoolObject = {};
     function getQnumber(id) {
@@ -1494,7 +1495,7 @@ function checkAll(toMark = true) {
     }
     const inputs = [...document.querySelectorAll('input:not(.checkbox0)')]
     const orders = [...document.querySelectorAll('.orderList')]
-    const placeing = [...document.querySelectorAll('.place-bank-element-in-container')]
+    const placeing = [...document.querySelectorAll('.place-bank-element')]
     const checkboxes = [...document.querySelectorAll('input.checkbox0')]
     const checkQusetion = [...new Set(checkboxes.map(e => e.name))]
     let arrayOfCheckBoxes = [];
@@ -1536,9 +1537,10 @@ function checkAll(toMark = true) {
     })
     placeing.forEach(p => {
 
+
         ansAdd(p.id, p.parentNode.id)
     })
-    // returns the question id's that are checked at lease in ine place;
+
     let activeCheckQue = arrayOfCheckBoxes.map(e => e[0].name)
     activeCheckQue.forEach(p =>
         ansAdd(p, p)
@@ -1822,7 +1824,7 @@ function updateProgress() {
     const pre = progInprecent
 
     const baseColor = `rgb(${(362 / (pre / 14)) + 150},${(pre * 2) + 50}, ${(pre * 0.2) + 50}  )`
-    const fullText = `<div>${txtHeb} &nbsp<div style="background-image:linear-gradient(${baseColor} 0%, rgb(50,50,50) 100%); padding: 0px; background-size:${progInprecent}% 100%; background-repeat:no-repeat; background-position: right; border:1px solid white; display: inline-block; width:40px; border-radius:3px;">${progInprecent}%</div></div>`
+    const fullText = `<div>${txtHeb} &nbsp<div style="background-image:linear-gradient(${baseColor} 0%, rgb(50,50,50) 100%); padding: 0px; background-size:${progInprecent}% 100%; background-repeat:no-repeat; background-position: right; border:1px solid white; display: inline-block; width:48px; border-radius:3px;">${progInprecent}%</div></div>`
     Id('advanceBar').innerHTML = fullText;
 
     Id('footerCheckButton').style.opacity = opac + " "
