@@ -179,6 +179,7 @@ function langSet() {
         youMustHitInCorrectOrder: ' עליכם לפגוע בכל המטרות בסדר הנכון ',
         youMustHit: 'עליכם לפגוע ',
         correctHitsInArow: ' פגיעות נכונות ברצף ',
+        wouldYouLikeToReset: ' האם ברצונך למחוק את כל ההתקדמות ולהתחיל מחדש? ',
 
         cantResteGameDoWithClicl: 'לא ניתן לאפס משחק, נא לאפס דרך ממשק קליק',
         rank: "דרגה ",
@@ -649,7 +650,9 @@ function writePage(html = 'bla') {
 
 }
 function writeNavBarAndFooter() {
+
     var fullscreenToggler = false;
+    var menuTimer;
     function clickMenu() {
 
         if (Id('menu').style.display == 'none' || !Id('menu').style.display) {
@@ -783,7 +786,16 @@ ${G.TXT.fullHelpText2}<br><br>
         const nav = Id('navbar');
         if (nav.classList.contains('hovering')) { return };
         nav.classList.add('hovering')
-        setTimeout(() => { nav.classList.remove('hovering') }, 1500)
+        setTimeout(() => {
+            clearTimeout(menuTimer)
+            nav.classList.remove('hovering');
+            menuTimer = setTimeout(() => {
+
+                if (nav.classList.contains('hovering')) { return }
+                Id('menu').style.display = 'none'; // not a prefect solution but works
+            }, 6000)
+
+        }, 1500)
     }
     function toggleFullscreen() {
         const elem = document.documentElement;
@@ -1200,6 +1212,16 @@ function addSoundsListeners(classSnd) {
 }
 function pageTransition(n = 1) {
     if (!n) { return }
+    function focusOnAllFillBanks() {
+
+        const inputs = [...document.querySelectorAll('input[type=text]')]
+
+        for (i = 0; i < inputs.length; i++) {
+            let ev = new Event('focusout'); ev.target = inputs[i]; inputs[i].dispatchEvent(ev);
+
+        }
+
+    }
 
     const allSects = [...document.querySelectorAll('section')];
     const currentPageList = allSects.filter(e => e.style.display === 'block');
@@ -1221,6 +1243,7 @@ function pageTransition(n = 1) {
         setTimeout(() => {
             allSects[n - 1].classList.remove('go-back-page');
             currentPage.style.display = 'none';
+            focusOnAllFillBanks();
         }, 750)
 
     } else {
@@ -1229,6 +1252,7 @@ function pageTransition(n = 1) {
         setTimeout(() => {
             currentPage.classList.remove('turn-page');
             currentPage.style.display = 'none';
+            focusOnAllFillBanks();
         }, 750)
     }
 
@@ -1285,7 +1309,7 @@ function informationCheckBox(action) {
         if (!G.saves.checks) { G.saves.checks = 1 } else { G.saves.checks++ }
         chanegeHeader = true;
 
-        // goodMark
+         
 
     } else {
         fulltext = 'לא נותרו לך עוד בדיקות. ניתן להתחיל מחדש וכך למלא שוב את הבדיקות. התחלה מחדש תמחק את כל ההתקדמות שלך !'
@@ -1304,11 +1328,11 @@ function informationCheckBox(action) {
 
     Id('pageMetaContainer').appendChild(checkingProcess)
     setTimeout(() => {
-        if (wrongAnswers < 1) {
+        if (wrongAnswers < 1 && false) {
             checkingProcess.remove();
             finishFinal();
 
-            return
+            // return
         }
         if (!Id('checkingProcess')) { return }
         innerAnimationBar.remove()
@@ -1327,6 +1351,7 @@ function informationCheckBox(action) {
     G.checkText = `תוצאות הבדיקה האחרונה: <br>` + fulltext;
 }
 function checkAll(toMark = true) {
+    L(toMark)
     saveState()
     let answerBoolObject = {};
     function getQnumber(id) {
@@ -1720,11 +1745,19 @@ function assignLoadedContent() {
         }
         if (questionObject.typ === 'q_fillbank') {
             const answersLength = questionObject.answer.filter(e => e).length
+
+
+
             const inputs = [...document.querySelectorAll('input[type=text]')].filter(e => e.name === ("Q" + qNum))
             allAnswers = [];
             for (i = 0; i < inputs.length; i++) {
-                inputs[i].value = G.saves[qNum][i]
+
+                inputs[i].value = G.saves[qNum][i];
+                let ev = new Event('focusout'); ev.target = inputs[i]; inputs[i].dispatchEvent(ev);
+
+
             }
+
             return allAnswers
         }
         if (questionObject.typ === 'q_order') {
@@ -1864,7 +1897,7 @@ const urlParams = new URLSearchParams(window.location.search)
 progressSummary()
 updateProgress()
 //Id('navbar').classList.add('hovering')
-if (G.saves.checks) { checkAll(true) }
+//if (G.saves.checks) { checkAll(true) }
 
 //informationCheckBox();
 
