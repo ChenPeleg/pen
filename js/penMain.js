@@ -4,6 +4,7 @@ G.Q = _Q_object.QuestionsArray;
 G.V = [];
 
 G.saves = {};
+G.supportsTouch = 'ontouchstart' in window || navigator.msMaxTouchPoints;
 
 
 utils: {
@@ -853,7 +854,7 @@ ${G.TXT.fullHelpText2}<br><br>
             const num = (allSects.indexOf(s) + 1);
             let cls = '';
             if (num === 1) { cls = 'currentPageInd' }
-            pageslinks2 += `<a href="#page_${num}" id="fpage_${num}" class="${footcls}">${num}</a> </span>`
+            pageslinks2 += `<a href="#page${num}" id="fpage_${num}" class="${footcls}">${num}</a> </span>`
         })
 
         formFooter.innerHTML += pageslinks2;
@@ -1093,15 +1094,37 @@ function enableElementPlacing(elemClass_, containerClass_, bankClass = 'word-pla
 }
 function enableDragSort(listClass) {
 
+
     function enableDragList(list) {
+        thisList = list
         Array.prototype.map.call(list.children, (item) => { enableDragItem(item) });
     }
     function enableDragItem(item) {
+
         item.setAttribute('draggable', true)
         item.ondrag = handleDrag;
         item.ondragstart = onDragStart
         item.ondragend = handleDrop;
-        item.ondragover = onDragOver
+        item.ondragover = onDragOver;
+        item.onclick = onItemClick;
+    }
+    function onItemClick(item) {
+        if (!G.supportsTouch || item.target.parentNode.classList.contains('done')) { return }
+        const oList = item.target.parentNode;
+        const listArray = [...oList.childNodes]
+        const choosen = listArray.filter(c => c.classList.contains('clickedListItem'));
+        if (choosen[0] && choosen[0] !== item.target) {
+            oList.insertBefore(choosen[0], item.target);
+            choosen[0].classList.remove('clickedListItem');
+            oList.classList.remove('listReadyToSwap')
+
+            return;
+        }
+        else if (choosen[0] === item.target) { item.target.classList.remove('clickedListItem'); return }
+
+        listArray.forEach(c => c.classList.remove('clickedListItem'))
+        item.target.classList.add('clickedListItem')
+        oList.classList.add('listReadyToSwap')
     }
     function onDragStart(item) {
         if (item.target.parentNode.classList.contains('done')) { return }
@@ -1140,7 +1163,7 @@ function enableDragSort(listClass) {
         item.target.classList.remove('drag-sort-active');
     }
     const sortableLists = document.getElementsByClassName(listClass);
-    Array.prototype.map.call(sortableLists, (list) => { enableDragList(list) });
+    Array.prototype.map.call(sortableLists, (list) => { enableDragList(list); });
 }
 function addListnerToBank(listClass) {
     const dataAtr = 'data-wordBank';
@@ -1331,8 +1354,8 @@ function informationCheckBox(action) {
         if (wrongAnswers < 1) {
             checkingProcess.remove();
             finishFinal();
-
-            // return
+            checkAll(true)
+            return
         }
         if (!Id('checkingProcess')) { return }
         innerAnimationBar.remove()
