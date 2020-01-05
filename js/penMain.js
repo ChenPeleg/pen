@@ -137,7 +137,7 @@ utils: {
 }
 function setDirectionBylanguage(element, text) {
     if (text && element) { } else return
-    const lagnguageRelationModifier = 2 // towards hebrew
+    const lagnguageRelationModifier = 1.3 // towards hebrew
     function isHebrew(qtext) {
         if (typeof qtext !== 'string') { return false }
         var hebLetters = /\s?[אבגדהוזחטיכלמנסעפצקרשתםןץףך]{1,30}\s?/g
@@ -153,7 +153,7 @@ function setDirectionBylanguage(element, text) {
 
         element.style.direction = 'rtl'; element.style.textAlign = 'right'
     } else {
-        //{element.style.direction = "ltr"; element.style.textAlign = "left"}
+        element.style.direction = "ltr"; element.style.textAlign = "left"
     }
 
 }
@@ -847,9 +847,10 @@ ${G.TXT.fullHelpText2}<br><br>
 
     if (pageslinks) {
         const footcls = 'allow-hover'
-        let pageslinks2 = '<span style="direction: rtl;"> עמוד '
-        pageslinks2 += `<a href="#page_${2}" id="fpage_next" class="${footcls}">הבא</a>`
-        pageslinks2 += `<a href="#page_${1}" id="fpage_pre" class="${footcls}">הקודם</a>`
+        let pageslinks2 = '<span style="direction: rtl;"> עמוד ';
+
+        pageslinks2 += `<a href="#page${2}" id="fpage_next" class="${footcls}">הבא</a>`
+        pageslinks2 += `<a href="#page${1}" id="fpage_pre" class="${footcls}">הקודם</a>`
         allSects.forEach(s => {
             const num = (allSects.indexOf(s) + 1);
             let cls = '';
@@ -997,8 +998,10 @@ function enableElementPlacing(elemClass_, containerClass_, bankClass = 'word-pla
     function clickContainer(ev) {
         const createFakeElement = (elme) => {
             const dupe = elme.cloneNode(true)
-            dupe.innerHTML = dupe.innerHTML.replace(/./g, '&nbsp');
+            dupe.innerHTML = dupe.innerHTML// .replace(/./g, '&nbsp')//.replace('&nbsp&nbsp', '');
+
             dupe.style.backgroundColor = 'transparent';
+            dupe.style.color = 'transparent';
             dupe.style.boxShadow = '0 0 0 0';
             dupe.id = dupe.id + fakeElementId;
             return dupe
@@ -1017,8 +1020,9 @@ function enableElementPlacing(elemClass_, containerClass_, bankClass = 'word-pla
         ev.target.innerHTML = '';
         const parent = elements[0].parentNode
         const dupelicate = createFakeElement(elements[0])
+        parent.insertBefore(dupelicate, elements[0]) ///
         ev.target.appendChild(elements[0]);
-        parent.appendChild(dupelicate)
+
 
         const styleOfBankElement = document.querySelector('.place-bank-element');
         const styleOfElementInBank = getComputedStyle(styleOfBankElement);
@@ -1047,9 +1051,12 @@ function enableElementPlacing(elemClass_, containerClass_, bankClass = 'word-pla
             let dupe = Id(ev.target.id + fakeElementId)
             let correctBank = [...document.getElementsByClassName(bankClass)].filter(b => seg === b.getAttribute('data-seg'))
 
-            correctBank[0].appendChild(ev.target);
 
-            if (dupe) { dupe.remove(); dupe = null; }
+
+            if (dupe) {
+                correctBank[0].insertBefore(ev.target, dupe);
+                dupe.remove(); dupe = null;
+            } else { correctBank[0].appendChild(ev.target); }
             ev.target.style.opacity = '0'
             setTimeout(() => { ev.target.style.opacity = '1' }, 1)
             ev.target.classList.remove(elementThatIsplaced);
@@ -1234,7 +1241,13 @@ function addSoundsListeners(classSnd) {
 
 }
 function pageTransition(n = 1) {
+
     if (!n) { return }
+    if (!G.applause) {
+        G.applause = new Audio('assets/claps.mp3')
+        G.applause.volume = 0;
+        G.applause.play().then(() => { }).catch(() => { ; G.applause = false });
+    }
     function focusOnAllFillBanks() {
 
         const inputs = [...document.querySelectorAll('input[type=text]')]
@@ -1282,6 +1295,12 @@ function pageTransition(n = 1) {
     Id('page_' + (allSects.indexOf(currentPage) + 1)).classList.remove('currentPageInd')
     Id('page_' + n).classList.add('currentPageInd');
     Id('fpage_pre').classList.add('allow-hover'); Id('fpage_next').classList.add('allow-hover');
+    const nextPage = n < allSects.length ? n + 1 : n;
+    const prePage = n > 1 ? n - 1 : 1;
+    L(n)
+    setTimeout(()=>{Id('fpage_next').href = '#page' + nextPage; Id('fpage_pre').href = '#page' + prePage;},400)
+    
+
     if (n === 1) { Id('fpage_pre').classList.remove('allow-hover') }
     if (n === allSects.length) { Id('fpage_next').classList.remove('allow-hover') }
 
@@ -1857,7 +1876,10 @@ function updateProgress() {
 function finishFinal() {
     const finishAllMsg = Elm('finishAllMsg');
     const checkClosebutton = Elm('checkClosebutton', 'span');
-    checkClosebutton.innerHTML = 'סגירה'
+    checkClosebutton.innerHTML = 'סגירה';
+    if (!G.applause) { G.applause = new Audio('assets/claps.mp3') }
+    G.applause.volume = 0.7
+    G.applause.play(); // new Audio('data/terminalType.mp3'); G.sound.Consoletyping.volume = 1
 
     Id('pageMetaContainer').appendChild(finishAllMsg);
     let html = `<H1>סיימת בהצלחה !</H1><br><br><br> כל הכבוד ! ענית נכון על כל השאלות בדף.` + '<br><br>'
@@ -1909,7 +1931,7 @@ if (G.saves.nameOfplayer) { assignLoadedContent() };
 
 setInterval(() => {
     updateProgress()
-    if (G.saves.nameOfplayer || true) {
+    if (G.saves.nameOfplayer) {
         saveState();
         storeInLocal('save')
     }
@@ -1925,5 +1947,6 @@ updateProgress()
 //if (G.saves.checks) { checkAll(true) }
 
 //informationCheckBox();
-
+// prob;ems to solve - somtime the dropb bank becomse bigger than i started. 
+// 
 //things to add: after in-text images add spaces acording to width relation;
