@@ -1297,9 +1297,9 @@ function pageTransition(n = 1) {
     Id('fpage_pre').classList.add('allow-hover'); Id('fpage_next').classList.add('allow-hover');
     const nextPage = n < allSects.length ? n + 1 : n;
     const prePage = n > 1 ? n - 1 : 1;
-    L(n)
-    setTimeout(()=>{Id('fpage_next').href = '#page' + nextPage; Id('fpage_pre').href = '#page' + prePage;},400)
-    
+
+    setTimeout(() => { Id('fpage_next').href = '#page' + nextPage; Id('fpage_pre').href = '#page' + prePage; }, 400)
+
 
     if (n === 1) { Id('fpage_pre').classList.remove('allow-hover') }
     if (n === allSects.length) { Id('fpage_next').classList.remove('allow-hover') }
