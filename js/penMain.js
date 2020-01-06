@@ -1373,7 +1373,8 @@ function informationCheckBox(action) {
         if (wrongAnswers < 1) {
             checkingProcess.remove();
             finishFinal();
-            checkAll(true)
+            checkAll(true);
+            Id('markProgBar').innerHTML = `<span class="littleMark">${rightAnswers}</span><span class="littleMark" style="bottom:-17px; background-color:red;">${wrongAnswers}</span>`
             return
         }
         if (!Id('checkingProcess')) { return }
@@ -1867,6 +1868,7 @@ function updateProgress() {
 
     const baseColor = `rgb(${(362 / (pre / 14)) + 150},${(pre * 2) + 50}, ${(pre * 0.2) + 50}  )`
     const fullText = `<div>${txtHeb} &nbsp<div style="background-image:linear-gradient(${baseColor} 0%, rgb(50,50,50) 100%); padding: 0px; background-size:${progInprecent}% 100%; background-repeat:no-repeat; background-position: right; border:1px solid white; display: inline-block; width:48px; border-radius:3px;">${progInprecent}%</div></div>`
+
     Id('advanceBar').innerHTML = fullText;
 
     Id('footerCheckButton').style.opacity = opac + " "
