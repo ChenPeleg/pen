@@ -4,6 +4,8 @@ G.Q = _Q_object.QuestionsArray;
 G.V = [];
 
 G.saves = {};
+G.supportsTouch = 'ontouchstart' in window || navigator.msMaxTouchPoints;
+
 
 utils: {
     function L(...args) {
@@ -135,6 +137,7 @@ utils: {
 }
 function setDirectionBylanguage(element, text) {
     if (text && element) { } else return
+    const lagnguageRelationModifier = 1.3 // towards hebrew
     function isHebrew(qtext) {
         if (typeof qtext !== 'string') { return false }
         var hebLetters = /\s?[אבגדהוזחטיכלמנסעפצקרשתםןץףך]{1,30}\s?/g
@@ -143,14 +146,14 @@ function setDirectionBylanguage(element, text) {
         if (matchArryEnglsh === null) { matchArryEnglsh = [] }
         let matchArryHebrew = qtext.match(hebLetters)
 
-        if (matchArryHebrew !== null && matchArryHebrew.length > matchArryEnglsh.length) { return true } else { return false }
+        if (matchArryHebrew !== null && (matchArryHebrew.length * lagnguageRelationModifier) > matchArryEnglsh.length) { return true } else { return false }
 
     }
     if (isHebrew(text)) {
 
         element.style.direction = 'rtl'; element.style.textAlign = 'right'
     } else {
-        //{element.style.direction = "ltr"; element.style.textAlign = "left"}
+        element.style.direction = "ltr"; element.style.textAlign = "left"
     }
 
 }
@@ -177,6 +180,7 @@ function langSet() {
         youMustHitInCorrectOrder: ' עליכם לפגוע בכל המטרות בסדר הנכון ',
         youMustHit: 'עליכם לפגוע ',
         correctHitsInArow: ' פגיעות נכונות ברצף ',
+        wouldYouLikeToReset: ' האם ברצונך למחוק את כל ההתקדמות ולהתחיל מחדש? ',
 
         cantResteGameDoWithClicl: 'לא ניתן לאפס משחק, נא לאפס דרך ממשק קליק',
         rank: "דרגה ",
@@ -412,6 +416,7 @@ function buildObjectsOfWorkSheet(q) {
             const segnumber = this.number
 
 
+
             answers.forEach(ans => {
                 const ansLower = ans.toLowerCase()
                 bankDiv += `<span id="${'bank_' + ansLower + "_" + segnumber}" class="" ${seg}>${ans}</span>${spaces}`
@@ -424,21 +429,22 @@ function buildObjectsOfWorkSheet(q) {
             let imageInTextClass = ''
             if (content !== txtWithimageMarkup) { imageInTextClass = 'text-containig-images' };
             const rgex = /\$[123456789]/g; let comleteElem = bankDiv;
-            let txtArr = txtWithimageMarkup.split(rgex)
+            let txtArr = txtWithimageMarkup.split(rgex).filter(e => e.trim())
             let answersCode = this.content.match(rgex)
             answersCode = answersCode.map(a => Number(a.replace('$', '')))
             const textInputClass = 'textFillInputClass';
             comleteElem += this.creadSoundButton();
 
+
             txtArr.forEach(e => {
                 const num = txtArr.indexOf(e)
                 let input = `<div class="bottom-input-border"><input id = "${"Q" + this.number + "_" + num}" type="text" class="${textInputClass}" name="${"Q" + this.number}" size="${maxLetters}" value="" ${seg}></div>`
                 if (!answers[num]) { input = '' }
-                let formElm = `<span class="${imageInTextClass}">${e}${input}</span>`
+                let formElm = `<span class="${imageInTextClass} fill-text">${e}${input}</span>`
                 comleteElem += formElm
             })
 
-            return comleteElem + '<br>';
+            return comleteElem + '<br>' + '<div class="separator"></div>';
         }
         toPlaceFromBank() {
             const seg = this.segNum();
@@ -511,6 +517,7 @@ function buildObjectsOfWorkSheet(q) {
 
             }
             if (this.typ.includes("h_")) {
+                if (this.typ === 'h_page' && this.number < 5) { document.title = this.content }
                 let txtWithimageMarkup = imageIntext(content)
                 let imageInTextClass = '';
                 const unerline = '<div class="header-underline"></div>'
@@ -644,13 +651,19 @@ function writePage(html = 'bla') {
 
 }
 function writeNavBarAndFooter() {
+
     var fullscreenToggler = false;
+    var menuTimer;
     function clickMenu() {
 
-        if (Id('menu').style.display === 'none') {
+        if (Id('menu').style.display == 'none' || !Id('menu').style.display) {
             Id('menu').style.display = 'flex'
+            Id('menu').style.opacity = '0'
+            setTimeout(() => { Id('menu').style.opacity = '1' }, 2)
+
         } else {
-            Id('menu').style.display = 'none'
+
+            Id('menu').style.display = 'none';
         }
     }
     function createMenu(html) {
@@ -708,9 +721,14 @@ ${G.TXT.fullHelpText2}<br><br>
     }
 
     function clickProg() {
-        let text = saveState();
+        let text = ""
+        const progInprecent = Math.round(progressSummary() * 100)
+        text += G.saves.nameOfplayer ? G.saves.nameOfplayer + ',<br><br>' : ''
+        text += ` ענית על ${progInprecent}% אחוז מהשאלות. ` + ' <br><br>'
 
-        createMenu(JSON.stringify(text))
+        text += G.checkText ? G.checkText : "";
+
+        createMenu(text)
     }
     function submitF(formArray) {
 
@@ -769,7 +787,16 @@ ${G.TXT.fullHelpText2}<br><br>
         const nav = Id('navbar');
         if (nav.classList.contains('hovering')) { return };
         nav.classList.add('hovering')
-        //setTimeout(()=>{nav.classList.remove('hovering')}, 1500)
+        setTimeout(() => {
+            clearTimeout(menuTimer)
+            nav.classList.remove('hovering');
+            menuTimer = setTimeout(() => {
+
+                if (nav.classList.contains('hovering')) { return }
+                Id('menu').style.display = 'none'; // not a prefect solution but works
+            }, 6000)
+
+        }, 1500)
     }
     function toggleFullscreen() {
         const elem = document.documentElement;
@@ -820,14 +847,15 @@ ${G.TXT.fullHelpText2}<br><br>
 
     if (pageslinks) {
         const footcls = 'allow-hover'
-        let pageslinks2 = '<span style="direction: rtl;"> עמוד '
-        pageslinks2 += `<a href="#page_${2}" id="fpage_next" class="${footcls}">הבא</a>`
-        pageslinks2 += `<a href="#page_${1}" id="fpage_pre" class="${footcls}">הקודם</a>`
+        let pageslinks2 = '<span style="direction: rtl;"> עמוד ';
+
+        pageslinks2 += `<a href="#page${2}" id="fpage_next" class="${footcls}">הבא</a>`
+        pageslinks2 += `<a href="#page${1}" id="fpage_pre" class="${footcls}">הקודם</a>`
         allSects.forEach(s => {
             const num = (allSects.indexOf(s) + 1);
             let cls = '';
             if (num === 1) { cls = 'currentPageInd' }
-            pageslinks2 += `<a href="#page_${num}" id="fpage_${num}" class="${footcls}">${num}</a> </span>`
+            pageslinks2 += `<a href="#page${num}" id="fpage_${num}" class="${footcls}">${num}</a> </span>`
         })
 
         formFooter.innerHTML += pageslinks2;
@@ -957,9 +985,15 @@ function buildContent(tree) {
     return fullHtml
 }
 function setDirection() {
+    function removeHtmlTags(html) {
+        regex = /<[^>]*>|&nbsp/gi
+        const onlyText = html.replace(regex, "")
+
+        return onlyText
+    }
     const mainForm = Id('mainForm');
     const collection = mainForm.querySelectorAll('span, h1, h2, h3, div');
-    collection.forEach(e => setDirectionBylanguage(e, e.innerHTML))
+    collection.forEach(e => setDirectionBylanguage(e, removeHtmlTags(e.innerHTML)))
 }
 function enableElementPlacing(elemClass_, containerClass_, bankClass = 'word-place-bank') {
     const chooseClass = 'choosen-place-element'
@@ -969,8 +1003,10 @@ function enableElementPlacing(elemClass_, containerClass_, bankClass = 'word-pla
     function clickContainer(ev) {
         const createFakeElement = (elme) => {
             const dupe = elme.cloneNode(true)
-            dupe.innerHTML = dupe.innerHTML.replace(/./g, '&nbsp');
+            dupe.innerHTML = dupe.innerHTML// .replace(/./g, '&nbsp')//.replace('&nbsp&nbsp', '');
+
             dupe.style.backgroundColor = 'transparent';
+            dupe.style.color = 'transparent';
             dupe.style.boxShadow = '0 0 0 0';
             dupe.id = dupe.id + fakeElementId;
             return dupe
@@ -989,8 +1025,9 @@ function enableElementPlacing(elemClass_, containerClass_, bankClass = 'word-pla
         ev.target.innerHTML = '';
         const parent = elements[0].parentNode
         const dupelicate = createFakeElement(elements[0])
+        parent.insertBefore(dupelicate, elements[0]) ///
         ev.target.appendChild(elements[0]);
-        parent.appendChild(dupelicate)
+
 
         const styleOfBankElement = document.querySelector('.place-bank-element');
         const styleOfElementInBank = getComputedStyle(styleOfBankElement);
@@ -1019,9 +1056,12 @@ function enableElementPlacing(elemClass_, containerClass_, bankClass = 'word-pla
             let dupe = Id(ev.target.id + fakeElementId)
             let correctBank = [...document.getElementsByClassName(bankClass)].filter(b => seg === b.getAttribute('data-seg'))
 
-            correctBank[0].appendChild(ev.target);
 
-            if (dupe) { dupe.remove(); dupe = null; }
+
+            if (dupe) {
+                correctBank[0].insertBefore(ev.target, dupe);
+                dupe.remove(); dupe = null;
+            } else { correctBank[0].appendChild(ev.target); }
             ev.target.style.opacity = '0'
             setTimeout(() => { ev.target.style.opacity = '1' }, 1)
             ev.target.classList.remove(elementThatIsplaced);
@@ -1066,15 +1106,37 @@ function enableElementPlacing(elemClass_, containerClass_, bankClass = 'word-pla
 }
 function enableDragSort(listClass) {
 
+
     function enableDragList(list) {
+        thisList = list
         Array.prototype.map.call(list.children, (item) => { enableDragItem(item) });
     }
     function enableDragItem(item) {
+
         item.setAttribute('draggable', true)
         item.ondrag = handleDrag;
         item.ondragstart = onDragStart
         item.ondragend = handleDrop;
-        item.ondragover = onDragOver
+        item.ondragover = onDragOver;
+        item.onclick = onItemClick;
+    }
+    function onItemClick(item) {
+        if (!G.supportsTouch || item.target.parentNode.classList.contains('done')) { return }
+        const oList = item.target.parentNode;
+        const listArray = [...oList.childNodes]
+        const choosen = listArray.filter(c => c.classList.contains('clickedListItem'));
+        if (choosen[0] && choosen[0] !== item.target) {
+            oList.insertBefore(choosen[0], item.target);
+            choosen[0].classList.remove('clickedListItem');
+            oList.classList.remove('listReadyToSwap')
+
+            return;
+        }
+        else if (choosen[0] === item.target) { item.target.classList.remove('clickedListItem'); return }
+
+        listArray.forEach(c => c.classList.remove('clickedListItem'))
+        item.target.classList.add('clickedListItem')
+        oList.classList.add('listReadyToSwap')
     }
     function onDragStart(item) {
         if (item.target.parentNode.classList.contains('done')) { return }
@@ -1113,7 +1175,7 @@ function enableDragSort(listClass) {
         item.target.classList.remove('drag-sort-active');
     }
     const sortableLists = document.getElementsByClassName(listClass);
-    Array.prototype.map.call(sortableLists, (list) => { enableDragList(list) });
+    Array.prototype.map.call(sortableLists, (list) => { enableDragList(list); });
 }
 function addListnerToBank(listClass) {
     const dataAtr = 'data-wordBank';
@@ -1184,7 +1246,23 @@ function addSoundsListeners(classSnd) {
 
 }
 function pageTransition(n = 1) {
+
     if (!n) { return }
+    if (!G.applause) {
+        G.applause = new Audio('assets/claps.mp3')
+        G.applause.volume = 0;
+        G.applause.play().then(() => { }).catch(() => { ; G.applause = false });
+    }
+    function focusOnAllFillBanks() {
+
+        const inputs = [...document.querySelectorAll('input[type=text]')]
+
+        for (i = 0; i < inputs.length; i++) {
+            let ev = new Event('focusout'); ev.target = inputs[i]; inputs[i].dispatchEvent(ev);
+
+        }
+
+    }
 
     const allSects = [...document.querySelectorAll('section')];
     const currentPageList = allSects.filter(e => e.style.display === 'block');
@@ -1206,6 +1284,7 @@ function pageTransition(n = 1) {
         setTimeout(() => {
             allSects[n - 1].classList.remove('go-back-page');
             currentPage.style.display = 'none';
+            focusOnAllFillBanks();
         }, 750)
 
     } else {
@@ -1214,36 +1293,42 @@ function pageTransition(n = 1) {
         setTimeout(() => {
             currentPage.classList.remove('turn-page');
             currentPage.style.display = 'none';
+            focusOnAllFillBanks();
         }, 750)
     }
 
     Id('page_' + (allSects.indexOf(currentPage) + 1)).classList.remove('currentPageInd')
     Id('page_' + n).classList.add('currentPageInd');
     Id('fpage_pre').classList.add('allow-hover'); Id('fpage_next').classList.add('allow-hover');
+    const nextPage = n < allSects.length ? n + 1 : n;
+    const prePage = n > 1 ? n - 1 : 1;
+
+    setTimeout(() => { Id('fpage_next').href = '#page' + nextPage; Id('fpage_pre').href = '#page' + prePage; }, 400)
+
+
     if (n === 1) { Id('fpage_pre').classList.remove('allow-hover') }
     if (n === allSects.length) { Id('fpage_next').classList.remove('allow-hover') }
 
 }
-function keyPressFunc(e) { if (e.charCode == 49) { checkAll() } }
+function keyPressFunc(e) { if (e.charCode == 49 && G.dev_mode) { checkAll() } }
 
 function informationCheckBox(action) {
-    saveState()
-    updateProgress()
-    const pre = Math.round(progressSummary() * 100) || 0;
 
-
+    const pre = Math.round(progressSummary() * 100);
     const checkingProcess = Elm('checkingProcess')
     const animationBar = Elm('animationBar')
     const checkTxt1 = Elm('checkTxt1'); // innerAnimationBar
     const checkTxt2 = Elm('checkTxt2'); // innerAnimationBar
-    const checkClosebutton = Elm('checkClosebutton', 'span')
+    const checkClosebutton = Elm('checkClosebutton', 'span');
     const innerAnimationBar = Elm('innerAnimationBar');
-    const boolArray = checkAll(false).map(e => e || false)
+    const boolArray = Object.values(checkAll(false))
     const allAnswers = boolArray.length;
-    const wrongAnswers = boolArray.filter(e => e === false).length;
-    const rightAnswers = allAnswers - wrongAnswers;
-    const goodMark = svgGetter('good')
+
+    const rightAnswers = boolArray.filter(e => e === true).length;
+    const wrongAnswers = allAnswers - rightAnswers;
+    const goodMark = svgGetter('good');
     const badMark = svgGetter('bad');
+    const allQuestionQuantity = Object.keys(G.saves).filter(e => e == Number(e)).length
 
     let timeTowait = 100;
     let shouldCheck = true;
@@ -1251,16 +1336,20 @@ function informationCheckBox(action) {
 
     let fulltext = `מתוך ` + allAnswers + "  שאלות, ענית על: " + "<br>"
     fulltext += `<span style="font-weight:bolder;"><span class="check-mark-general">${goodMark} </span> ` + rightAnswers + ' נכון מאד ' + "<br>"
-    fulltext += `<span class="check-mark-general" >${badMark} </span> ` + wrongAnswers + ' לא נכון או חלקי ' + "</span><br><br>";
+    fulltext += `<span class="check-mark-general" >${badMark} </span> ` + wrongAnswers + ' לא נכון או חסר ' + "</span><br><br>";
+
+    G.saves.checks = G.saves.checks || 1
     fulltext += 'נותרו עוד ' + (G.numberOfChecksAllowed - G.saves.checks) + ' בדיקות '
 
 
     checkTxt1.innerHTML = 'בדיקת תשובות  ';
+    let chanegeHeader = false;
 
-    if (pre < (G.canCheckFrom * 100)) {
+    if (pre < (100)) {
         const preSouldBe = Math.round(G.canCheckFrom * 100)
         fulltext = `יש לסיים את המענה על  ${preSouldBe + "%"} מהשאלות לפני צפייה בתוצאות`;
         timeTowait = 0; shouldCheck = false; animationBar.classList.add('shrink-bar');
+
 
     } else { showResults() }
 }
@@ -1275,6 +1364,7 @@ function showResults() {
         return precent
 
     }
+
     function precentAnimation(id, final, current) {
         Id(id + "T").innerHTML = current + "%";
         //Id(id).style.width = current + "%";
@@ -1336,8 +1426,10 @@ function showResults() {
 }
 
 function checkAll(toMark = true) {
+
+
     saveState()
-    let answerBoolArray = [];
+    let answerBoolObject = {};
     function getQnumber(id) {
         const reg = /Q([0123456789]{1,3})(_A?([0123456789]{1,3}))?/i
         const theMatch = id.match(reg);
@@ -1352,7 +1444,6 @@ function checkAll(toMark = true) {
     function checkIfAnsCorrect(qObj, val) {
 
         const questionObject = G.V[qObj.questNum];
-
         const ansObj = questionObject ? questionObject.answer[qObj.PartNum - 1] : false
         const solution = questionObject ? Number(questionObject.solution) : false;
         let finalCorretValue = ansObj
@@ -1361,7 +1452,9 @@ function checkAll(toMark = true) {
 
         switch (questionObject.typ) {
             case 'q_multi': case 'q_image':
-                if (qObj.PartNum === solution) { return true } else { return false }
+                const wasChecked = Id(`Q${qObj.questNum}_${qObj.PartNum - 1}`).checked
+
+                if (qObj.PartNum === solution && wasChecked || qObj.PartNum !== solution && !wasChecked) { return true } else { return false }
                 break;
             case 'q_dropbank':
                 let numberOfAns = getQnumber(val);
@@ -1369,6 +1462,10 @@ function checkAll(toMark = true) {
             case 'q_fillbank':
                 if (trimAndLower(val) === trimAndLower(ansObj)) { return true } else { return false };
                 break;
+            case 'q_word':
+
+                if (trimAndLower(val) === trimAndLower(questionObject.answer[solution - 1])) { return true } else { return false };
+
             case 'q_checkbox':
                 const numRegex = /[\D]{1,4}/g;
                 const solutionArr = questionObject.solution.split(numRegex).filter(e => e).map(e => Number(e));
@@ -1402,6 +1499,7 @@ function checkAll(toMark = true) {
         }
     }
     function ansAdd(name, value) {
+
         const insertAfter = function (newNode, nodeToinsertAfter) {
 
 
@@ -1410,23 +1508,36 @@ function checkAll(toMark = true) {
         const checkSvg = svgGetter('good')
         const Xsvg = svgGetter('bad')
 
-        const check = checkIfAnsCorrect(getQnumber(name), value)
-        answerBoolArray.push(check)
-        if (!toMark) { return }
+        let check = checkIfAnsCorrect(getQnumber(name), value);
+
+        if (check) {
+
+        } else {
+            answerBoolObject[getQnumber(name).questNum] = false;
+        }
+
+
+        if (!toMark || (!value)) { return }
 
         if (!Id(name)) { name += "_0" } // in the case of checkboxes
-        if (check) { //  
 
-            Id(name).classList.add('done');
-            Id(name).readOnly = "readonly";
-            if (Id(name).type === 'radio') {
-                const radios = [...document.getElementsByName(Id(name).name)]
+        const oldName = name;
+        if (Id(name).type === 'radio') {
+            name = "Q" + getQnumber(name).questNum + "_0";
+            check = answerBoolObject[getQnumber(name).questNum]
+        }
+        if (check) {
+
+            Id(oldName).classList.add('done');
+            Id(oldName).readOnly = "readonly";
+            if (Id(oldName).type === 'radio') {
+                const radios = [...document.getElementsByName(Id(oldName).name)]
                 radios.forEach(r => {
-                    if (r.id !== name) { r.disabled = true; r.classList.add('done'); }
+                    if (r.id !== oldName) { r.disabled = true; r.classList.add('done'); }
                 })
             }
-            if (Id(name).type === 'checkbox') {
-                const checkboxes = [...document.getElementsByName(Id(name).name)]
+            if (Id(oldName).type === 'checkbox') {
+                const checkboxes = [...document.getElementsByName(Id(oldName).name)]
                 checkboxes.forEach(r => {
                     r.classList.add('done');
                     r.disabled = "disabled";
@@ -1434,8 +1545,13 @@ function checkAll(toMark = true) {
                 })
 
             }
+        } else if (!check && Id(name).type === 'radio') {
+            const radios = [...document.getElementsByName(Id(oldName).name)]
+            radios.forEach(r => {
+                r.disabled = false; r.classList.remove('done');
+            })
+
         }
-        if (Id(name).type === 'radio') { name = "Q" + getQnumber(name).questNum + "_0" }
         let grade = Elm(name + '_mark', 'span'); grade.classList.add("check-mark");
 
 
@@ -1454,11 +1570,16 @@ function checkAll(toMark = true) {
     }
     const inputs = [...document.querySelectorAll('input:not(.checkbox0)')]
     const orders = [...document.querySelectorAll('.orderList')]
-    const placeing = [...document.querySelectorAll('.place-bank-element-in-container')]
+    const placeing = [...document.querySelectorAll('.place-bank-element')]
     const checkboxes = [...document.querySelectorAll('input.checkbox0')]
     const checkQusetion = [...new Set(checkboxes.map(e => e.name))]
-
     let arrayOfCheckBoxes = [];
+    for (let i = 1; i < G.V.length; i++) {
+        if (G.V[i].typ.includes("q_")) {
+
+            answerBoolObject[i] = true
+        }
+    }
     checkQusetion.forEach(n => {
         const oneQuestion = checkboxes.filter(c => c.name === n)
         arrayOfCheckBoxes.push(oneQuestion)
@@ -1472,25 +1593,35 @@ function checkAll(toMark = true) {
 
     })
     inputs.forEach(i => {
-        if (i.id === 'nameOfPlayerInput') { return }
 
-        if (i.value !== i.defaultValue) {
+        if (i.id === 'nameOfPlayerInput' || !i.id.match(/Q[\d]/)) { return }
+
+
+
+
+        if (i.type === 'text') { // && i.value !== i.defaultValue
             ansAdd(i.id, i.value)
-        } else if (i.checked !== i.defaultChecked) {
-            if (i.type === 'checkbox') { } else { ansAdd(i.id, i.checked) }
+        } else if (i.type === 'radio') {
+            // (i.checked !== i.defaultChecked)
+
+            ansAdd(i.id, i.value)
+        } else if (i.type === 'checkbox') {
+            ansAdd(i.id, i.checked)
         }
+
     })
     placeing.forEach(p => {
 
+
         ansAdd(p.id, p.parentNode.id)
     })
-    // returns the question id's that are checked at lease in ine place;
-    let activeCheckQue = arrayOfCheckBoxes.filter(a => a.some(c => c.checked)).map(e => e[0].name)
+
+    let activeCheckQue = arrayOfCheckBoxes.map(e => e[0].name)
     activeCheckQue.forEach(p =>
         ansAdd(p, p)
     )
 
-    return answerBoolArray
+    return answerBoolObject
 
 }
 function saveState() {
@@ -1637,6 +1768,7 @@ function storeInLocal(command) {
 function assignLoadedContent() {
     function puInputInAns(qNum) {
         const questionObject = G.V[qNum];
+
         if (questionObject.typ === 'q_word') {
             Id("Q" + qNum).value = G.saves[qNum] || "";
             return
@@ -1690,20 +1822,29 @@ function assignLoadedContent() {
         }
         if (questionObject.typ === 'q_fillbank') {
             const answersLength = questionObject.answer.filter(e => e).length
+
+
+
             const inputs = [...document.querySelectorAll('input[type=text]')].filter(e => e.name === ("Q" + qNum))
             allAnswers = [];
             for (i = 0; i < inputs.length; i++) {
-                inputs[i].value = G.saves[qNum][i]
+
+                inputs[i].value = G.saves[qNum][i];
+                let ev = new Event('focusout'); ev.target = inputs[i]; inputs[i].dispatchEvent(ev);
+
+
             }
+
             return allAnswers
         }
         if (questionObject.typ === 'q_order') {
-            if (qNum > 3) return
+
             const ol = Id("Q" + qNum);
             const listItems = [...ol.querySelectorAll('li')];
             //listItems.forEach(e=>e.remove())
             G.saves[qNum].forEach(n => {
                 const li = Id("Q" + qNum + "_" + n);
+
 
                 ol.appendChild(li)
 
@@ -1715,6 +1856,7 @@ function assignLoadedContent() {
     let saveObject = {}
     for (let i = 1; i < G.V.length; i++) {
         if (G.V[i].typ.includes("q_")) {
+
             puInputInAns(i)
 
         }
@@ -1758,18 +1900,40 @@ function updateProgress() {
 
     const pre = progInprecent
 
-    const baseColor = `rgb(${(362 / (pre / 14)) + 150}, ${(pre * 2) + 50}, ${(pre * 0.2) + 50}  )`
-    const fullText = `< div > ${txtHeb} & nbsp < div style = "background-image:linear-gradient(${baseColor} 0%, rgb(50,50,50) 100%); padding: 0px; background-size:${progInprecent}% 100%; background-repeat:no-repeat; background-position: right; border:1px solid white; display: inline-block; width:40px; border-radius:3px;" > ${progInprecent}%</div ></div > `
-    // Id('advanceBar').innerHTML = fullText;
+    const baseColor = `rgb(${(362 / (pre / 14)) + 150},${(pre * 2) + 50}, ${(pre * 0.2) + 50}  )`
+    const fullText = `<div>${txtHeb} &nbsp<div style="background-image:linear-gradient(${baseColor} 0%, rgb(50,50,50) 100%); padding: 0px; background-size:${progInprecent}% 100%; background-repeat:no-repeat; background-position: right; border:1px solid white; display: inline-block; width:48px; border-radius:3px;">${progInprecent}%</div></div>`
 
-    if (Id('footerCheckButton')) {
-        Id('footerCheckButton').style.opacity = opac + " "
-    }
+    //Id('advanceBar').innerHTML = fullText;
 
 
 
 }
+function finishFinal() {
+    const finishAllMsg = Elm('finishAllMsg');
+    const checkClosebutton = Elm('checkClosebutton', 'span');
+    checkClosebutton.innerHTML = 'סגירה';
+    if (!G.applause) { G.applause = new Audio('assets/claps.mp3') }
+    G.applause.volume = 0.7
+    G.applause.play(); // new Audio('data/terminalType.mp3'); G.sound.Consoletyping.volume = 1
 
+    Id('pageMetaContainer').appendChild(finishAllMsg);
+    let html = `<H1>סיימת בהצלחה !</H1><br><br><br> כל הכבוד ! ענית נכון על כל השאלות בדף.` + '<br><br>'
+    html += `ניתן למלא את הדף שוב על ידי איפוס ההתקדמות והתחלה מחדש.` + '<br><br><br>'
+    finishAllMsg.innerHTML = html;
+    confetti.start();
+    setTimeout(() => { confetti.stop(); }, 5000)
+    finishAllMsg.appendChild(checkClosebutton);
+    checkClosebutton.addEventListener('click', () => { finishAllMsg.remove(); confetti.stop() })
+
+
+
+}
+function disablePngSahdow() {
+    const images = [...document.querySelectorAll('img')]
+    let pngs = images.filter(i => i.src.includes('.png'))
+    pngs.forEach(p => p.classList.add('no-shadow'))
+
+}
 buildObjectsOfWorkSheet();
 const cont = buildContent(mapPageTree());
 
@@ -1781,11 +1945,8 @@ enableDragSort('orderList');
 addListnerToBank('textFillInputClass')
 enableElementPlacing('place-bank-element', 'placeInputWithBank');
 addSoundsListeners('soundBtn')
-
-
-
-
 writeNavBarAndFooter()
+disablePngSahdow()
 pageTransition(1)
 
 document.body.addEventListener("keypress", keyPressFunc);
@@ -1798,28 +1959,22 @@ function t(n) {
     const arr = n.split(numRegex).filter(e => e).map(e => Number(e));
     return arr
 }
-//Id('menu').style.display = 'flex'
+
 
 //storeInLocal('load');
 //if (G.saves.nameOfplayer) { assignLoadedContent() };
 
-setInterval(() => {
 
-    updateProgress();
-    return
-    if (G.saves.nameOfplayer || true) {
-
-        saveState();
-        storeInLocal('save')
-    }
-
-}, 500)
 checkHashParam()
 
 const urlParams = new URLSearchParams(window.location.search)
 
 progressSummary()
 updateProgress()
-
+//Id('navbar').classList.add('hovering')
+//if (G.saves.checks) { checkAll(true) }
 
 //informationCheckBox();
+// prob;ems to solve - somtime the dropb bank becomse bigger than i started.
+//
+//things to add: after in-text images add spaces acording to width relation;
