@@ -625,7 +625,12 @@ function mapPageTree() {
 
 }
 function writePage(html = 'bla') {
-    const widthPx = Math.round(screen.width * 0.68);
+    const widthOfAllWorksheet = 0.58; // 0.68
+    const enlargeHorizontal = 1.125;
+    let widthPx = Math.round(screen.width * widthOfAllWorksheet);
+    widthPx = Math.round(screen.width > screen.height ? screen.height : screen.width);
+
+    widthPx = screen.width > screen.height ? widthPx * enlargeHorizontal : widthPx
     const pageMetaContainer = Elm('pageMetaContainer')
     const pageContainer = Elm('pageContainer');
     const errorCheck = Id('ErrorCheck');
