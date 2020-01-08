@@ -1,5 +1,6 @@
 
 var G = G || {};
+
 G.Q = _Q_object.QuestionsArray;
 G.V = [];
 
@@ -139,6 +140,7 @@ function setDirectionBylanguage(element, text) {
     if (text && element) { } else return
     const lagnguageRelationModifier = 1.3 // towards hebrew
     function isHebrew(qtext) {
+
         if (typeof qtext !== 'string') { return false }
         var hebLetters = /\s?[אבגדהוזחטיכלמנסעפצקרשתםןץףך]{1,30}\s?/g
         var englishLetters = /[A-Za-z]{3,30}/g
@@ -569,16 +571,21 @@ function buildObjectsOfWorkSheet(q) {
                 let videoHtml = `<div style="text-align:center"><video width="80%"  controls><source src="content/${content}" type="video/mp4"> היתה בעייה בטעינת הוידאו</video></div>`;
                 content = videoHtml;
             }
+            if (this.typ === 'explain') {
+                let explainHtml = `<div>${content}</div>`;
+                content = explainHtml;
+            }
 
 
             return content
         }
 
     }
+    // L(G.Q)
     for (let i = 1; i < G.Q.length; i++) {
-        let addPosition = "1"
-        if (i > 1) { addPosition = G.Q[i - 1][0] + "" }
-        G.Q[i][0] = G.Q[i][0] || addPosition
+        let addPosition = "1";
+        if (i > 1) { addPosition = Math.floor( (Number(G.Q[i - 1][0]) + 1)) + " " }
+        G.Q[i][0] = G.Q[i][0] || addPosition;
         G.V[i] = new Segment(G.Q[i], i)
     }
     return G.V
@@ -1478,6 +1485,7 @@ function checkAll(toMark = true) {
 
         let check = checkIfAnsCorrect(getQnumber(name), value);
 
+
         if (check) {
 
         } else {
@@ -1579,9 +1587,12 @@ function checkAll(toMark = true) {
 
     })
     placeing.forEach(p => {
+        if (!p.id.includes('dupe')) {
+            ansAdd(p.id, p.parentNode.id)
+        }
 
 
-        ansAdd(p.id, p.parentNode.id)
+
     })
 
     let activeCheckQue = arrayOfCheckBoxes.map(e => e[0].name)
@@ -1853,12 +1864,14 @@ function progressSummary() {
     }
     const filteredQuestions = Object.keys(G.saves).filter(e => e == Number(e)).map(e => G.saves[e])
     /* this array dowsnt consider question numbers */
+
     const answerAverage = arrayStats(filteredQuestions)
     return answerAverage
 }
 function updateProgress() {
 
-    const progInprecent = Math.round(progressSummary() * 100);
+    const progInprecent = Math.round(progressSummary() * 100) || 0;
+
     let colorStl = ''; let opac = 1;
     if (progInprecent < (G.canCheckFrom * 100)) { colorStl = "color:grey"; opac = 0.5 }
     const heb = 'בדיקה';
@@ -1932,9 +1945,10 @@ storeInLocal('load');
 if (G.saves.nameOfplayer) { assignLoadedContent() };
 
 setInterval(() => {
-    updateProgress()
+    updateProgress();
+    saveState();
     if (G.saves.nameOfplayer) {
-        saveState();
+
         storeInLocal('save')
     }
 
