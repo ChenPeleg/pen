@@ -281,8 +281,10 @@ function buildObjectsOfWorkSheet(q) {
     const elementOfhtml = (t) => {
         switch (t) {
             case "h_page": return 'h1';
-            case "h_text": return 'h2';
-            case "h_q": return 'h3';
+            case "h_text": case "h_2": return 'h2';
+            case "h_q": case "h_3": return 'h3';
+            case "h_4": return 'h4';
+
             case "image_text": case "image_main": case "image_back": return 'img';
             case "explain": case "txt": return 'div';
             default: return 'div'
@@ -584,7 +586,7 @@ function buildObjectsOfWorkSheet(q) {
     // L(G.Q)
     for (let i = 1; i < G.Q.length; i++) {
         let addPosition = "1";
-        if (i > 1) { addPosition = Math.floor( (Number(G.Q[i - 1][0]) + 1)) + " " }
+        if (i > 1) { addPosition = Math.floor((Number(G.Q[i - 1][0]) + 1)) + " " }
         G.Q[i][0] = G.Q[i][0] || addPosition;
         G.V[i] = new Segment(G.Q[i], i)
     }
