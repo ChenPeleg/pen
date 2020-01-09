@@ -22,7 +22,7 @@ div {
 }
 
 body {
-    background-image: url("abs.jpg");
+    background-image: url("bg.jpg");
 
     font-family: 'David', sans-serif;
     font-size: var(--main-font-size)
