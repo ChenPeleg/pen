@@ -136,6 +136,7 @@ utils: {
 function setDirectionBylanguage(element, text) {
     if (text && element) { } else return
     function isHebrew(qtext) {
+        return true
         if (typeof qtext !== 'string') { return false }
         var hebLetters = /\s?[אבגדהוזחטיכלמנסעפצקרשתםןץףך]{1,30}\s?/g
         var englishLetters = /[A-Za-z]{3,30}/g
@@ -316,7 +317,7 @@ function buildObjectsOfWorkSheet(q) {
         segNum() { return `data-seg="${this.number}"` }
         toMultiInput() {
             const answers = this.answer.filter((e) => e)
-            let html = ''; let slash = '<span style="color:black">/</span>';
+            let html = ''; let slash = '<span style="color:black"></span>';
             let isSlashin = false;
             const avarageLength = Math.round(JSON.stringify(answers).length / answers.length)
             if (avarageLength < 17) { isSlashin = true }
@@ -326,7 +327,7 @@ function buildObjectsOfWorkSheet(q) {
                 const ansLbl = "Q" + this.number + "_" + numberOfAns
                 const radioClass = "radio2"; let sl = '';
                 if ((numberOfAns + 1) < answers.length && isSlashin) { sl = slash } else { sl = ' ' }
-                let formElm = `<input id = "${ansLbl}" type="radio" class="${radioClass}" name="${"Q" + this.number}" value="${numberOfAns}"> <label class="${radioClass}" for="${ansLbl}">${ans}</label>` + sl
+                let formElm = `<input id = "${ansLbl}" type="radio" class="${radioClass}" name="${"Q" + this.number}" value="${numberOfAns}"> <label class="${radioClass}" for="${ansLbl}">${ans}</label> <br>` + sl
 
 
                 html += formElm;
@@ -1324,11 +1325,11 @@ function showResults() {
     html += '</div>'
 
     Id('mainForm').innerHTML = html
-    L(G.project)
+
     localStorage.setItem(storageKey, JSON.stringify(G.project))
     setTimeout(() => {
         location.reload()
-    }, 20000)
+    }, 50000)
 
 }
 
@@ -1773,7 +1774,7 @@ const cont = buildContent(mapPageTree());
 
 langSet();
 writePage(cont)
-setDirection()
+
 enableDragSort('orderList');
 addListnerToBank('textFillInputClass')
 enableElementPlacing('place-bank-element', 'placeInputWithBank');
@@ -1784,7 +1785,7 @@ addSoundsListeners('soundBtn')
 
 writeNavBarAndFooter()
 pageTransition(1)
-
+setDirection()
 //document.body.addEventListener("keypress", keyPressFunc);
 
 
