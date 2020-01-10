@@ -456,7 +456,29 @@ h2+.header-underline{
    border-radius: 20px;
    z-index: 0;
 }
+
 h3{
+    background: linear-gradient(
+        90deg,
+        rgb(216, 216, 1) 0%,
+        #ff0 25%,
+        #ff0 75%, 
+        rgb(216, 216, 1) 100%) ;
+   
+      margin: 13px 0;
+      background-repeat: no-repeat;
+  
+  background-size: 100%  100%;
+  background-position: 0% 0%;
+    border-radius: 22px;
+    border: rgb(124, 27, 27) solid 4px;
+      padding: 0em 1.5em;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--main-soft-shadow);
+
+}
+h4{
     font-size: calc(var(--main-font-size)*1.1);
    
  
@@ -466,58 +488,6 @@ h3{
     font-weight:300;
     color: rgb(245, 224, 32);
     text-shadow: -1px 0  black, 0 1px black, 1px 0 black, 0 -1px black, 3px 3px 2px grey;
-
-}
-h4{
-    background: linear-gradient(
-        355deg,
-        transparent,
-        transparent 40%,
-        #ff0 40%,
-        transparent 45%,
-        #ff0 50%,
-        #ff0 60%,
-        transparent 60%,
-        transparent),linear-gradient(
-            5deg,
-            transparent,
-            transparent 40%,
-            #ff5 40%,
-            transparent 43%,
-            #ff5 50%,
-            #fD8 60%,
-            transparent 63%,
-            transparent 70%,
-            transparent);
-      /* unchanged: */
-      margin: 13px 0;
-      /* padding set to 0.5em on the left and right sides,
-         in order that the 'strike-through' extends beyond
-         the side of the text: */
-      padding: 0em 0.5em;
-    position: relative;
-    overflow: hidden;
-
-}
-h4::before{
-    --strike: #ff0;
-    /* --strike: rgb(255, 72, 0); */
-  background: linear-gradient(10deg, transparent 0%, transparent 54%, var(--strike) 55%, var(--strike) 55%, transparent 76%, transparent 100% ),
-  linear-gradient(2deg, transparent 0%, transparent 50%, var(--strike) 55%, var(--strike) 65%, transparent 76%, transparent 100%), linear-gradient(355deg, transparent 0%, transparent 44%, var(--strike) 59%, var(--strike) 65%, transparent 76%, transparent 100%), linear-gradient(345deg, transparent 0%, transparent 44%, var(--strike) 59%,transparent 60%, var(--strike) 65%, transparent 86%, transparent 100%)    ;
-  content: "";
-  height: 1.75em;
-  left: 0;
-  margin-top: calc(0.125em / 2 * -1);
-  position: absolute;
-  right: 0;
-  top: 25%;
-  border-radius: 40% 90%;
-  background-repeat: no-repeat;
-  /* background-size: 0% 100%; */
-  opacity: 1;
-  background-size: 100% 100%;
-  z-index: -1;
- 
 
 }
 
